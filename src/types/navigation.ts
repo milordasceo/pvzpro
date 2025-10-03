@@ -1,7 +1,20 @@
 // Типы для навигации
 export type RootStackParamList = {
   ChatList: undefined;
-  Chat: { chatId: string; title: string };
+  Chat: { 
+    chatId: string; 
+    title: string; 
+    initialMessage?: string;
+    penaltyData?: {
+      amount: number;
+      description: string;
+      category: string;
+      severity: string;
+      color: string;
+      date: string;
+      relatedItemPrice?: number;
+    };
+  };
   FinanceHistory: undefined;
   FinanceBreakdown: { period?: string };
   PvzSettings: undefined;

@@ -6,9 +6,11 @@ import { financeService } from '../services';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/auth.store';
 import { Payment, ShiftPayment } from '../types/finance';
+import { useNavigation } from '@react-navigation/native';
 
 export const FinanceCurrentPeriodScreen: React.FC = () => {
   const theme = useTheme();
+  const navigation = useNavigation<any>();
   const { user } = useAuthStore();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [shifts, setShifts] = useState<ShiftPayment[]>([]);
@@ -569,14 +571,41 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                         {/* Кнопка оспаривания */}
                                         <StyledButton
                                           mode={disputed ? 'outlined' : 'contained'}
-                                          onPress={() =>
-                                            setDisputedKeys((prev) => {
-                                              const next = new Set(Array.from(prev));
-                                              if (next.has(key)) next.delete(key);
-                                              else next.add(key);
-                                              return next;
-                                            })
-                                          }
+                                          onPress={() => {
+                                            if (disputed) {
+                                              // Отменяем оспаривание
+                                              setDisputedKeys((prev) => {
+                                                const next = new Set(Array.from(prev));
+                                                next.delete(key);
+                                                return next;
+                                              });
+                                            } else {
+                                              // Открываем чат с данными штрафа
+                                              setDisputedKeys((prev) => new Set(prev).add(key));
+                                              
+                                              const penaltyDescription = p.description || dayLabelFromCategory(p.category ?? p.penaltyCategory);
+                                              const dateFormatted = day.date.toLocaleDateString('ru-RU', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric',
+                                              });
+                                              
+                                              navigation.navigate('Chat', {
+                                                chatId: 'admin-chat',
+                                                title: 'Чат с администратором',
+                                                initialMessage: `Хочу оспорить штраф от ${dateFormatted}`,
+                                                penaltyData: {
+                                                  amount: p.amount,
+                                                  description: penaltyDescription,
+                                                  category: p.category ?? p.penaltyCategory ?? 'unknown',
+                                                  severity: meta.label,
+                                                  color: meta.color,
+                                                  date: dateFormatted,
+                                                  relatedItemPrice: p.relatedItemPrice,
+                                                },
+                                              });
+                                            }
+                                          }}
                                           icon={disputed ? 'check-circle' : 'comment-alert'}
                                           buttonColor={disputed ? undefined : '#DC2626'}
                                           textColor={disputed ? '#78350F' : '#FFF'}

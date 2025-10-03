@@ -12,25 +12,57 @@ import {
 import { Appbar, Avatar, Text, TextInput, useTheme, Menu, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyledScrollView, SquareIconButton, StyledDialog } from '../components';
 
 type Role = 'me' | 'manager' | 'system';
+
+type PenaltyAttachment = {
+  amount: number;
+  description: string;
+  category: string;
+  severity: string;
+  color: string;
+  date: string;
+  relatedItemPrice?: number;
+};
 
 type Message = {
   id: string;
   role: Role;
   text: string;
   at: number;
+  penaltyAttachment?: PenaltyAttachment;
 };
 
 export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
   const theme = useTheme();
   const title = route?.params?.title ?? 'Чат';
+  const initialMessage = route?.params?.initialMessage;
+  const penaltyData = route?.params?.penaltyData;
+  
   const [messages, setMessages] = React.useState<Message[]>([
     { id: 's1', role: 'system', text: 'Чат создан', at: Date.now() - 60_000 },
     { id: 'm1', role: 'manager', text: 'Здравствуйте! Чем могу помочь?', at: Date.now() - 55_000 },
   ]);
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState(initialMessage || '');
+  
+  // Добавляем сообщение со штрафом при загрузке, если есть данные
+  React.useEffect(() => {
+    if (penaltyData && initialMessage) {
+      setTimeout(() => {
+        const newMsg: Message = {
+          id: `penalty-${Date.now()}`,
+          role: 'me',
+          text: initialMessage,
+          at: Date.now(),
+          penaltyAttachment: penaltyData,
+        };
+        setMessages((prev) => [...prev, newMsg]);
+        scrollToEnd();
+      }, 300);
+    }
+  }, []);
   const [attachmentsVisible, setAttachmentsVisible] = React.useState(false);
   const [emojiOpen, setEmojiOpen] = React.useState(false);
   const emojiHeight = React.useRef(new Animated.Value(0)).current;
@@ -153,7 +185,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
         quality: 0.7,
       });
       if (!res.canceled && res.assets?.length) {
-        setMessages((prev) => [
+        setMessages((prev: Message[]) => [
           ...prev,
           { id: String(Math.random()), role: 'me', text: '📷 Фото прикреплено', at: Date.now() },
         ]);
@@ -272,6 +304,13 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               );
             }
             const isMe = item.role === 'me';
+            const formatRUB = (n: number) =>
+              new Intl.NumberFormat('ru-RU', {
+                style: 'currency',
+                currency: 'RUB',
+                minimumFractionDigits: 0,
+              }).format(n);
+            
             return (
               <View
                 key={item.id}
@@ -298,6 +337,67 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                   }}
                 >
                   <Text style={{ color: '#111827' }}>{item.text}</Text>
+                  
+                  {/* Карточка штрафа */}
+                  {item.penaltyAttachment && (
+                    <View
+                      style={{
+                        marginTop: 8,
+                        padding: 10,
+                        backgroundColor: '#FFF',
+                        borderWidth: 1,
+                        borderColor: '#FEE2E2',
+                        borderRadius: 8,
+                        gap: 6,
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <MaterialCommunityIcons
+                          name="alert-circle"
+                          size={16}
+                          color={item.penaltyAttachment.color}
+                        />
+                        <Text style={{ fontSize: 12, fontWeight: '600', color: '#111827', flex: 1 }}>
+                          {item.penaltyAttachment.description}
+                        </Text>
+                      </View>
+                      
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
+                        <View
+                          style={{
+                            backgroundColor: `${item.penaltyAttachment.color}20`,
+                            paddingHorizontal: 6,
+                            paddingVertical: 2,
+                            borderRadius: 4,
+                          }}
+                        >
+                          <Text style={{ fontSize: 10, fontWeight: '600', color: item.penaltyAttachment.color }}>
+                            {item.penaltyAttachment.severity}
+                          </Text>
+                        </View>
+                        <Text style={{ fontSize: 10, color: '#6B7280' }}>
+                          {item.penaltyAttachment.date}
+                        </Text>
+                      </View>
+                      
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+                        <Text style={{ fontSize: 11, color: '#6B7280' }}>Сумма штрафа:</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '700', color: item.penaltyAttachment.color }}>
+                          {formatRUB(item.penaltyAttachment.amount)}
+                        </Text>
+                      </View>
+                      
+                      {item.penaltyAttachment.relatedItemPrice && (
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text style={{ fontSize: 10, color: '#9CA3AF' }}>Стоимость товара:</Text>
+                          <Text style={{ fontSize: 11, color: '#6B7280' }}>
+                            {formatRUB(item.penaltyAttachment.relatedItemPrice)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                  
                   <Text
                     style={{ color: '#6B7280', fontSize: 11, marginTop: 4, alignSelf: 'flex-end' }}
                   >
@@ -341,7 +441,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => {
-                    setText((prev) => prev + item);
+                    setText((prev: string) => prev + item);
                     setTimeout(() => inputRef.current?.focus?.(), 0);
                   }}
                   style={{
