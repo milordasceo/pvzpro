@@ -40,6 +40,8 @@ export interface ShiftPayment {
     amount: number; // отрицательное
     relatedItemPrice?: number;
     description?: string;
+    itemName?: string; // Название товара
+    adminComment?: string; // Комментарий администратора
   }>;
 }
 

@@ -9,10 +9,11 @@ export type RootStackParamList = {
       amount: number;
       description: string;
       category: string;
-      severity: string;
       color: string;
       date: string;
       relatedItemPrice?: number;
+      itemName?: string;
+      adminComment?: string;
     };
   };
   FinanceHistory: undefined;

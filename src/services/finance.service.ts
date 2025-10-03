@@ -265,10 +265,31 @@ function generateMockShiftPayments(): ShiftPayment[] {
     let penalty = 0;
     let penaltyDetails: ShiftPayment['penaltyDetails'] = undefined;
     
+    // Общие данные для штрафов
+    const itemNames = [
+      'Смартфон Samsung Galaxy A54',
+      'Наушники Apple AirPods Pro',
+      'Умные часы Xiaomi Mi Band 8',
+      'Кроссовки Nike Air Max',
+      'Рюкзак для ноутбука 15.6"',
+      'Мышь Logitech MX Master 3',
+      'Термокружка Stanley 0.5л',
+      'Электробритва Philips S5579',
+    ];
+    const adminComments = [
+      'Клиент подтвердил, что товар не соответствует описанию',
+      'По видео с камеры видно нарушение протокола проверки',
+      'Повторное нарушение за неделю',
+      'Товар не был найден на складе более 48 часов',
+      null, // Иногда комментария нет
+      null,
+    ];
+    
     const penaltyRand = Math.random();
     if (penaltyRand < 0.15) {
       // 15% - серьёзный штраф (подмена, брак, зависший)
       const penaltyType = Math.random();
+      
       if (penaltyType < 0.33) {
         // Подмена товара (100%)
         const itemPrice = Math.floor(Math.random() * 4000) + 3000;
@@ -278,6 +299,8 @@ function generateMockShiftPayments(): ShiftPayment[] {
           amount: -itemPrice,
           relatedItemPrice: itemPrice,
           description: 'Подмена товара',
+          itemName: itemNames[Math.floor(Math.random() * itemNames.length)],
+          adminComment: adminComments[Math.floor(Math.random() * adminComments.length)] || undefined,
         }];
       } else if (penaltyType < 0.66) {
         // Брак (50%)
@@ -289,6 +312,8 @@ function generateMockShiftPayments(): ShiftPayment[] {
           amount: -penaltyAmount,
           relatedItemPrice: itemPrice,
           description: 'Брак – не проверено под камерой',
+          itemName: itemNames[Math.floor(Math.random() * itemNames.length)],
+          adminComment: adminComments[Math.floor(Math.random() * adminComments.length)] || undefined,
         }];
       } else {
         // Зависший товар (100%)
@@ -299,6 +324,8 @@ function generateMockShiftPayments(): ShiftPayment[] {
           amount: -itemPrice,
           relatedItemPrice: itemPrice,
           description: 'Зависший товар',
+          itemName: itemNames[Math.floor(Math.random() * itemNames.length)],
+          adminComment: adminComments[Math.floor(Math.random() * adminComments.length)] || undefined,
         }];
       }
     } else if (penaltyRand < 0.25) {
@@ -309,6 +336,7 @@ function generateMockShiftPayments(): ShiftPayment[] {
         category: 'bad_rating',
         amount: -amount,
         description: 'Плохая оценка клиента',
+        adminComment: adminComments[Math.floor(Math.random() * adminComments.length)] || undefined,
       }];
     }
     

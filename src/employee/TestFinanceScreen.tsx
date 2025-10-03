@@ -533,38 +533,72 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                           </View>
                                         </View>
                                         
-                                        {/* Бейджи и стоимость */}
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                                          <View
-                                            style={{
-                                              backgroundColor: `${meta.color}20`,
-                                              paddingHorizontal: 8,
-                                              paddingVertical: 3,
-                                              borderRadius: 6,
-                                            }}
-                                          >
-                                            <Text style={{ fontSize: 11, fontWeight: '600', color: meta.color }}>
-                                              {meta.label}
-                                            </Text>
-                                          </View>
-                                          {disputed && (
-                                            <View
-                                              style={{
-                                                backgroundColor: '#FCD34D',
-                                                paddingHorizontal: 8,
-                                                paddingVertical: 3,
-                                                borderRadius: 6,
-                                              }}
-                                            >
-                                              <Text style={{ fontSize: 11, fontWeight: '600', color: '#78350F' }}>
-                                                Оспаривается
+                                        {/* Детали штрафа */}
+                                        <View style={{ gap: 6 }}>
+                                          {/* Название товара */}
+                                          {p.itemName && (
+                                            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
+                                              <MaterialCommunityIcons name="package-variant" size={14} color="#6B7280" style={{ marginTop: 2 }} />
+                                              <Text style={{ fontSize: 12, color: '#111827', flex: 1 }}>
+                                                {p.itemName}
                                               </Text>
                                             </View>
                                           )}
+                                          
+                                          {/* Стоимость товара */}
                                           {p.relatedItemPrice && (
-                                            <Text style={{ fontSize: 11, color: '#6B7280' }}>
-                                              Товар: {formatRUB(p.relatedItemPrice)}
-                                            </Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                              <MaterialCommunityIcons name="cash" size={14} color="#6B7280" />
+                                              <Text style={{ fontSize: 11, color: '#6B7280' }}>
+                                                Стоимость: {formatRUB(p.relatedItemPrice)}
+                                              </Text>
+                                            </View>
+                                          )}
+                                          
+                                          {/* Комментарий администратора */}
+                                          {p.adminComment && (
+                                            <View
+                                              style={{
+                                                backgroundColor: '#FEF3C7',
+                                                padding: 8,
+                                                borderRadius: 6,
+                                                borderLeftWidth: 3,
+                                                borderLeftColor: '#F59E0B',
+                                              }}
+                                            >
+                                              <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
+                                                <MaterialCommunityIcons name="comment-text" size={14} color="#D97706" style={{ marginTop: 1 }} />
+                                                <View style={{ flex: 1 }}>
+                                                  <Text style={{ fontSize: 10, fontWeight: '600', color: '#92400E', marginBottom: 2 }}>
+                                                    Комментарий администратора:
+                                                  </Text>
+                                                  <Text style={{ fontSize: 11, color: '#78350F', lineHeight: 16 }}>
+                                                    {p.adminComment}
+                                                  </Text>
+                                                </View>
+                                              </View>
+                                            </View>
+                                          )}
+                                          
+                                          {/* Статус оспаривания */}
+                                          {disputed && (
+                                            <View
+                                              style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                gap: 6,
+                                                backgroundColor: '#FCD34D',
+                                                paddingHorizontal: 8,
+                                                paddingVertical: 4,
+                                                borderRadius: 6,
+                                                alignSelf: 'flex-start',
+                                              }}
+                                            >
+                                              <MaterialCommunityIcons name="clock-outline" size={12} color="#78350F" />
+                                              <Text style={{ fontSize: 11, fontWeight: '600', color: '#78350F' }}>
+                                                На рассмотрении
+                                              </Text>
+                                            </View>
                                           )}
                                         </View>
                                         
@@ -601,10 +635,11 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                                     amount: p.amount,
                                                     description: penaltyDescription,
                                                     category: p.category ?? p.penaltyCategory ?? 'unknown',
-                                                    severity: meta.label,
                                                     color: meta.color,
                                                     date: dateFormatted,
                                                     relatedItemPrice: p.relatedItemPrice,
+                                                    itemName: p.itemName,
+                                                    adminComment: p.adminComment,
                                                   },
                                                 },
                                               });

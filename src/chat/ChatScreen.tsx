@@ -21,10 +21,11 @@ type PenaltyAttachment = {
   amount: number;
   description: string;
   category: string;
-  severity: string;
   color: string;
   date: string;
   relatedItemPrice?: number;
+  itemName?: string;
+  adminComment?: string;
 };
 
 type Message = {
@@ -354,7 +355,8 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                         gap: 6,
                       }}
                     >
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      {/* Заголовок */}
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                         <MaterialCommunityIcons
                           name="alert-circle"
                           size={16}
@@ -365,36 +367,56 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                         </Text>
                       </View>
                       
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                        <View
-                          style={{
-                            backgroundColor: `${item.penaltyAttachment.color}20`,
-                            paddingHorizontal: 6,
-                            paddingVertical: 2,
-                            borderRadius: 4,
-                          }}
-                        >
-                          <Text style={{ fontSize: 10, fontWeight: '600', color: item.penaltyAttachment.color }}>
-                            {item.penaltyAttachment.severity}
+                      {/* Дата */}
+                      <Text style={{ fontSize: 10, color: '#6B7280', marginBottom: 8 }}>
+                        {item.penaltyAttachment.date}
+                      </Text>
+                      
+                      {/* Название товара */}
+                      {item.penaltyAttachment.itemName && (
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
+                          <MaterialCommunityIcons name="package-variant" size={14} color="#6B7280" style={{ marginTop: 1 }} />
+                          <Text style={{ fontSize: 11, color: '#111827', flex: 1 }}>
+                            {item.penaltyAttachment.itemName}
                           </Text>
                         </View>
-                        <Text style={{ fontSize: 10, color: '#6B7280' }}>
-                          {item.penaltyAttachment.date}
-                        </Text>
-                      </View>
+                      )}
                       
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
-                        <Text style={{ fontSize: 11, color: '#6B7280' }}>Сумма штрафа:</Text>
-                        <Text style={{ fontSize: 14, fontWeight: '700', color: item.penaltyAttachment.color }}>
-                          {formatRUB(item.penaltyAttachment.amount)}
-                        </Text>
-                      </View>
-                      
-                      {item.penaltyAttachment.relatedItemPrice && (
+                      {/* Сумма штрафа и стоимость товара */}
+                      <View style={{ gap: 4, marginBottom: 6 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={{ fontSize: 10, color: '#9CA3AF' }}>Стоимость товара:</Text>
-                          <Text style={{ fontSize: 11, color: '#6B7280' }}>
-                            {formatRUB(item.penaltyAttachment.relatedItemPrice)}
+                          <Text style={{ fontSize: 11, color: '#6B7280' }}>Сумма штрафа:</Text>
+                          <Text style={{ fontSize: 14, fontWeight: '700', color: item.penaltyAttachment.color }}>
+                            {formatRUB(item.penaltyAttachment.amount)}
+                          </Text>
+                        </View>
+                        
+                        {item.penaltyAttachment.relatedItemPrice && (
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 10, color: '#9CA3AF' }}>Стоимость товара:</Text>
+                            <Text style={{ fontSize: 11, color: '#6B7280' }}>
+                              {formatRUB(item.penaltyAttachment.relatedItemPrice)}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      
+                      {/* Комментарий администратора */}
+                      {item.penaltyAttachment.adminComment && (
+                        <View
+                          style={{
+                            backgroundColor: '#FEF3C7',
+                            padding: 6,
+                            borderRadius: 4,
+                            borderLeftWidth: 2,
+                            borderLeftColor: '#F59E0B',
+                          }}
+                        >
+                          <Text style={{ fontSize: 9, fontWeight: '600', color: '#92400E', marginBottom: 2 }}>
+                            От администратора:
+                          </Text>
+                          <Text style={{ fontSize: 10, color: '#78350F', lineHeight: 14 }}>
+                            {item.penaltyAttachment.adminComment}
                           </Text>
                         </View>
                       )}
