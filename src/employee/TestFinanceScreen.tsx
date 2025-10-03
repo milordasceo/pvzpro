@@ -442,22 +442,78 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                           )}
                         </View>
 
-                        {/* Детали штрафов: сворачиваемый список */}
+                        {/* Детали штрафов: структурированные карточки */}
                         {(() => {
-                          const penalties =
-                            (day as any).penaltyDetails ??
-                            payments.filter(
-                              (p) => p.type === 'penalty' && ymd(p.date) === ymd(day.date),
-                            );
+                          const penalties = day.penaltyDetails;
                           if (!penalties || penalties.length === 0) return null;
                           const dayKey = ymd(day.date);
                           const expanded = expandedDays.has(dayKey);
+                          
+                          // Подсчёт статистики по штрафам
+                          const totalPenaltyAmount = penalties.reduce((sum: number, p: any) => sum + Math.abs(p.amount), 0);
+                          const disputedCount = penalties.filter((p: any, idx: number) => {
+                            const key = `${dayKey}:${p.category ?? p.penaltyCategory ?? 'x'}:${p.amount}:${idx}`;
+                            return disputedKeys.has(key);
+                          }).length;
+                          
+                          // Функция для получения иконки и цвета по типу штрафа
+                          const getPenaltyMeta = (category?: string) => {
+                            switch (category) {
+                              case 'substitution_100':
+                                return { icon: 'swap-horizontal', color: '#DC2626', severity: 'Критический' };
+                              case 'stuck_100':
+                                return { icon: 'package-variant-closed', color: '#DC2626', severity: 'Критический' };
+                              case 'defect_50':
+                                return { icon: 'alert-circle', color: '#F59E0B', severity: 'Серьёзный' };
+                              case 'bad_rating':
+                                return { icon: 'star-off', color: '#F59E0B', severity: 'Средний' };
+                              default:
+                                return { icon: 'alert', color: '#EF4444', severity: 'Средний' };
+                            }
+                          };
+                          
                           return (
-                            <View style={{ marginTop: 6 }}>
-                              <List.Accordion
-                                title={`Подробности штрафов (${penalties.length})`}
-                                titleStyle={{ color: '#111827' }}
-                                expanded={expanded}
+                            <View style={{ marginTop: 12 }}>
+                              {/* Заголовок с статистикой */}
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  backgroundColor: '#FEF2F2',
+                                  padding: 12,
+                                  borderRadius: 8,
+                                  marginBottom: 8,
+                                }}
+                              >
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                  <MaterialCommunityIcons name="alert-circle" size={20} color="#DC2626" />
+                                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#DC2626' }}>
+                                    Штрафы ({penalties.length})
+                                  </Text>
+                                  {disputedCount > 0 && (
+                                    <View
+                                      style={{
+                                        backgroundColor: '#FCD34D',
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 2,
+                                        borderRadius: 12,
+                                      }}
+                                    >
+                                      <Text style={{ fontSize: 11, fontWeight: '600', color: '#78350F' }}>
+                                        {disputedCount} оспаривается
+                                      </Text>
+                                    </View>
+                                  )}
+                                </View>
+                                <Text style={{ fontSize: 16, fontWeight: '700', color: '#DC2626' }}>
+                                  −{formatRUB(totalPenaltyAmount)}
+                                </Text>
+                              </View>
+                              
+                              {/* Кнопка раскрытия */}
+                              <StyledButton
+                                mode="text"
                                 onPress={() =>
                                   setExpandedDays((prev) => {
                                     const next = new Set(Array.from(prev));
@@ -466,42 +522,153 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                     return next;
                                   })
                                 }
+                                icon={expanded ? 'chevron-up' : 'chevron-down'}
+                                contentStyle={{ flexDirection: 'row-reverse' }}
+                                style={{ marginTop: -4 }}
                               >
-                                {penalties.map((p: any, idx: number) => {
-                                  const key = `${dayKey}:${p.category ?? p.penaltyCategory ?? 'x'}:${p.amount}:${idx}`;
-                                  const disputed = disputedKeys.has(key);
-                                  const base = p.description
-                                    ? p.description
-                                    : dayLabelFromCategory(p.category ?? p.penaltyCategory);
-                                  const longText = `Удержание за ${base}${p.relatedItemPrice ? `; стоимость товара: ${formatRUB(p.relatedItemPrice)}` : ''}`;
-                                  return (
-                                    <View key={key} style={{ paddingVertical: 6 }}>
-                                      <MetaRow
-                                        icon="file-document"
-                                        label={longText}
-                                        rightValue={formatRUB(p.amount)}
-                                        rightColor="#EF4444"
-                                      />
-                                      <StyledButton
-                                        mode="contained"
-                                        onPress={() =>
-                                          setDisputedKeys((prev) => {
-                                            const next = new Set(Array.from(prev));
-                                            if (next.has(key)) next.delete(key);
-                                            else next.add(key);
-                                            return next;
-                                          })
-                                        }
-                                        style={{ marginTop: 8 }}
-                                        icon="comment-alert"
+                                {expanded ? 'Скрыть подробности' : 'Показать подробности'}
+                              </StyledButton>
+                              
+                              {/* Карточки штрафов */}
+                              {expanded && (
+                                <View style={{ gap: 8, marginTop: 8 }}>
+                                  {penalties.map((p: any, idx: number) => {
+                                    const key = `${dayKey}:${p.category ?? p.penaltyCategory ?? 'x'}:${p.amount}:${idx}`;
+                                    const disputed = disputedKeys.has(key);
+                                    const meta = getPenaltyMeta(p.category ?? p.penaltyCategory);
+                                    
+                                    return (
+                                      <View
+                                        key={key}
+                                        style={{
+                                          backgroundColor: disputed ? '#FFFBEB' : '#FFF',
+                                          borderWidth: 1,
+                                          borderColor: disputed ? '#FCD34D' : '#FEE2E2',
+                                          borderRadius: 12,
+                                          padding: 12,
+                                          gap: 10,
+                                        }}
                                       >
-                                        {disputed ? 'Оспаривается' : 'Оспорить'}
-                                      </StyledButton>
-                                      <Divider style={{ marginTop: 6 }} />
-                                    </View>
-                                  );
-                                })}
-                              </List.Accordion>
+                                        {/* Заголовок штрафа */}
+                                        <View
+                                          style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'flex-start',
+                                          }}
+                                        >
+                                          <View style={{ flex: 1, gap: 4 }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                              <MaterialCommunityIcons
+                                                name={meta.icon as any}
+                                                size={18}
+                                                color={meta.color}
+                                              />
+                                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                                                {p.description || dayLabelFromCategory(p.category ?? p.penaltyCategory)}
+                                              </Text>
+                                            </View>
+                                            <View
+                                              style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                gap: 6,
+                                                marginLeft: 24,
+                                              }}
+                                            >
+                                              <View
+                                                style={{
+                                                  backgroundColor: `${meta.color}20`,
+                                                  paddingHorizontal: 8,
+                                                  paddingVertical: 2,
+                                                  borderRadius: 6,
+                                                }}
+                                              >
+                                                <Text
+                                                  style={{
+                                                    fontSize: 11,
+                                                    fontWeight: '600',
+                                                    color: meta.color,
+                                                  }}
+                                                >
+                                                  {meta.severity}
+                                                </Text>
+                                              </View>
+                                              {disputed && (
+                                                <View
+                                                  style={{
+                                                    backgroundColor: '#FCD34D',
+                                                    paddingHorizontal: 8,
+                                                    paddingVertical: 2,
+                                                    borderRadius: 6,
+                                                  }}
+                                                >
+                                                  <Text
+                                                    style={{
+                                                      fontSize: 11,
+                                                      fontWeight: '600',
+                                                      color: '#78350F',
+                                                    }}
+                                                  >
+                                                    На рассмотрении
+                                                  </Text>
+                                                </View>
+                                              )}
+                                            </View>
+                                          </View>
+                                          <Text
+                                            style={{
+                                              fontSize: 18,
+                                              fontWeight: '700',
+                                              color: meta.color,
+                                            }}
+                                          >
+                                            {formatRUB(p.amount)}
+                                          </Text>
+                                        </View>
+                                        
+                                        {/* Детали */}
+                                        {p.relatedItemPrice && (
+                                          <View
+                                            style={{
+                                              backgroundColor: '#F9FAFB',
+                                              padding: 8,
+                                              borderRadius: 6,
+                                              marginLeft: 24,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                                              Стоимость товара: <Text style={{ fontWeight: '600', color: '#111827' }}>{formatRUB(p.relatedItemPrice)}</Text>
+                                            </Text>
+                                          </View>
+                                        )}
+                                        
+                                        {/* Кнопка оспаривания */}
+                                        <StyledButton
+                                          mode={disputed ? 'outlined' : 'contained'}
+                                          onPress={() =>
+                                            setDisputedKeys((prev) => {
+                                              const next = new Set(Array.from(prev));
+                                              if (next.has(key)) next.delete(key);
+                                              else next.add(key);
+                                              return next;
+                                            })
+                                          }
+                                          icon={disputed ? 'check-circle' : 'comment-alert'}
+                                          buttonColor={disputed ? undefined : '#DC2626'}
+                                          textColor={disputed ? '#78350F' : '#FFF'}
+                                          style={{
+                                            marginTop: 4,
+                                            borderColor: disputed ? '#FCD34D' : undefined,
+                                          }}
+                                        >
+                                          {disputed ? 'Отменить оспаривание' : 'Оспорить штраф'}
+                                        </StyledButton>
+                                      </View>
+                                    );
+                                  })}
+                                </View>
+                              )}
                             </View>
                           );
                         })()}

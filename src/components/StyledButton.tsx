@@ -13,6 +13,8 @@ export interface StyledButtonProps {
   contentStyle?: any;
   labelStyle?: any;
   compact?: boolean;
+  buttonColor?: string;
+  textColor?: string;
 }
 
 /**
@@ -31,6 +33,8 @@ export const StyledButton: React.FC<StyledButtonProps> = React.memo(
     contentStyle,
     labelStyle,
     compact = false,
+    buttonColor,
+    textColor,
   }) => {
     const defaultStyle = {
       borderRadius: UI_TOKENS.radius,
@@ -52,6 +56,8 @@ export const StyledButton: React.FC<StyledButtonProps> = React.memo(
         style={defaultStyle}
         contentStyle={defaultContentStyle}
         labelStyle={labelStyle}
+        buttonColor={buttonColor}
+        textColor={textColor}
       >
         {children}
       </Button>
