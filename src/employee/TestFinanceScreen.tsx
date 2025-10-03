@@ -590,18 +590,22 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                                 year: 'numeric',
                                               });
                                               
-                                              navigation.navigate('Chat', {
-                                                chatId: 'admin-chat',
-                                                title: 'Чат с администратором',
-                                                initialMessage: `Хочу оспорить штраф от ${dateFormatted}`,
-                                                penaltyData: {
-                                                  amount: p.amount,
-                                                  description: penaltyDescription,
-                                                  category: p.category ?? p.penaltyCategory ?? 'unknown',
-                                                  severity: meta.label,
-                                                  color: meta.color,
-                                                  date: dateFormatted,
-                                                  relatedItemPrice: p.relatedItemPrice,
+                                              // Навигация к чату через вложенные навигаторы
+                                              navigation.getParent()?.navigate('Чат', {
+                                                screen: 'Chat',
+                                                params: {
+                                                  chatId: 'admin-chat',
+                                                  title: 'Чат с администратором',
+                                                  initialMessage: `Хочу оспорить штраф от ${dateFormatted}`,
+                                                  penaltyData: {
+                                                    amount: p.amount,
+                                                    description: penaltyDescription,
+                                                    category: p.category ?? p.penaltyCategory ?? 'unknown',
+                                                    severity: meta.label,
+                                                    color: meta.color,
+                                                    date: dateFormatted,
+                                                    relatedItemPrice: p.relatedItemPrice,
+                                                  },
                                                 },
                                               });
                                             }
