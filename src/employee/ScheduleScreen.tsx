@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text, useTheme, TouchableRipple, Snackbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -79,7 +79,22 @@ export const ScheduleScreen: React.FC = () => {
     return days;
   }, [weekOffset]);
 
-  const today = new Date();
+  const today = useMemo(() => new Date(), []); // Мемоизируем, чтобы не создавать новый объект каждый рендер
+
+  // Мемоизированные обработчики
+  const handlePrevWeek = useCallback(() => setWeekOffset((v) => v - 1), []);
+  const handleNextWeek = useCallback(() => setWeekOffset((v) => v + 1), []);
+  const handleToday = useCallback(() => {
+    const t = new Date();
+    setSelectedDate(t);
+    setWeekOffset(0);
+  }, []);
+  const handleEditMode = useCallback(() => setEditMode(true), []);
+  const handleCancelEdit = useCallback(() => {
+    setEditMode(false);
+    setAdds(new Set());
+    setRemoves(new Set());
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -96,7 +111,7 @@ export const ScheduleScreen: React.FC = () => {
         >
           <StyledButton
             mode="text"
-            onPress={() => setWeekOffset((v) => v - 1)}
+            onPress={handlePrevWeek}
             style={{ margin: 0 }}
             contentStyle={{ paddingHorizontal: 12 }}
             labelStyle={{ fontSize: 20 }}
@@ -109,11 +124,7 @@ export const ScheduleScreen: React.FC = () => {
             mode={isSameDay(selectedDate, today) && weekOffset === 0 ? 'contained' : 'text'}
             disabled={isSameDay(selectedDate, today) && weekOffset === 0}
             icon="calendar-today"
-            onPress={() => {
-              const t = new Date();
-              setSelectedDate(t);
-              setWeekOffset(0);
-            }}
+            onPress={handleToday}
             labelStyle={{ fontSize: 12, fontWeight: '600' }}
             compact
           >
@@ -122,7 +133,7 @@ export const ScheduleScreen: React.FC = () => {
           
           <StyledButton
             mode="text"
-            onPress={() => setWeekOffset((v) => v + 1)}
+            onPress={handleNextWeek}
             style={{ margin: 0 }}
             contentStyle={{ paddingHorizontal: 12 }}
             labelStyle={{ fontSize: 20 }}
@@ -563,7 +574,7 @@ export const ScheduleScreen: React.FC = () => {
               {!editMode ? (
                 <StyledButton
                   mode="contained"
-                  onPress={() => setEditMode(true)}
+                  onPress={handleEditMode}
                   style={{ marginTop: 4 }}
                   icon="calendar-edit"
                 >
@@ -573,11 +584,7 @@ export const ScheduleScreen: React.FC = () => {
                 <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                   <StyledButton
                     mode="outlined"
-                    onPress={() => {
-                      setEditMode(false);
-                      setAdds(new Set());
-                      setRemoves(new Set());
-                    }}
+                    onPress={handleCancelEdit}
                     style={{ flex: 1 }}
                   >
                     Отмена
