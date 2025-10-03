@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { List, Text, TextInput, Divider } from 'react-native-paper';
 import { StyledScrollView, StyledCard, StyledButton } from '../../components';
-import { MapPickerModal } from './MapPickerModal';
+import { MapPickerModal } from '../components/MapPickerModal';
 
 type PvzItem = {
   id: string;

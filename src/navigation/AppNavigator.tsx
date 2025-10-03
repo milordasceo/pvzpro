@@ -5,7 +5,7 @@ import { MainNavigator } from './MainNavigator';
 import { AuthNavigator } from './AuthNavigator';
 import { FinanceHistoryScreen } from '../employee/FinanceHistoryScreen';
 import { RootStackParamList } from '../types/navigation';
-import PvzSettingsScreen from '../screens/admin/PvzSettingsScreen';
+import PvzSettingsScreen from '../admin/screens/PvzSettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
