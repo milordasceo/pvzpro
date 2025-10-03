@@ -94,8 +94,9 @@ function generateMockPayments(): Payment[] {
         });
       }
 
-      // Штраф (редко): фикс или процент от стоимости
-      if (chance(0.25)) {
+      // Штрафы: для текущего месяца (back=0) гарантируем несколько штрафов для тестирования
+      const penaltyChance = back === 0 ? 0.8 : 0.25; // 80% для текущего, 25% для прошлых
+      if (chance(penaltyChance)) {
         const day = randInt(start, end);
         if (chance(0.5)) {
           result.push({
@@ -142,6 +143,52 @@ function generateMockPayments(): Payment[] {
         penaltyCategory: chance(0.5) ? 'bad_rating' : 'defect_50',
         relatedItemPrice: fifty ? itemPrice : undefined,
         date: new Date(y, m, day),
+        period: periodStr,
+        pvzId: 'pvz1',
+        status: 'paid',
+      });
+    }
+
+    // Для текущего месяца (back=0) добавляем дополнительные штрафы для тестирования
+    if (back === 0) {
+      // Подмена товара (100% стоимости)
+      const itemPrice1 = randInt(3000, 8000);
+      result.push({
+        id: `p${idCounter++}`,
+        type: 'penalty',
+        amount: -itemPrice1,
+        description: 'Подмена товара',
+        penaltyCategory: 'substitution_100',
+        relatedItemPrice: itemPrice1,
+        date: new Date(y, m, randInt(1, endOfMonth)),
+        period: periodStr,
+        pvzId: 'pvz1',
+        status: 'paid',
+      });
+
+      // Зависший товар (100% стоимости)
+      const itemPrice2 = randInt(2500, 6000);
+      result.push({
+        id: `p${idCounter++}`,
+        type: 'penalty',
+        amount: -itemPrice2,
+        description: 'Зависший товар',
+        penaltyCategory: 'stuck_100',
+        relatedItemPrice: itemPrice2,
+        date: new Date(y, m, randInt(1, endOfMonth)),
+        period: periodStr,
+        pvzId: 'pvz1',
+        status: 'paid',
+      });
+
+      // Еще один штраф за плохую оценку
+      result.push({
+        id: `p${idCounter++}`,
+        type: 'penalty',
+        amount: -randInt(400, 900),
+        description: 'Плохая оценка от клиента',
+        penaltyCategory: 'bad_rating',
+        date: new Date(y, m, randInt(1, endOfMonth)),
         period: periodStr,
         pvzId: 'pvz1',
         status: 'paid',
@@ -235,8 +282,32 @@ const mockShiftPayments: ShiftPayment[] = [
     },
   ]),
   genShift(6, 7, 2200, 4, 0, 0),
-  genShift(7, 9, 2200, 0, 0, 0),
-  genShift(8, 11, 2200, 0, 0, 0),
+  genShift(7, 9, 2200, 0, 0, -4500, [
+    {
+      category: 'substitution_100',
+      amount: -4500,
+      relatedItemPrice: 4500,
+      description: 'Подмена товара',
+    },
+  ]),
+  genShift(8, 11, 2200, 0, 0, -3200, [
+    {
+      category: 'stuck_100',
+      amount: -3200,
+      relatedItemPrice: 3200,
+      description: 'Зависший товар',
+    },
+  ]),
+  genShift(9, 13, 2200, 2, 300, 0),
+  genShift(10, 14, 2200, 0, 0, -600, [
+    { category: 'bad_rating', amount: -400, description: 'Плохая оценка (повторно)' },
+    {
+      category: 'defect_50',
+      amount: -200,
+      relatedItemPrice: 400,
+      description: 'Мелкий брак',
+    },
+  ]),
 ];
 
 export class FinanceService {
