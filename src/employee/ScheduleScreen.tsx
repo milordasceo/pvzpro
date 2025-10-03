@@ -82,37 +82,72 @@ export const ScheduleScreen: React.FC = () => {
   const today = new Date();
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
       <View style={{ paddingHorizontal: 12, marginTop: 8 }}>
+        {/* Навигация */}
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: 8,
+            marginBottom: 12,
+            backgroundColor: '#F9FAFB',
+            borderRadius: 12,
+            padding: 4,
+            borderWidth: 1,
+            borderColor: '#E5E7EB',
           }}
         >
-          <View style={{ width: 72, alignItems: 'flex-start' }}>
-            <StyledButton mode="text" onPress={() => setWeekOffset((v) => v - 1)}>
+          <View
+            style={{
+              backgroundColor: '#FFF',
+              borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          >
+            <StyledButton
+              mode="text"
+              onPress={() => setWeekOffset((v) => v - 1)}
+              style={{ margin: 0 }}
+              contentStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
+              labelStyle={{ fontSize: 24, lineHeight: 28 }}
+            >
               ‹
             </StyledButton>
           </View>
-          <View style={{ flex: 1, alignItems: 'center' }}>
+          
+          <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 8 }}>
             <StyledButton
-              mode="text"
-              icon="calendar-today"
+              mode={isSameDay(selectedDate, today) && weekOffset === 0 ? 'contained' : 'contained-tonal'}
               disabled={isSameDay(selectedDate, today) && weekOffset === 0}
+              icon="calendar-today"
               onPress={() => {
                 const t = new Date();
                 setSelectedDate(t);
                 setWeekOffset(0);
               }}
+              contentStyle={{ paddingHorizontal: 12, paddingVertical: 4 }}
+              labelStyle={{ fontSize: 13, fontWeight: '600' }}
             >
               Сегодня
             </StyledButton>
           </View>
-          <View style={{ width: 72, alignItems: 'flex-end' }}>
-            <StyledButton mode="text" onPress={() => setWeekOffset((v) => v + 1)}>
+          
+          <View
+            style={{
+              backgroundColor: '#FFF',
+              borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          >
+            <StyledButton
+              mode="text"
+              onPress={() => setWeekOffset((v) => v + 1)}
+              style={{ margin: 0 }}
+              contentStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
+              labelStyle={{ fontSize: 24, lineHeight: 28 }}
+            >
               ›
             </StyledButton>
           </View>
@@ -604,9 +639,11 @@ export const ScheduleScreen: React.FC = () => {
         );
       })()}
 
+      </ScrollView>
+      
       <Snackbar visible={!!snack} onDismiss={() => setSnack(null)} duration={2500}>
         {snack}
       </Snackbar>
-    </ScrollView>
+    </View>
   );
 };
