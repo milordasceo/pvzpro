@@ -644,15 +644,15 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                               });
                                             }
                                           }}
-                                          icon={disputed ? 'check-circle' : 'comment-alert'}
-                                          buttonColor={disputed ? undefined : '#DC2626'}
+                                          icon={disputed ? 'check-circle' : 'message-text-outline'}
+                                          buttonColor={disputed ? undefined : '#3B82F6'}
                                           textColor={disputed ? '#78350F' : '#FFF'}
                                           compact
                                           style={{
                                             borderColor: disputed ? '#FCD34D' : undefined,
                                           }}
                                         >
-                                          {disputed ? 'Отменить' : 'Оспорить'}
+                                          {disputed ? 'Отменить' : 'Обсудить'}
                                         </StyledButton>
                                       </View>
                                     );
