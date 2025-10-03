@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Image, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Text, Divider, useTheme, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useTasksCounter } from '../tasks/TasksCounterContext';
 import { StyledCard, StyledButton, StyledScrollView, SquareIconButton } from '../../components';
@@ -383,6 +384,9 @@ export const TasksTab: React.FC = () => {
                             <Image
                               source={{ uri: photoUri }}
                               style={{ width: 52, height: 52, borderRadius: 8 }}
+                              contentFit="cover"
+                              transition={200}
+                              placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
                             />
                           ) : (
                             <SquareIconButton
@@ -515,7 +519,9 @@ export const TasksTab: React.FC = () => {
                           <Image
                             source={{ uri: photoUri }}
                             style={{ width: '100%', height: 120, borderRadius: 8 }}
-                            resizeMode="cover"
+                            contentFit="cover"
+                            transition={200}
+                            placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
                           />
                           <View
                             style={{
