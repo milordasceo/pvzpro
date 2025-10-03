@@ -200,7 +200,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
 
   const onTakePhoto = React.useCallback(async () => {
     try {
-      const res = await ImagePicker.launchCameraAsync({ quality: 0.7 });
+      const res = await ImagePicker.launchCameraAsync({ quality: 0.3 });
       if (!res.canceled && res.assets?.length) {
         setMessages((prev) => [
           ...prev,

@@ -56,14 +56,15 @@ export const ProcessTab: React.FC = () => {
   const endShift = useShiftStore((s) => s.endShift);
   const { pendingCount, completedCount } = useTasksCounter();
 
-  function formatLeft(ms: number): string {
+  // Мемоизированная функция форматирования времени
+  const formatLeft = React.useCallback((ms: number): string => {
     const totalSec = Math.floor(ms / 1000);
     const h = Math.floor(totalSec / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     const s = totalSec % 60;
     const pad = (n: number) => n.toString().padStart(2, '0');
     return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
-  }
+  }, []);
 
   const timeRange = `с 10:00 – 22:00`;
   const onBreak = status === 'break';
@@ -75,8 +76,14 @@ export const ProcessTab: React.FC = () => {
     const id = setInterval(() => setNowTick(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const canFinishByTime = nowTick >= end.getTime();
-  const breakLeftMs = Math.max(0, BREAK_DURATION_MS - (nowTick - (breakStartedAtMs ?? nowTick)));
+
+  // Мемоизированные временные вычисления
+  const canFinishByTime = React.useMemo(() => nowTick >= end.getTime(), [nowTick, end]);
+  const breakLeftMs = React.useMemo(
+    () => Math.max(0, BREAK_DURATION_MS - (nowTick - (breakStartedAtMs ?? nowTick))),
+    [nowTick, breakStartedAtMs, BREAK_DURATION_MS]
+  );
+
   React.useEffect(() => {
     if (onBreak && breakLeftMs === 0) {
       endBreak(); // Используем метод store
@@ -86,14 +93,23 @@ export const ProcessTab: React.FC = () => {
     }
   }, [onBreak, breakLeftMs]);
 
-  // Вычисления для прогресса
-  const shiftDurationMs = end.getTime() - start.getTime(); // 12 часов
-  const elapsedMs = startedAtMs ? Math.min(nowTick - startedAtMs, shiftDurationMs) : 0;
-  const progressPercent = shiftDurationMs > 0 ? (elapsedMs / shiftDurationMs) * 100 : 0;
-  const elapsedHours = Math.floor(elapsedMs / (1000 * 60 * 60));
-  const elapsedMinutes = Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60));
-  const totalHours = Math.floor(shiftDurationMs / (1000 * 60 * 60));
-  const totalTasksCount = pendingCount + completedCount;
+  // Мемоизированные вычисления для прогресса
+  const shiftDurationMs = React.useMemo(() => end.getTime() - start.getTime(), [end, start]);
+  const elapsedMs = React.useMemo(
+    () => (startedAtMs ? Math.min(nowTick - startedAtMs, shiftDurationMs) : 0),
+    [startedAtMs, nowTick, shiftDurationMs]
+  );
+  const progressPercent = React.useMemo(
+    () => (shiftDurationMs > 0 ? (elapsedMs / shiftDurationMs) * 100 : 0),
+    [elapsedMs, shiftDurationMs]
+  );
+  const elapsedHours = React.useMemo(() => Math.floor(elapsedMs / (1000 * 60 * 60)), [elapsedMs]);
+  const elapsedMinutes = React.useMemo(
+    () => Math.floor((elapsedMs % (1000 * 60 * 60)) / (1000 * 60)),
+    [elapsedMs]
+  );
+  const totalHours = React.useMemo(() => Math.floor(shiftDurationMs / (1000 * 60 * 60)), [shiftDurationMs]);
+  const totalTasksCount = React.useMemo(() => pendingCount + completedCount, [pendingCount, completedCount]);
 
   return (
     <>

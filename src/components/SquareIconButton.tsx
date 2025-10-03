@@ -13,7 +13,7 @@ export interface SquareIconButtonProps {
   size?: number;
 }
 
-export const SquareIconButton: React.FC<SquareIconButtonProps> = ({
+export const SquareIconButton: React.FC<SquareIconButtonProps> = React.memo(({
   icon,
   onPress,
   disabled = false,
@@ -44,4 +44,4 @@ export const SquareIconButton: React.FC<SquareIconButtonProps> = ({
       </View>
     </TouchableRipple>
   );
-};
+});

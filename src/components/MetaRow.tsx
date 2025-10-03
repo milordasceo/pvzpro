@@ -19,7 +19,7 @@ export const MetaRow: React.FC<{
   subdued?: boolean;
   rightValue?: string;
   rightColor?: string;
-}> = ({ icon, label, subdued, rightValue, rightColor }) => (
+}> = React.memo(({ icon, label, subdued, rightValue, rightColor }) => (
   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }}>
       <MaterialCommunityIcons name={icon} size={16} color={subdued ? '#9CA3AF' : '#6B7280'} />
@@ -31,4 +31,4 @@ export const MetaRow: React.FC<{
       </Text>
     ) : null}
   </View>
-);
+));

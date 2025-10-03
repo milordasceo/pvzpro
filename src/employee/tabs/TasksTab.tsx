@@ -95,7 +95,7 @@ export const TasksTab: React.FC = () => {
   const takePhoto = useCallback(async (update: (uri: string) => void) => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') return;
-    const result = await ImagePicker.launchCameraAsync({ quality: 0.5 });
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.3 });
     if (!result.canceled && result.assets && result.assets.length > 0) {
       update(result.assets[0].uri);
     }
@@ -146,10 +146,19 @@ export const TasksTab: React.FC = () => {
     [checklistPhotos],
   );
 
-  // Общий прогресс
-  const totalTasks = CHECKLISTS.length + assignments.length;
-  const completedTasks = Object.values(completedChecklists).filter(Boolean).length + completed.filter(c => !c.id.includes('checklist')).length;
-  const totalProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  // Мемоизированные вычисления общего прогресса
+  const totalTasks = useMemo(
+    () => CHECKLISTS.length + assignments.length,
+    [assignments.length]
+  );
+  const completedTasks = useMemo(
+    () => Object.values(completedChecklists).filter(Boolean).length + completed.filter(c => !c.id.includes('checklist')).length,
+    [completedChecklists, completed]
+  );
+  const totalProgress = useMemo(
+    () => (totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0),
+    [totalTasks, completedTasks]
+  );
 
   return (
     <StyledScrollView>
