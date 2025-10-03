@@ -1,6 +1,7 @@
 // Общие типы приложения
 export * from './navigation';
 export * from './finance';
+export * from './admin';
 
 // Роли пользователей
 export type UserRole = 'owner' | 'admin' | 'employee';

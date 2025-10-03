@@ -31,9 +31,11 @@ export type EmployeeTabParamList = {
 };
 
 export type AdminTabParamList = {
-  Главная: undefined;
+  Обзор: undefined;
+  ПВЗ: undefined;
   Сотрудники: undefined;
-  Чат: undefined;
+  График: undefined;
+  Чат: NavigatorScreenParams<RootStackParamList> | undefined;
 };
 
 export type OwnerTabParamList = {

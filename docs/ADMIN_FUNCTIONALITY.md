@@ -528,20 +528,23 @@ interface PvzStats {
 
 ## План разработки
 
-### Этап 1: Подготовка (1 сессия)
+### Этап 1: Подготовка ✅ (1 сессия, завершено 2025-10-03)
 - [x] Создать документ ADMIN_FUNCTIONALITY.md
-- [ ] Создать типы в `src/types/admin.ts`:
+- [x] Создать типы в `src/types/admin.ts`:
   - Admin, AdminPermissions
-  - Pvz, PvzStats
-  - Обновить Employee, Shift, Transaction
-- [ ] Создать моковые данные:
-  - 2-3 ПВЗ для администратора
-  - 5-10 сотрудников на каждый ПВЗ
-  - Смены за последний месяц
-  - Запросы на изменение графика
-  - Финансовые транзакции
-- [ ] Обновить AdminTabNavigator (5 табов)
-- [ ] Создать store для управления текущим ПВЗ
+  - AdminPvz, PvzStats, AdminEmployee
+  - AdminShift, AdminTransaction, AdminTask
+  - ScheduleRequest, AdminFilters
+- [x] Создать моковые данные в `src/admin/services/mockData.ts`:
+  - 3 ПВЗ с полной статистикой
+  - 10 сотрудников (5/4/1 по ПВЗ)
+  - ~70 смен за последние 7 дней
+  - 4 запроса на изменение графика
+  - 4 финансовые транзакции
+  - 4 задачи с разными статусами
+- [x] Обновить AdminTabNavigator (5 табов: Обзор, ПВЗ, Сотрудники, График, Чат)
+- [x] Создать store для управления текущим ПВЗ (`src/admin/store/pvz.store.ts`)
+- [x] Оптимизировать код (React.memo, StyleSheet, partialize)
 
 ### Этап 2: Модуль "ПВЗ" — 2-3 сессии
 - [ ] Создать `PvzListScreen.tsx`:
