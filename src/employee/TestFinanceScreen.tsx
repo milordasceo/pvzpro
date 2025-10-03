@@ -442,15 +442,14 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                           )}
                         </View>
 
-                        {/* Детали штрафов: структурированные карточки */}
+                        {/* Детали штрафов: компактное отображение */}
                         {(() => {
                           const penalties = day.penaltyDetails;
                           if (!penalties || penalties.length === 0) return null;
                           const dayKey = ymd(day.date);
                           const expanded = expandedDays.has(dayKey);
                           
-                          // Подсчёт статистики по штрафам
-                          const totalPenaltyAmount = penalties.reduce((sum: number, p: any) => sum + Math.abs(p.amount), 0);
+                          // Подсчёт оспариваемых штрафов
                           const disputedCount = penalties.filter((p: any, idx: number) => {
                             const key = `${dayKey}:${p.category ?? p.penaltyCategory ?? 'x'}:${p.amount}:${idx}`;
                             return disputedKeys.has(key);
@@ -460,58 +459,21 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                           const getPenaltyMeta = (category?: string) => {
                             switch (category) {
                               case 'substitution_100':
-                                return { icon: 'swap-horizontal', color: '#DC2626', severity: 'Критический' };
+                                return { icon: 'swap-horizontal', color: '#DC2626', label: 'Критический' };
                               case 'stuck_100':
-                                return { icon: 'package-variant-closed', color: '#DC2626', severity: 'Критический' };
+                                return { icon: 'package-variant-closed', color: '#DC2626', label: 'Критический' };
                               case 'defect_50':
-                                return { icon: 'alert-circle', color: '#F59E0B', severity: 'Серьёзный' };
+                                return { icon: 'alert-circle', color: '#F59E0B', label: 'Серьёзный' };
                               case 'bad_rating':
-                                return { icon: 'star-off', color: '#F59E0B', severity: 'Средний' };
+                                return { icon: 'star-off', color: '#F59E0B', label: 'Средний' };
                               default:
-                                return { icon: 'alert', color: '#EF4444', severity: 'Средний' };
+                                return { icon: 'alert', color: '#EF4444', label: 'Средний' };
                             }
                           };
                           
                           return (
-                            <View style={{ marginTop: 12 }}>
-                              {/* Заголовок с статистикой */}
-                              <View
-                                style={{
-                                  flexDirection: 'row',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center',
-                                  backgroundColor: '#FEF2F2',
-                                  padding: 12,
-                                  borderRadius: 8,
-                                  marginBottom: 8,
-                                }}
-                              >
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                  <MaterialCommunityIcons name="alert-circle" size={20} color="#DC2626" />
-                                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#DC2626' }}>
-                                    Штрафы ({penalties.length})
-                                  </Text>
-                                  {disputedCount > 0 && (
-                                    <View
-                                      style={{
-                                        backgroundColor: '#FCD34D',
-                                        paddingHorizontal: 8,
-                                        paddingVertical: 2,
-                                        borderRadius: 12,
-                                      }}
-                                    >
-                                      <Text style={{ fontSize: 11, fontWeight: '600', color: '#78350F' }}>
-                                        {disputedCount} оспаривается
-                                      </Text>
-                                    </View>
-                                  )}
-                                </View>
-                                <Text style={{ fontSize: 16, fontWeight: '700', color: '#DC2626' }}>
-                                  −{formatRUB(totalPenaltyAmount)}
-                                </Text>
-                              </View>
-                              
-                              {/* Кнопка раскрытия */}
+                            <View style={{ marginTop: 8 }}>
+                              {/* Кнопка раскрытия с счётчиком */}
                               <StyledButton
                                 mode="text"
                                 onPress={() =>
@@ -524,14 +486,14 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                 }
                                 icon={expanded ? 'chevron-up' : 'chevron-down'}
                                 contentStyle={{ flexDirection: 'row-reverse' }}
-                                style={{ marginTop: -4 }}
                               >
-                                {expanded ? 'Скрыть подробности' : 'Показать подробности'}
+                                {expanded ? 'Скрыть детали' : `Подробности (${penalties.length})`}
+                                {disputedCount > 0 && !expanded && ` • ${disputedCount} оспаривается`}
                               </StyledButton>
                               
                               {/* Карточки штрафов */}
                               {expanded && (
-                                <View style={{ gap: 8, marginTop: 8 }}>
+                                <View style={{ gap: 8, marginTop: 4 }}>
                                   {penalties.map((p: any, idx: number) => {
                                     const key = `${dayKey}:${p.category ?? p.penaltyCategory ?? 'x'}:${p.amount}:${idx}`;
                                     const disputed = disputedKeys.has(key);
@@ -544,104 +506,65 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                           backgroundColor: disputed ? '#FFFBEB' : '#FFF',
                                           borderWidth: 1,
                                           borderColor: disputed ? '#FCD34D' : '#FEE2E2',
-                                          borderRadius: 12,
-                                          padding: 12,
-                                          gap: 10,
+                                          borderRadius: 8,
+                                          padding: 10,
+                                          gap: 8,
                                         }}
                                       >
-                                        {/* Заголовок штрафа */}
+                                        {/* Заголовок */}
                                         <View
                                           style={{
                                             flexDirection: 'row',
                                             justifyContent: 'space-between',
-                                            alignItems: 'flex-start',
+                                            alignItems: 'center',
                                           }}
                                         >
-                                          <View style={{ flex: 1, gap: 4 }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                                              <MaterialCommunityIcons
-                                                name={meta.icon as any}
-                                                size={18}
-                                                color={meta.color}
-                                              />
-                                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                                                {p.description || dayLabelFromCategory(p.category ?? p.penaltyCategory)}
-                                              </Text>
-                                            </View>
-                                            <View
-                                              style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                gap: 6,
-                                                marginLeft: 24,
-                                              }}
-                                            >
-                                              <View
-                                                style={{
-                                                  backgroundColor: `${meta.color}20`,
-                                                  paddingHorizontal: 8,
-                                                  paddingVertical: 2,
-                                                  borderRadius: 6,
-                                                }}
-                                              >
-                                                <Text
-                                                  style={{
-                                                    fontSize: 11,
-                                                    fontWeight: '600',
-                                                    color: meta.color,
-                                                  }}
-                                                >
-                                                  {meta.severity}
-                                                </Text>
-                                              </View>
-                                              {disputed && (
-                                                <View
-                                                  style={{
-                                                    backgroundColor: '#FCD34D',
-                                                    paddingHorizontal: 8,
-                                                    paddingVertical: 2,
-                                                    borderRadius: 6,
-                                                  }}
-                                                >
-                                                  <Text
-                                                    style={{
-                                                      fontSize: 11,
-                                                      fontWeight: '600',
-                                                      color: '#78350F',
-                                                    }}
-                                                  >
-                                                    На рассмотрении
-                                                  </Text>
-                                                </View>
-                                              )}
-                                            </View>
-                                          </View>
-                                          <Text
-                                            style={{
-                                              fontSize: 18,
-                                              fontWeight: '700',
-                                              color: meta.color,
-                                            }}
-                                          >
-                                            {formatRUB(p.amount)}
-                                          </Text>
-                                        </View>
-                                        
-                                        {/* Детали */}
-                                        {p.relatedItemPrice && (
-                                          <View
-                                            style={{
-                                              backgroundColor: '#F9FAFB',
-                                              padding: 8,
-                                              borderRadius: 6,
-                                              marginLeft: 24,
-                                            }}
-                                          >
-                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>
-                                              Стоимость товара: <Text style={{ fontWeight: '600', color: '#111827' }}>{formatRUB(p.relatedItemPrice)}</Text>
+                                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+                                            <MaterialCommunityIcons
+                                              name={meta.icon as any}
+                                              size={18}
+                                              color={meta.color}
+                                            />
+                                            <Text style={{ fontSize: 13, fontWeight: '600', color: '#111827', flex: 1 }}>
+                                              {p.description || dayLabelFromCategory(p.category ?? p.penaltyCategory)}
                                             </Text>
                                           </View>
-                                        )}
+                                        </View>
+                                        
+                                        {/* Бейджи и стоимость */}
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                          <View
+                                            style={{
+                                              backgroundColor: `${meta.color}20`,
+                                              paddingHorizontal: 8,
+                                              paddingVertical: 3,
+                                              borderRadius: 6,
+                                            }}
+                                          >
+                                            <Text style={{ fontSize: 11, fontWeight: '600', color: meta.color }}>
+                                              {meta.label}
+                                            </Text>
+                                          </View>
+                                          {disputed && (
+                                            <View
+                                              style={{
+                                                backgroundColor: '#FCD34D',
+                                                paddingHorizontal: 8,
+                                                paddingVertical: 3,
+                                                borderRadius: 6,
+                                              }}
+                                            >
+                                              <Text style={{ fontSize: 11, fontWeight: '600', color: '#78350F' }}>
+                                                Оспаривается
+                                              </Text>
+                                            </View>
+                                          )}
+                                          {p.relatedItemPrice && (
+                                            <Text style={{ fontSize: 11, color: '#6B7280' }}>
+                                              Товар: {formatRUB(p.relatedItemPrice)}
+                                            </Text>
+                                          )}
+                                        </View>
                                         
                                         {/* Кнопка оспаривания */}
                                         <StyledButton
@@ -657,12 +580,12 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                           icon={disputed ? 'check-circle' : 'comment-alert'}
                                           buttonColor={disputed ? undefined : '#DC2626'}
                                           textColor={disputed ? '#78350F' : '#FFF'}
+                                          compact
                                           style={{
-                                            marginTop: 4,
                                             borderColor: disputed ? '#FCD34D' : undefined,
                                           }}
                                         >
-                                          {disputed ? 'Отменить оспаривание' : 'Оспорить штраф'}
+                                          {disputed ? 'Отменить' : 'Оспорить'}
                                         </StyledButton>
                                       </View>
                                     );
