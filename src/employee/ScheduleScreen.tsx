@@ -92,10 +92,6 @@ export const ScheduleScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             marginBottom: 12,
-            backgroundColor: '#F9FAFB',
-            borderRadius: 8,
-            paddingVertical: 2,
-            paddingHorizontal: 4,
           }}
         >
           <StyledButton
@@ -146,18 +142,18 @@ export const ScheduleScreen: React.FC = () => {
           }}
         >
           {WEEKDAY_SHORT.map((wd) => (
-            <View key={wd} style={{ flex: 1 }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  color: '#6B7280',
-                  fontWeight: '600',
-                  fontSize: 13,
-                }}
-              >
-                {wd}
-              </Text>
-            </View>
+            <Text
+              key={wd}
+              style={{
+                width: `${100 / 7}%`,
+                textAlign: 'center',
+                color: '#6B7280',
+                fontWeight: '600',
+                fontSize: 13,
+              }}
+            >
+              {wd}
+            </Text>
           ))}
         </View>
 
@@ -200,7 +196,7 @@ export const ScheduleScreen: React.FC = () => {
                   cells.push(
                     <View
                       key={`pad_${d.getFullYear()}_${d.getMonth()}_${i}`}
-                      style={{ flex: 1, flexBasis: `${100 / 7}%`, height: 52 }}
+                      style={{ width: `${100 / 7}%`, height: 52 }}
                     />,
                   );
                 }
@@ -218,9 +214,7 @@ export const ScheduleScreen: React.FC = () => {
                 <View
                   key={d.toISOString()}
                   style={{
-                    flex: 1,
-                    flexBasis: `${100 / 7}%`,
-                    maxWidth: `${100 / 7}%`,
+                    width: `${100 / 7}%`,
                     borderRightWidth: weekdayMonIndex(d) === 6 ? 0 : 1,
                     borderRightColor: '#F3F4F6',
                     borderBottomWidth: 1,
