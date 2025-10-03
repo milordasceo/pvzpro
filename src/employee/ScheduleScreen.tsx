@@ -163,7 +163,6 @@ export const ScheduleScreen: React.FC = () => {
             flexDirection: 'row',
             backgroundColor: '#FFF',
             borderRadius: 8,
-            overflow: 'hidden',
           }}
         >
           {(() => {
