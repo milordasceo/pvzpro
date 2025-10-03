@@ -45,24 +45,8 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
     { id: 's1', role: 'system', text: 'Чат создан', at: Date.now() - 60_000 },
     { id: 'm1', role: 'manager', text: 'Здравствуйте! Чем могу помочь?', at: Date.now() - 55_000 },
   ]);
-  const [text, setText] = React.useState(initialMessage || '');
-  
-  // Добавляем сообщение со штрафом при загрузке, если есть данные
-  React.useEffect(() => {
-    if (penaltyData && initialMessage) {
-      setTimeout(() => {
-        const newMsg: Message = {
-          id: `penalty-${Date.now()}`,
-          role: 'me',
-          text: initialMessage,
-          at: Date.now(),
-          penaltyAttachment: penaltyData,
-        };
-        setMessages((prev) => [...prev, newMsg]);
-        scrollToEnd();
-      }, 300);
-    }
-  }, []);
+  const [text, setText] = React.useState('');
+  const [penaltyMessageAdded, setPenaltyMessageAdded] = React.useState(false);
   const [attachmentsVisible, setAttachmentsVisible] = React.useState(false);
   const [emojiOpen, setEmojiOpen] = React.useState(false);
   const emojiHeight = React.useRef(new Animated.Value(0)).current;
@@ -78,9 +62,28 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
 
   const scrollToEnd = React.useCallback(() => {
     requestAnimationFrame(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
+      scrollViewRef.current?.scrollToEnd({ animated: false });
     });
   }, []);
+  
+  // Добавляем сообщение со штрафом при загрузке, если есть данные (только один раз)
+  React.useEffect(() => {
+    if (penaltyData && initialMessage && !penaltyMessageAdded) {
+      setPenaltyMessageAdded(true);
+      setTimeout(() => {
+        const newMsg: Message = {
+          id: `penalty-${Date.now()}`,
+          role: 'me',
+          text: initialMessage,
+          at: Date.now(),
+          penaltyAttachment: penaltyData,
+        };
+        setMessages((prev) => [...prev, newMsg]);
+        // Прокручиваем к новому сообщению
+        setTimeout(() => scrollToEnd(), 100);
+      }, 300);
+    }
+  }, [penaltyData, initialMessage, penaltyMessageAdded, scrollToEnd]);
 
   const closeEmoji = React.useCallback(() => {
     setEmojiOpen(false);
@@ -288,7 +291,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <StyledScrollView ref={scrollViewRef} onContentSizeChange={scrollToEnd}>
+        <StyledScrollView ref={scrollViewRef}>
           {messages.map((item) => {
             if (item.role === 'system') {
               return (
