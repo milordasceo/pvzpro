@@ -232,83 +232,115 @@ function generateMockPayments(): Payment[] {
 
 const mockPayments: Payment[] = generateMockPayments();
 
-// Упрощённые смены для текущего месяца (демо для экрана текущего периода)
-const nowGen = new Date();
-const periodStartGen =
-  nowGen.getDate() <= 15
-    ? new Date(nowGen.getFullYear(), nowGen.getMonth(), 1)
-    : new Date(nowGen.getFullYear(), nowGen.getMonth(), 15);
-function genShift(
-  id: number,
-  dayOffset: number,
-  base: number,
-  overtime: number,
-  bonus: number,
-  penalty: number,
-  penaltyDetails?: ShiftPayment['penaltyDetails'],
-): ShiftPayment {
-  const date = new Date(periodStartGen);
-  date.setDate(periodStartGen.getDate() + dayOffset);
-  const hours = 12;
-  return {
-    shiftId: `shift${id}`,
-    shiftDate: date,
-    hoursWorked: hours,
-    baseRate: base / hours,
-    overtimeHours: overtime,
-    overtimeRate: 200,
-    bonuses: bonus,
-    penalties: penalty,
-    totalAmount: base + overtime * 200 + bonus + penalty,
-    pvzName: 'ПВЗ Герцена 12',
-    pvzAddress: 'г. Новосибирск, ул. Герцена, 12',
-    penaltyDetails,
-  };
+// Динамическая генерация смен для текущего месяца
+function generateMockShiftPayments(): ShiftPayment[] {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  // Начало текущего периода (1 или 15 число)
+  const periodStart = now.getDate() <= 15
+    ? new Date(currentYear, currentMonth, 1)
+    : new Date(currentYear, currentMonth, 15);
+  
+  // Конец текущего периода (14 или последнее число месяца)
+  const periodEnd = now.getDate() <= 15
+    ? new Date(currentYear, currentMonth, 14)
+    : new Date(currentYear, currentMonth + 1, 0);
+  
+  const shifts: ShiftPayment[] = [];
+  let shiftId = 1;
+  
+  // Генерируем смены для каждого дня текущего периода (кроме воскресений)
+  for (let d = new Date(periodStart); d <= periodEnd && d <= now; d.setDate(d.getDate() + 1)) {
+    const dayOfWeek = d.getDay();
+    // Пропускаем воскресенье (0)
+    if (dayOfWeek === 0) continue;
+    
+    const shiftDate = new Date(d);
+    const hours = 12;
+    const baseRate = 200;
+    const base = baseRate * hours;
+    
+    // Случайно добавляем переработку (30% вероятность)
+    const hasOvertime = Math.random() < 0.3;
+    const overtimeHours = hasOvertime ? Math.floor(Math.random() * 3) + 1 : 0;
+    
+    // Случайно добавляем премию (20% вероятность)
+    const hasBonus = Math.random() < 0.2;
+    const bonus = hasBonus ? Math.floor(Math.random() * 700) + 300 : 0;
+    
+    // Штрафы с разной вероятностью и типами
+    let penalty = 0;
+    let penaltyDetails: ShiftPayment['penaltyDetails'] = undefined;
+    
+    const penaltyRand = Math.random();
+    if (penaltyRand < 0.15) {
+      // 15% - серьёзный штраф (подмена, брак, зависший)
+      const penaltyType = Math.random();
+      if (penaltyType < 0.33) {
+        // Подмена товара (100%)
+        const itemPrice = Math.floor(Math.random() * 4000) + 3000;
+        penalty = -itemPrice;
+        penaltyDetails = [{
+          category: 'substitution_100',
+          amount: -itemPrice,
+          relatedItemPrice: itemPrice,
+          description: 'Подмена товара',
+        }];
+      } else if (penaltyType < 0.66) {
+        // Брак (50%)
+        const itemPrice = Math.floor(Math.random() * 6000) + 2000;
+        const penaltyAmount = Math.floor(itemPrice * 0.5);
+        penalty = -penaltyAmount;
+        penaltyDetails = [{
+          category: 'defect_50',
+          amount: -penaltyAmount,
+          relatedItemPrice: itemPrice,
+          description: 'Брак – не проверено под камерой',
+        }];
+      } else {
+        // Зависший товар (100%)
+        const itemPrice = Math.floor(Math.random() * 5000) + 2500;
+        penalty = -itemPrice;
+        penaltyDetails = [{
+          category: 'stuck_100',
+          amount: -itemPrice,
+          relatedItemPrice: itemPrice,
+          description: 'Зависший товар',
+        }];
+      }
+    } else if (penaltyRand < 0.25) {
+      // 10% - средний штраф (плохая оценка, опоздание)
+      const amount = Math.floor(Math.random() * 400) + 200;
+      penalty = -amount;
+      penaltyDetails = [{
+        category: 'bad_rating',
+        amount: -amount,
+        description: 'Плохая оценка клиента',
+      }];
+    }
+    
+    shifts.push({
+      shiftId: `shift${shiftId++}`,
+      shiftDate,
+      hoursWorked: hours,
+      baseRate,
+      overtimeHours,
+      overtimeRate: 200,
+      bonuses: bonus,
+      penalties: penalty,
+      totalAmount: base + (overtimeHours * 200) + bonus + penalty,
+      pvzName: 'ПВЗ Герцена 12',
+      pvzAddress: 'г. Новосибирск, ул. Герцена, 12',
+      penaltyDetails,
+    });
+  }
+  
+  return shifts;
 }
 
-const mockShiftPayments: ShiftPayment[] = [
-  genShift(1, 0, 2200, 0, 0, 0),
-  genShift(2, 1, 2200, 2, 0, 0),
-  genShift(3, 2, 2200, 0, 500, 0),
-  genShift(4, 3, 2200, 0, 0, -300, [
-    { category: 'bad_rating', amount: -300, description: 'Плохая оценка клиента' },
-  ]),
-  genShift(5, 5, 2200, 0, 0, -2500, [
-    {
-      category: 'defect_50',
-      amount: -2500,
-      relatedItemPrice: 5000,
-      description: 'Брак – не проверено под камерой',
-    },
-  ]),
-  genShift(6, 7, 2200, 4, 0, 0),
-  genShift(7, 9, 2200, 0, 0, -4500, [
-    {
-      category: 'substitution_100',
-      amount: -4500,
-      relatedItemPrice: 4500,
-      description: 'Подмена товара',
-    },
-  ]),
-  genShift(8, 11, 2200, 0, 0, -3200, [
-    {
-      category: 'stuck_100',
-      amount: -3200,
-      relatedItemPrice: 3200,
-      description: 'Зависший товар',
-    },
-  ]),
-  genShift(9, 13, 2200, 2, 300, 0),
-  genShift(10, 14, 2200, 0, 0, -600, [
-    { category: 'bad_rating', amount: -400, description: 'Плохая оценка (повторно)' },
-    {
-      category: 'defect_50',
-      amount: -200,
-      relatedItemPrice: 400,
-      description: 'Мелкий брак',
-    },
-  ]),
-];
+const mockShiftPayments: ShiftPayment[] = generateMockShiftPayments();
 
 export class FinanceService {
   /**
