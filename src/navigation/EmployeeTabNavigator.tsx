@@ -94,6 +94,15 @@ export const EmployeeTabNavigator: React.FC = () => {
             <MaterialCommunityIcons name="chat-processing-outline" size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            // Сбрасываем стек чата к начальному экрану (ChatList)
+            // Это гарантирует, что при клике на таб "Чат" всегда открывается список чатов
+            (navigation as any).navigate('Чат', {
+              screen: 'ChatList',
+            });
+          },
+        })}
       />
     </Tab.Navigator>
   );

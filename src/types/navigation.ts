@@ -1,3 +1,5 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
+
 // Типы для навигации
 export type RootStackParamList = {
   ChatList: undefined;
@@ -25,7 +27,7 @@ export type EmployeeTabParamList = {
   'Моя смена': undefined;
   График: undefined;
   Финансы: undefined;
-  Чат: undefined;
+  Чат: NavigatorScreenParams<RootStackParamList> | undefined;
 };
 
 export type AdminTabParamList = {
