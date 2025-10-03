@@ -150,52 +150,6 @@ export const FinanceHistoryScreen: React.FC = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         <View style={{ padding: 16, gap: 16 }}>
-          {/* Статистика за год */}
-          <StyledCard title={`За ${new Date().getFullYear()} год`}>
-            <View style={{ gap: 12 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ fontSize: 14, color: '#6B7280' }}>Заработано</Text>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontWeight: '700',
-                    color: theme.colors.primary,
-                  }}
-                >
-                  {formatRUB(yearStats.totalEarned)}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingTop: 4,
-                }}
-              >
-                <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
-                  Премий: {formatRUB(yearStats.totalBonuses)}
-                </Text>
-                <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
-                  Штрафов: {formatRUB(yearStats.totalPenalties)}
-                </Text>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 4 }}>
-                <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
-                  Смен отработано: {yearStats.shiftsCount}
-                </Text>
-                <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
-                  Часов: {yearStats.totalHours}
-                </Text>
-              </View>
-            </View>
-          </StyledCard>
-
           {/* Список периодов */}
           <View style={{ gap: 12 }}>
             {periods.length === 0 ? (
@@ -213,37 +167,9 @@ export const FinanceHistoryScreen: React.FC = () => {
                 const isExpanded = expandedPeriods[period.key];
 
                 return (
-                  <StyledCard
-                    key={period.key}
-                    title={period.label}
-                    titleStyle={{ fontSize: 15, color: '#4B5563', fontWeight: '600' }}
-                    right={
-                      period.isPaid ? (
-                        <MaterialCommunityIcons
-                          name="check-circle"
-                          size={20}
-                          color="#10B981"
-                          style={{ marginRight: 12 }}
-                        />
-                      ) : (
-                        <MaterialCommunityIcons
-                          name="clock-outline"
-                          size={20}
-                          color="#F59E0B"
-                          style={{ marginRight: 12 }}
-                        />
-                      )
-                    }
-                  >
+                  <StyledCard key={period.key}>
                     <View style={{ gap: 12 }}>
-                      {/* Статус */}
-                      <Text style={{ fontSize: 12, color: '#6B7280' }}>
-                        {period.isPaid
-                          ? `Выплачено ${period.paymentDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`
-                          : `К выплате ${period.paymentDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`}
-                      </Text>
-
-                      {/* Итого */}
+                      {/* Заголовок периода + статус */}
                       <View
                         style={{
                           flexDirection: 'row',
@@ -251,12 +177,55 @@ export const FinanceHistoryScreen: React.FC = () => {
                           alignItems: 'center',
                         }}
                       >
-                        <Text style={{ fontSize: 14, color: '#111827' }}>
+                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827' }}>
+                          {period.label}
+                        </Text>
+                        <View
+                          style={{
+                            paddingHorizontal: 10,
+                            paddingVertical: 4,
+                            borderRadius: 12,
+                            backgroundColor: period.isPaid ? '#D1FAE5' : '#FEF3C7',
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              fontWeight: '600',
+                              color: period.isPaid ? '#059669' : '#D97706',
+                            }}
+                          >
+                            {period.isPaid ? 'Выплачено' : 'Ожидает'}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Дата выплаты */}
+                      <Text style={{ fontSize: 13, color: '#6B7280' }}>
+                        {period.isPaid ? 'Выплачено' : 'К выплате'}{' '}
+                        {period.paymentDate.toLocaleDateString('ru-RU', {
+                          day: 'numeric',
+                          month: 'long',
+                        })}
+                      </Text>
+
+                      {/* Разделитель */}
+                      <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 4 }} />
+
+                      {/* Итоговая сумма */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Text style={{ fontSize: 14, color: '#6B7280' }}>
                           {period.isPaid ? 'Получено' : 'Заработано'}
                         </Text>
                         <Text
                           style={{
-                            fontSize: 20,
+                            fontSize: 22,
                             fontWeight: '700',
                             color: theme.colors.primary,
                           }}
@@ -265,15 +234,27 @@ export const FinanceHistoryScreen: React.FC = () => {
                         </Text>
                       </View>
 
-                      {/* Краткая инфо */}
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
-                          Смен: {period.shifts.length} • Часов: {totalHours}
-                        </Text>
-                        {totalPenalties !== 0 && (
-                          <Text style={{ fontSize: 12, color: '#EF4444' }}>
-                            Штрафы: {formatRUB(totalPenalties)}
+                      {/* Детали */}
+                      <View style={{ gap: 6, marginTop: 4 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Смен отработано</Text>
+                          <Text style={{ fontSize: 13, color: '#111827', fontWeight: '500' }}>
+                            {period.shifts.length}
                           </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Часов</Text>
+                          <Text style={{ fontSize: 13, color: '#111827', fontWeight: '500' }}>
+                            {totalHours}
+                          </Text>
+                        </View>
+                        {totalPenalties !== 0 && (
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Штрафы</Text>
+                            <Text style={{ fontSize: 13, color: '#EF4444', fontWeight: '500' }}>
+                              {formatRUB(totalPenalties)}
+                            </Text>
+                          </View>
                         )}
                       </View>
 

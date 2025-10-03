@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 import { Text, useTheme, Divider, List } from 'react-native-paper';
 import { StyledCard, MetaRow, StyledButton } from '../components';
 import { financeService } from '../services';
@@ -13,6 +13,7 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [shifts, setShifts] = useState<ShiftPayment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [periodLabel, setPeriodLabel] = useState<string>('');
   const [summary, setSummary] = useState<{
     toPay: number;
@@ -46,42 +47,49 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const load = async () => {
-      if (!user?.id) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const summaryData = await financeService.getFinancialSummary(user.id);
-      const { startDate, endDate, toPay, bonuses, penalties, shiftsCount } =
-        summaryData.currentPayoutPeriod;
-      setSummary({ toPay, bonuses, penalties, shifts: shiftsCount });
-      setPeriodLabel(
-        `${startDate.toLocaleDateString('ru-RU')} — ${endDate.toLocaleDateString('ru-RU')}`,
-      );
-      const list = await financeService.getPayments(user.id, {
-        dateRange: { start: startDate, end: endDate },
-      });
-      setPayments(list);
-      const allShifts = await financeService.getShiftPayments(user.id);
-      const periodShifts = allShifts.filter(
-        (s) => s.shiftDate >= startDate && s.shiftDate <= endDate,
-      );
-      setShifts(periodShifts);
-      const toPayCalc = periodShifts.reduce((s, x) => s + x.totalAmount, 0);
-      const bonusesCalc = periodShifts.reduce((s, x) => s + x.bonuses, 0);
-      const penaltiesCalc = periodShifts.reduce((s, x) => s + x.penalties, 0);
-      setSummary({
-        toPay: toPayCalc,
+  const loadData = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const summaryData = await financeService.getFinancialSummary(user.id);
+    const { startDate, endDate, toPay, bonuses, penalties, shiftsCount } =
+      summaryData.currentPayoutPeriod;
+    setSummary({ toPay, bonuses, penalties, shifts: shiftsCount });
+    setPeriodLabel(
+      `${startDate.toLocaleDateString('ru-RU')} — ${endDate.toLocaleDateString('ru-RU')}`,
+    );
+    const list = await financeService.getPayments(user.id, {
+      dateRange: { start: startDate, end: endDate },
+    });
+    setPayments(list);
+    const allShifts = await financeService.getShiftPayments(user.id);
+    const periodShifts = allShifts.filter(
+      (s) => s.shiftDate >= startDate && s.shiftDate <= endDate,
+    );
+    setShifts(periodShifts);
+    const toPayCalc = periodShifts.reduce((s, x) => s + x.totalAmount, 0);
+    const bonusesCalc = periodShifts.reduce((s, x) => s + x.bonuses, 0);
+    const penaltiesCalc = periodShifts.reduce((s, x) => s + x.penalties, 0);
+    setSummary({
+      toPay: toPayCalc,
         bonuses: bonusesCalc,
         penalties: penaltiesCalc,
         shifts: periodShifts.length,
       });
       setLoading(false);
-    };
-    load();
+  };
+
+  useEffect(() => {
+    loadData();
   }, [user?.id]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
 
   type DayRow = { id: string; icon: string; label: string; amount: number };
   const days = useMemo(() => {
@@ -199,7 +207,10 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
         <View style={{ padding: 16, gap: 16 }}>
           {/* Компактные карточки статистики */}
           <View style={{ gap: 12 }}>
