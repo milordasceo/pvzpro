@@ -169,89 +169,122 @@ export const FinanceHistoryScreen: React.FC = () => {
                 return (
                   <StyledCard key={period.key}>
                     <View style={{ gap: 12 }}>
-                      {/* Заголовок периода + статус */}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827' }}>
-                          {period.label}
-                        </Text>
+                      {/* Заголовок периода */}
+                      <View style={{ gap: 4 }}>
                         <View
                           style={{
-                            paddingHorizontal: 10,
-                            paddingVertical: 4,
-                            borderRadius: 12,
-                            backgroundColor: period.isPaid ? '#D1FAE5' : '#FEF3C7',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
                           }}
                         >
-                          <Text
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                              {period.label}
+                            </Text>
+                            <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                              {period.isPaid ? 'Выплачено' : 'К выплате'}{' '}
+                              {period.paymentDate.toLocaleDateString('ru-RU', {
+                                day: 'numeric',
+                                month: 'long',
+                              })}
+                            </Text>
+                          </View>
+                          <View
                             style={{
-                              fontSize: 12,
-                              fontWeight: '600',
-                              color: period.isPaid ? '#059669' : '#D97706',
+                              paddingHorizontal: 8,
+                              paddingVertical: 3,
+                              borderRadius: 10,
+                              backgroundColor: period.isPaid ? '#D1FAE5' : '#FEF3C7',
                             }}
                           >
-                            {period.isPaid ? 'Выплачено' : 'Ожидает'}
+                            <Text
+                              style={{
+                                fontSize: 11,
+                                fontWeight: '600',
+                                color: period.isPaid ? '#059669' : '#D97706',
+                              }}
+                            >
+                              {period.isPaid ? 'Выплачено' : 'Ожидает'}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+
+                      {/* Разделитель */}
+                      <View style={{ height: 1, backgroundColor: '#E5E7EB' }} />
+
+                      {/* Итоговая сумма - акцент */}
+                      <View
+                        style={{
+                          backgroundColor: '#F0F9FF',
+                          padding: 12,
+                          borderRadius: 8,
+                          borderLeftWidth: 3,
+                          borderLeftColor: theme.colors.primary,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Text style={{ fontSize: 13, color: '#6B7280', fontWeight: '500' }}>
+                            {period.isPaid ? 'Получено' : 'Заработано'}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 24,
+                              fontWeight: '700',
+                              color: theme.colors.primary,
+                            }}
+                          >
+                            {formatRUB(totalEarned)}
                           </Text>
                         </View>
                       </View>
 
-                      {/* Дата выплаты */}
-                      <Text style={{ fontSize: 13, color: '#6B7280' }}>
-                        {period.isPaid ? 'Выплачено' : 'К выплате'}{' '}
-                        {period.paymentDate.toLocaleDateString('ru-RU', {
-                          day: 'numeric',
-                          month: 'long',
-                        })}
-                      </Text>
-
-                      {/* Разделитель */}
-                      <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 4 }} />
-
-                      {/* Итоговая сумма */}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Text style={{ fontSize: 14, color: '#6B7280' }}>
-                          {period.isPaid ? 'Получено' : 'Заработано'}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 22,
-                            fontWeight: '700',
-                            color: theme.colors.primary,
-                          }}
-                        >
-                          {formatRUB(totalEarned)}
-                        </Text>
-                      </View>
-
-                      {/* Детали */}
-                      <View style={{ gap: 6, marginTop: 4 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Смен отработано</Text>
-                          <Text style={{ fontSize: 13, color: '#111827', fontWeight: '500' }}>
+                      {/* Детали с иконками */}
+                      <View style={{ gap: 8, marginTop: 4 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <MaterialCommunityIcons name="briefcase-clock" size={16} color="#6B7280" />
+                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>
+                            Смен отработано
+                          </Text>
+                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
                             {period.shifts.length}
                           </Text>
                         </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                          <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Часов</Text>
-                          <Text style={{ fontSize: 13, color: '#111827', fontWeight: '500' }}>
-                            {totalHours}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <MaterialCommunityIcons name="clock-outline" size={16} color="#6B7280" />
+                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>Часов</Text>
+                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
+                            {totalHours} ч
                           </Text>
                         </View>
                         {totalPenalties !== 0 && (
-                          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ fontSize: 13, color: '#9CA3AF' }}>Штрафы</Text>
-                            <Text style={{ fontSize: 13, color: '#EF4444', fontWeight: '500' }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 8,
+                              backgroundColor: '#FEE2E2',
+                              padding: 8,
+                              borderRadius: 6,
+                              marginTop: 4,
+                            }}
+                          >
+                            <MaterialCommunityIcons
+                              name="alert-circle-outline"
+                              size={16}
+                              color="#DC2626"
+                            />
+                            <Text style={{ fontSize: 13, color: '#DC2626', flex: 1, fontWeight: '500' }}>
+                              Штрафы
+                            </Text>
+                            <Text style={{ fontSize: 14, color: '#DC2626', fontWeight: '700' }}>
                               {formatRUB(totalPenalties)}
                             </Text>
                           </View>
@@ -272,68 +305,226 @@ export const FinanceHistoryScreen: React.FC = () => {
 
                       {/* Список смен */}
                       {isExpanded && (
-                        <View style={{ gap: 8, marginTop: 8 }}>
+                        <View style={{ gap: 10, marginTop: 8 }}>
                           {period.shifts
                             .sort((a, b) => b.shiftDate.getTime() - a.shiftDate.getTime())
-                            .map((shift) => (
-                              <View
-                                key={shift.shiftId}
-                                style={{
-                                  padding: 12,
-                                  backgroundColor: '#F9FAFB',
-                                  borderRadius: 8,
-                                  gap: 6,
-                                }}
-                              >
-                                {/* Дата + сумма */}
+                            .map((shift) => {
+                              const baseEarnings = shift.hoursWorked * shift.baseRate;
+                              const overtimeEarnings = shift.overtimeHours * shift.overtimeRate;
+                              
+                              return (
                                 <View
+                                  key={shift.shiftId}
                                   style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
+                                    backgroundColor: shift.penalties < 0 ? '#FFFBEB' : '#F9FAFB',
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: shift.penalties < 0 ? '#FEF3C7' : '#E5E7EB',
+                                    overflow: 'hidden',
                                   }}
                                 >
-                                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                                    <MaterialCommunityIcons
-                                      name="calendar"
-                                      size={16}
-                                      color="#6B7280"
-                                    />
-                                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                                      {shift.shiftDate.toLocaleDateString('ru-RU', {
-                                        day: 'numeric',
-                                        month: 'short',
-                                      })}{' '}
-                                      ({weekdayShort(shift.shiftDate)})
-                                    </Text>
-                                    {shift.penalties < 0 && (
-                                      <MaterialCommunityIcons name="alert" size={16} color="#EF4444" />
-                                    )}
-                                  </View>
-                                  <Text
+                                  {/* Шапка смены */}
+                                  <View
                                     style={{
-                                      fontSize: 16,
-                                      fontWeight: '700',
-                                      color: theme.colors.primary,
+                                      backgroundColor: shift.penalties < 0 ? '#FEF3C7' : '#F3F4F6',
+                                      padding: 10,
+                                      flexDirection: 'row',
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
                                     }}
                                   >
-                                    {formatRUB(shift.totalAmount)}
-                                  </Text>
-                                </View>
-
-                                {/* ПВЗ + часы */}
-                                <View style={{ gap: 2 }}>
-                                  <Text style={{ fontSize: 12, color: '#6B7280' }}>
-                                    {shift.pvzAddress} • {shift.hoursWorked} часов
-                                  </Text>
-                                  {shift.penalties < 0 && (
-                                    <Text style={{ fontSize: 12, color: '#EF4444' }}>
-                                      Штраф: {formatRUB(shift.penalties)}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                      <MaterialCommunityIcons
+                                        name="calendar"
+                                        size={16}
+                                        color={shift.penalties < 0 ? '#92400E' : '#6B7280'}
+                                      />
+                                      <Text
+                                        style={{
+                                          fontSize: 14,
+                                          fontWeight: '600',
+                                          color: shift.penalties < 0 ? '#92400E' : '#111827',
+                                        }}
+                                      >
+                                        {shift.shiftDate.toLocaleDateString('ru-RU', {
+                                          day: 'numeric',
+                                          month: 'short',
+                                        })}{' '}
+                                        ({weekdayShort(shift.shiftDate)})
+                                      </Text>
+                                      {shift.penalties < 0 && (
+                                        <View
+                                          style={{
+                                            backgroundColor: '#FCD34D',
+                                            paddingHorizontal: 6,
+                                            paddingVertical: 2,
+                                            borderRadius: 6,
+                                          }}
+                                        >
+                                          <Text
+                                            style={{
+                                              fontSize: 10,
+                                              fontWeight: '600',
+                                              color: '#92400E',
+                                            }}
+                                          >
+                                            Штраф
+                                          </Text>
+                                        </View>
+                                      )}
+                                    </View>
+                                    <Text
+                                      style={{
+                                        fontSize: 17,
+                                        fontWeight: '700',
+                                        color: shift.penalties < 0 ? '#D97706' : theme.colors.primary,
+                                      }}
+                                    >
+                                      {formatRUB(shift.totalAmount)}
                                     </Text>
-                                  )}
+                                  </View>
+
+                                  {/* Детали смены */}
+                                  <View style={{ padding: 10, gap: 8 }}>
+                                    {/* ПВЗ */}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                      <MaterialCommunityIcons
+                                        name="map-marker"
+                                        size={14}
+                                        color="#9CA3AF"
+                                      />
+                                      <Text style={{ fontSize: 12, color: '#6B7280', flex: 1 }}>
+                                        {shift.pvzAddress}
+                                      </Text>
+                                    </View>
+
+                                    {/* Разбивка начислений */}
+                                    <View
+                                      style={{
+                                        backgroundColor: '#FFF',
+                                        borderRadius: 6,
+                                        padding: 8,
+                                        gap: 6,
+                                      }}
+                                    >
+                                      {/* База */}
+                                      <View
+                                        style={{
+                                          flexDirection: 'row',
+                                          justifyContent: 'space-between',
+                                          alignItems: 'center',
+                                        }}
+                                      >
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                          <MaterialCommunityIcons
+                                            name="clock-check-outline"
+                                            size={12}
+                                            color="#10B981"
+                                          />
+                                          <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                                            Основные часы ({shift.hoursWorked} ч)
+                                          </Text>
+                                        </View>
+                                        <Text style={{ fontSize: 12, color: '#111827', fontWeight: '500' }}>
+                                          {formatRUB(baseEarnings)}
+                                        </Text>
+                                      </View>
+
+                                      {/* Переработка */}
+                                      {shift.overtimeHours > 0 && (
+                                        <View
+                                          style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          <View
+                                            style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+                                          >
+                                            <MaterialCommunityIcons
+                                              name="clock-plus-outline"
+                                              size={12}
+                                              color="#3B82F6"
+                                            />
+                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                                              Переработка ({shift.overtimeHours} ч)
+                                            </Text>
+                                          </View>
+                                          <Text
+                                            style={{ fontSize: 12, color: '#3B82F6', fontWeight: '500' }}
+                                          >
+                                            +{formatRUB(overtimeEarnings)}
+                                          </Text>
+                                        </View>
+                                      )}
+
+                                      {/* Премии */}
+                                      {shift.bonuses > 0 && (
+                                        <View
+                                          style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          <View
+                                            style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+                                          >
+                                            <MaterialCommunityIcons
+                                              name="star-circle"
+                                              size={12}
+                                              color="#10B981"
+                                            />
+                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>Премия</Text>
+                                          </View>
+                                          <Text
+                                            style={{ fontSize: 12, color: '#10B981', fontWeight: '500' }}
+                                          >
+                                            +{formatRUB(shift.bonuses)}
+                                          </Text>
+                                        </View>
+                                      )}
+
+                                      {/* Штрафы */}
+                                      {shift.penalties < 0 && (
+                                        <View
+                                          style={{
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            backgroundColor: '#FEE2E2',
+                                            padding: 6,
+                                            borderRadius: 4,
+                                            marginTop: 2,
+                                          }}
+                                        >
+                                          <View
+                                            style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+                                          >
+                                            <MaterialCommunityIcons
+                                              name="alert-circle"
+                                              size={12}
+                                              color="#DC2626"
+                                            />
+                                            <Text
+                                              style={{ fontSize: 12, color: '#DC2626', fontWeight: '500' }}
+                                            >
+                                              Штраф
+                                            </Text>
+                                          </View>
+                                          <Text
+                                            style={{ fontSize: 12, color: '#DC2626', fontWeight: '600' }}
+                                          >
+                                            {formatRUB(shift.penalties)}
+                                          </Text>
+                                        </View>
+                                      )}
+                                    </View>
+                                  </View>
                                 </View>
-                              </View>
-                            ))}
+                              );
+                            })}
                         </View>
                       )}
                     </View>
