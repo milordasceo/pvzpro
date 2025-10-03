@@ -47,19 +47,40 @@ export const EmployeeTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: placeholderColor,
+        tabBarInactiveTintColor: '#9CA3AF',
         headerShown: false,
+        tabBarStyle: {
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 8,
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
+        },
       }}
     >
       <Tab.Screen
         name="Моя смена"
         component={EmployeeHomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, focused }) => (
             <TabBarIconWithBadge
               icon="calendar-clock"
               color={color}
-              size={size}
+              size={focused ? 28 : 26}
               badge={badgeValue}
             />
           ),
@@ -70,8 +91,12 @@ export const EmployeeTabNavigator: React.FC = () => {
         name="График"
         component={ScheduleScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-month" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialCommunityIcons 
+              name="calendar-month" 
+              size={focused ? 28 : 26} 
+              color={color} 
+            />
           ),
         }}
       />
@@ -80,8 +105,12 @@ export const EmployeeTabNavigator: React.FC = () => {
         name="Финансы"
         component={FinanceTabs}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cash-multiple" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialCommunityIcons 
+              name="cash-multiple" 
+              size={focused ? 28 : 26} 
+              color={color} 
+            />
           ),
         }}
       />
@@ -90,8 +119,13 @@ export const EmployeeTabNavigator: React.FC = () => {
         name="Чат"
         component={ChatStack}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat-processing-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIconWithBadge
+              icon="chat-processing-outline"
+              color={color}
+              size={focused ? 28 : 26}
+              badge="2"
+            />
           ),
         }}
         listeners={({ navigation }) => ({
@@ -162,28 +196,36 @@ const TabBarIconWithBadge: React.FC<{
   badge?: string;
 }> = ({ icon, color, size, badge }) => {
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size + 8, height: size + 8, alignItems: 'center', justifyContent: 'center' }}>
       <MaterialCommunityIcons name={icon} size={size} color={color} />
       {badge && (
         <View
           style={{
             position: 'absolute',
-            top: -2,
-            right: -6,
+            top: -4,
+            right: -4,
             backgroundColor: '#EF4444',
-            borderRadius: 8,
-            minWidth: 16,
-            height: 16,
+            borderRadius: 10,
+            minWidth: 20,
+            height: 20,
             alignItems: 'center',
             justifyContent: 'center',
-            paddingHorizontal: 4,
+            paddingHorizontal: 5,
+            borderWidth: 2,
+            borderColor: '#FFFFFF',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.2,
+            shadowRadius: 2,
+            elevation: 3,
           }}
         >
           <Text
             style={{
               color: '#FFFFFF',
-              fontSize: 10,
-              fontWeight: '600',
+              fontSize: 11,
+              fontWeight: '700',
+              lineHeight: 14,
             }}
           >
             {badge}
