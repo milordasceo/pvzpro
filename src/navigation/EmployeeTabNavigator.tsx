@@ -1,24 +1,34 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useTasksCounter } from '../employee/tasks/TasksCounterContext';
 import { placeholderColor } from '../theme';
 import { AnimatedTabBar, AnimatedTab } from '../components';
 import { EmployeeHomeScreen } from '../employee/EmployeeHomeScreen';
-import { ScheduleScreen } from '../employee/ScheduleScreen';
-import { FinanceCurrentPeriodScreen } from '../employee/TestFinanceScreen';
-import { FinanceHistoryScreen } from '../employee/FinanceHistoryScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ChatListScreen } from '../chat/ChatListScreen';
 import { ChatScreen } from '../chat/ChatScreen';
 import { EmployeeTabParamList } from '../types/navigation';
 
+// Ленивая загрузка тяжёлых экранов (Code Splitting)
+const ScheduleScreen = lazy(() => import('../employee/ScheduleScreen').then(m => ({ default: m.ScheduleScreen })));
+const FinanceCurrentPeriodScreen = lazy(() => import('../employee/TestFinanceScreen').then(m => ({ default: m.FinanceCurrentPeriodScreen })));
+const FinanceHistoryScreen = lazy(() => import('../employee/FinanceHistoryScreen').then(m => ({ default: m.FinanceHistoryScreen })));
+
 const Tab = createBottomTabNavigator<EmployeeTabParamList>();
 const Stack = createNativeStackNavigator();
 const FinanceTopTabs = createMaterialTopTabNavigator();
+
+// Компонент загрузки для Suspense
+const LoadingFallback: React.FC = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
+    <ActivityIndicator size="large" color="#4F46E5" />
+    <Text style={{ marginTop: 12, color: '#6B7280', fontSize: 14 }}>Загрузка...</Text>
+  </View>
+);
 
 /**
  * Стек навигатор для чата
@@ -89,7 +99,6 @@ export const EmployeeTabNavigator: React.FC = () => {
 
       <Tab.Screen
         name="График"
-        component={ScheduleScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <MaterialCommunityIcons 
@@ -99,7 +108,13 @@ export const EmployeeTabNavigator: React.FC = () => {
             />
           ),
         }}
-      />
+      >
+        {() => (
+          <Suspense fallback={<LoadingFallback />}>
+            <ScheduleScreen />
+          </Suspense>
+        )}
+      </Tab.Screen>
 
       <Tab.Screen
         name="Финансы"
@@ -177,8 +192,20 @@ const FinanceTabs: React.FC = () => {
         }}
         tabBar={(props) => <CustomFinanceTabBar {...props} />}
       >
-        <FinanceTopTabs.Screen name="Текущий период" component={FinanceCurrentPeriodScreen} />
-        <FinanceTopTabs.Screen name="История" component={FinanceHistoryScreen as any} />
+        <FinanceTopTabs.Screen name="Текущий период">
+          {() => (
+            <Suspense fallback={<LoadingFallback />}>
+              <FinanceCurrentPeriodScreen />
+            </Suspense>
+          )}
+        </FinanceTopTabs.Screen>
+        <FinanceTopTabs.Screen name="История">
+          {() => (
+            <Suspense fallback={<LoadingFallback />}>
+              <FinanceHistoryScreen />
+            </Suspense>
+          )}
+        </FinanceTopTabs.Screen>
       </FinanceTopTabs.Navigator>
     </View>
   );
