@@ -232,27 +232,18 @@ function generateMockPayments(): Payment[] {
 
 const mockPayments: Payment[] = generateMockPayments();
 
-// Динамическая генерация смен для текущего месяца
+// Динамическая генерация смен для текущего и прошлого месяца
 function generateMockShiftPayments(): ShiftPayment[] {
   const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-  
-  // Начало текущего периода (1 или 15 число)
-  const periodStart = now.getDate() <= 15
-    ? new Date(currentYear, currentMonth, 1)
-    : new Date(currentYear, currentMonth, 15);
-  
-  // Конец текущего периода (14 или последнее число месяца)
-  const periodEnd = now.getDate() <= 15
-    ? new Date(currentYear, currentMonth, 14)
-    : new Date(currentYear, currentMonth + 1, 0);
-  
   const shifts: ShiftPayment[] = [];
   let shiftId = 1;
   
-  // Генерируем смены для каждого дня текущего периода (кроме воскресений)
-  for (let d = new Date(periodStart); d <= periodEnd && d <= now; d.setDate(d.getDate() + 1)) {
+  // Генерируем смены за последние 60 дней (охватим прошлый и текущий месяц)
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - 60);
+  
+  // Генерируем смены для каждого дня (кроме воскресений)
+  for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
     const dayOfWeek = d.getDay();
     // Пропускаем воскресенье (0)
     if (dayOfWeek === 0) continue;
