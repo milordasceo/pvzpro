@@ -73,9 +73,31 @@ Android и iOS (Expo Managed + EAS Build; iOS — без Mac)
 ### Структура проекта
 ```
 src/
-├── attendance/           # QR, геолокация (утилиты и экраны)
-├── chat/                 # Список диалогов и экран переписки
-├── components/           # Унифицированные Paper-компоненты
+├── employee/             # 👤 Экраны и логика сотрудника
+│   ├── EmployeeHomeScreen.tsx
+│   ├── tabs/
+│   │   ├── ProcessTab.tsx
+│   │   └── TasksTab.tsx
+│   ├── ScheduleScreen.tsx
+│   ├── TestFinanceScreen.tsx
+│   ├── FinanceHistoryScreen.tsx
+│   ├── QrScanner.tsx
+│   └── tasks/
+│       └── TasksCounterContext.tsx
+├── admin/                # 👨‍💼 Экраны и логика администратора
+│   ├── screens/
+│   │   └── PvzSettingsScreen.tsx
+│   ├── components/
+│   │   ├── MapPickerModal.tsx
+│   │   └── DevicePairModal.tsx
+│   ├── services/         # (будут созданы)
+│   ├── store/            # (будут созданы)
+│   └── types/            # (будут созданы)
+├── owner/                # 👑 Владелец (будущее)
+├── chat/                 # 💬 Чат (общий для всех)
+│   ├── ChatListScreen.tsx
+│   └── ChatScreen.tsx
+├── components/           # 🔄 Общие UI компоненты
 │   ├── StyledButton.tsx
 │   ├── StyledCard.tsx
 │   ├── StyledDialog.tsx
@@ -83,42 +105,40 @@ src/
 │   ├── SquareIconButton.tsx
 │   ├── AnimatedTabBar.tsx
 │   └── MetaRow.tsx
-├── config/               # Конфигурация приложения
-├── employee/             # Экраны сотрудника
-│   ├── EmployeeHomeScreen.tsx
-│   ├── tabs/
-│   │   ├── ProcessTab.tsx
-│   │   └── TasksTab.tsx
-│   ├── ScheduleScreen.tsx
-│   ├── TestFinanceScreen.tsx
-│   └── FinanceHistoryScreen.tsx
 ├── hooks/                # Переиспользуемые хуки
 │   ├── useConfirmDialog.ts
 │   └── useForm.ts
-├── navigation/           # Навигаторы
+├── navigation/           # Навигаторы (по ролям)
 │   ├── AppNavigator.tsx
 │   ├── EmployeeTabNavigator.tsx
+│   ├── AdminTabNavigator.tsx
 │   └── MainNavigator.tsx
-├── providers/            # Корневые провайдеры
-├── services/             # API и бизнес-логика
-│   ├── qr.ts
+├── services/             # Общие сервисы
+│   ├── api.ts
+│   ├── qr.service.ts
 │   ├── finance.service.ts
 │   ├── schedule.service.ts
 │   └── notifications.ts
-├── store/                # Zustand сторы
+├── store/                # Общие stores
 │   ├── auth.store.ts
 │   ├── shift.store.ts
 │   └── requests.store.ts
-├── theme.ts              # Глобальная тема Paper (MD3)
-├── ui/                   # Токены темы
-│   └── themeTokens.ts
 ├── utils/                # Утилиты
 │   ├── qr.ts
 │   ├── geo.ts
 │   ├── storage.ts
 │   └── validation.ts
-├── types/                # Типы доменных сущностей
-└── App.tsx               # Входная точка
+├── types/                # Типы
+│   └── navigation.ts
+├── ui/                   # Токены дизайна
+│   └── themeTokens.ts
+├── attendance/           # QR, геолокация
+│   ├── geofence.ts
+│   └── qr.ts
+├── config/               # Конфигурация
+├── providers/            # Провайдеры
+├── theme.ts              # Тема MD3
+└── App.tsx               # Точка входа
 ```
 
 ### Основные принципы
