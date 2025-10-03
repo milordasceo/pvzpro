@@ -228,7 +228,16 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: '#E5DDD5' }}>
       <Appbar.Header mode="center-aligned">
-        <Appbar.Action icon="arrow-left" size={20} onPress={() => navigation?.goBack?.()} />
+        <Appbar.Action 
+          icon="arrow-left" 
+          size={20} 
+          onPress={() => {
+            // Всегда возвращаемся к списку чатов, а не к предыдущему экрану в истории
+            if (navigation?.canGoBack?.()) {
+              navigation.navigate('ChatList');
+            }
+          }} 
+        />
         <Avatar.Text
           size={28}
           label={title.slice(0, 2).toUpperCase()}
