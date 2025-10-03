@@ -4,7 +4,6 @@ import { useAuthStore } from '../store/auth.store';
 import { MainNavigator } from './MainNavigator';
 import { AuthNavigator } from './AuthNavigator';
 import { FinanceHistoryScreen } from '../employee/FinanceHistoryScreen';
-import { FinanceBreakdownScreen } from '../employee/FinanceBreakdownScreen';
 import { RootStackParamList } from '../types/navigation';
 import PvzSettingsScreen from '../screens/admin/PvzSettingsScreen';
 
@@ -33,11 +32,6 @@ export const AppNavigator: React.FC = () => {
           <Stack.Screen
             name={'FinanceHistory' as any}
             component={FinanceHistoryScreen}
-            options={{ presentation: 'modal' }}
-          />
-          <Stack.Screen
-            name={'FinanceBreakdown' as any}
-            component={FinanceBreakdownScreen}
             options={{ presentation: 'modal' }}
           />
           <Stack.Screen name={'PvzSettings' as any} component={PvzSettingsScreen} />
