@@ -208,12 +208,11 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-      >
-        <View style={{ padding: 16, gap: 16 }}>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 16, gap: 16 }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+    >
           {/* Компактные карточки статистики */}
           <View style={{ gap: 12 }}>
             {/* Текущий месяц */}
@@ -670,8 +669,6 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
               ))}
             </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 };
