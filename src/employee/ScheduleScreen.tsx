@@ -93,64 +93,47 @@ export const ScheduleScreen: React.FC = () => {
             justifyContent: 'space-between',
             marginBottom: 12,
             backgroundColor: '#F9FAFB',
-            borderRadius: 12,
-            padding: 4,
-            borderWidth: 1,
-            borderColor: '#E5E7EB',
+            borderRadius: 8,
+            paddingVertical: 2,
+            paddingHorizontal: 4,
           }}
         >
-          <View
-            style={{
-              backgroundColor: '#FFF',
-              borderRadius: 10,
-              overflow: 'hidden',
-            }}
+          <StyledButton
+            mode="text"
+            onPress={() => setWeekOffset((v) => v - 1)}
+            style={{ margin: 0 }}
+            contentStyle={{ paddingHorizontal: 12 }}
+            labelStyle={{ fontSize: 20 }}
+            compact
           >
-            <StyledButton
-              mode="text"
-              onPress={() => setWeekOffset((v) => v - 1)}
-              style={{ margin: 0 }}
-              contentStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
-              labelStyle={{ fontSize: 24, lineHeight: 28 }}
-            >
-              ‹
-            </StyledButton>
-          </View>
+            ‹
+          </StyledButton>
           
-          <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 8 }}>
-            <StyledButton
-              mode={isSameDay(selectedDate, today) && weekOffset === 0 ? 'contained' : 'contained-tonal'}
-              disabled={isSameDay(selectedDate, today) && weekOffset === 0}
-              icon="calendar-today"
-              onPress={() => {
-                const t = new Date();
-                setSelectedDate(t);
-                setWeekOffset(0);
-              }}
-              contentStyle={{ paddingHorizontal: 12, paddingVertical: 4 }}
-              labelStyle={{ fontSize: 13, fontWeight: '600' }}
-            >
-              Сегодня
-            </StyledButton>
-          </View>
-          
-          <View
-            style={{
-              backgroundColor: '#FFF',
-              borderRadius: 10,
-              overflow: 'hidden',
+          <StyledButton
+            mode={isSameDay(selectedDate, today) && weekOffset === 0 ? 'contained' : 'text'}
+            disabled={isSameDay(selectedDate, today) && weekOffset === 0}
+            icon="calendar-today"
+            onPress={() => {
+              const t = new Date();
+              setSelectedDate(t);
+              setWeekOffset(0);
             }}
+            labelStyle={{ fontSize: 12, fontWeight: '600' }}
+            compact
           >
-            <StyledButton
-              mode="text"
-              onPress={() => setWeekOffset((v) => v + 1)}
-              style={{ margin: 0 }}
-              contentStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
-              labelStyle={{ fontSize: 24, lineHeight: 28 }}
-            >
-              ›
-            </StyledButton>
-          </View>
+            Сегодня
+          </StyledButton>
+          
+          <StyledButton
+            mode="text"
+            onPress={() => setWeekOffset((v) => v + 1)}
+            style={{ margin: 0 }}
+            contentStyle={{ paddingHorizontal: 12 }}
+            labelStyle={{ fontSize: 20 }}
+            compact
+          >
+            ›
+          </StyledButton>
         </View>
         <View
           style={{
@@ -163,18 +146,18 @@ export const ScheduleScreen: React.FC = () => {
           }}
         >
           {WEEKDAY_SHORT.map((wd) => (
-            <Text
-              key={wd}
-              style={{
-                width: `${100 / 7}%`,
-                textAlign: 'center',
-                color: '#6B7280',
-                fontWeight: '600',
-                fontSize: 13,
-              }}
-            >
-              {wd}
-            </Text>
+            <View key={wd} style={{ flex: 1 }}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#6B7280',
+                  fontWeight: '600',
+                  fontSize: 13,
+                }}
+              >
+                {wd}
+              </Text>
+            </View>
           ))}
         </View>
 
@@ -185,8 +168,6 @@ export const ScheduleScreen: React.FC = () => {
             backgroundColor: '#FFF',
             borderRadius: 8,
             overflow: 'hidden',
-            borderWidth: 1,
-            borderColor: '#E5E7EB',
           }}
         >
           {(() => {
@@ -219,7 +200,7 @@ export const ScheduleScreen: React.FC = () => {
                   cells.push(
                     <View
                       key={`pad_${d.getFullYear()}_${d.getMonth()}_${i}`}
-                      style={{ width: `${100 / 7}%`, height: 52 }}
+                      style={{ flex: 1, flexBasis: `${100 / 7}%`, height: 52 }}
                     />,
                   );
                 }
@@ -237,7 +218,9 @@ export const ScheduleScreen: React.FC = () => {
                 <View
                   key={d.toISOString()}
                   style={{
-                    width: `${100 / 7}%`,
+                    flex: 1,
+                    flexBasis: `${100 / 7}%`,
+                    maxWidth: `${100 / 7}%`,
                     borderRightWidth: weekdayMonIndex(d) === 6 ? 0 : 1,
                     borderRightColor: '#F3F4F6',
                     borderBottomWidth: 1,
