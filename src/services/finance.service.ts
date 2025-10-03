@@ -340,8 +340,6 @@ function generateMockShiftPayments(): ShiftPayment[] {
   return shifts;
 }
 
-const mockShiftPayments: ShiftPayment[] = generateMockShiftPayments();
-
 export class FinanceService {
   /**
    * Получить сводку финансов сотрудника
@@ -372,6 +370,9 @@ export class FinanceService {
     const penalties = currentMonthPayments
       .filter((p) => p.type === 'penalty')
       .reduce((sum, p) => sum + p.amount, 0);
+
+    // Генерируем смены для расчётов
+    const mockShiftPayments = generateMockShiftPayments();
 
     // Расчет переработок и смен
     const overtimeHours = mockShiftPayments
@@ -519,6 +520,9 @@ export class FinanceService {
    */
   async getShiftPayments(employeeId: string, month?: Date): Promise<ShiftPayment[]> {
     await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Генерируем смены каждый раз при запросе
+    const mockShiftPayments = generateMockShiftPayments();
 
     if (month) {
       return mockShiftPayments.filter(
