@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, Portal } from 'react-native-paper';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 
 export interface StyledDialogProps {
   visible: boolean;
@@ -18,7 +18,7 @@ export interface StyledDialogProps {
 export const StyledDialog: React.FC<StyledDialogProps> = React.memo(
   ({ visible, onDismiss, title, children, actions, usePortal = true }) => {
     const dialogContent = (
-      <Dialog visible={visible} onDismiss={onDismiss} style={{ borderRadius: UI_TOKENS.radius }}>
+      <Dialog visible={visible} onDismiss={onDismiss} style={{ borderRadius: tokens.radius.lg }}>
         <Dialog.Title>{title}</Dialog.Title>
         <Dialog.Content>{children}</Dialog.Content>
         {actions && <Dialog.Actions>{actions}</Dialog.Actions>}

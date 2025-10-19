@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-native-paper';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 
 export interface StyledButtonProps {
   children: React.ReactNode;
@@ -37,12 +37,12 @@ export const StyledButton: React.FC<StyledButtonProps> = React.memo(
     textColor,
   }) => {
     const defaultStyle = {
-      borderRadius: UI_TOKENS.radius,
+      borderRadius: tokens.radius.md,
       ...style,
     };
 
     const defaultContentStyle = {
-      height: compact ? 36 : UI_TOKENS.buttonHeight,
+      height: compact ? 36 : tokens.spacing.buttonHeight,
       ...contentStyle,
     };
 

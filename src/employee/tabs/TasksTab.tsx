@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useTasksCounter } from '../tasks/TasksCounterContext';
-import { StyledCard, StyledButton, StyledScrollView, SquareIconButton } from '../../components';
+import { Card, Button, ScrollView, IconButton, tokens } from '../../ui';
 
 type TaskType = 'routine' | 'assigned';
 type TaskStatus = 'todo' | 'in_progress' | 'done' | 'skipped';
@@ -162,17 +162,17 @@ export const TasksTab: React.FC = () => {
   );
 
   return (
-    <StyledScrollView>
+    <ScrollView>
       {/* 1) Hero Card - Общий прогресс */}
-      <StyledCard>
+      <Card>
         <View style={{ gap: 12 }}>
           {/* Заголовок */}
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: tokens.colors.text.primary }}>
                 Задачи смены
               </Text>
-              <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+              <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, marginTop: 2 }}>
                 {completedTasks} из {totalTasks} выполнено
               </Text>
             </View>
@@ -189,7 +189,7 @@ export const TasksTab: React.FC = () => {
                 style={{
                   fontSize: 12,
                   fontWeight: '600',
-                  color: totalProgress === 100 ? '#166534' : totalProgress > 0 ? '#1E40AF' : '#6B7280',
+                  color: totalProgress === 100 ? tokens.colors.success.darker : totalProgress > 0 ? tokens.colors.primary.dark : '#6B7280',
                 }}
               >
                 {totalProgress === 100 ? '✓ Готово' : totalProgress > 0 ? 'В работе' : 'Ожидают'}
@@ -202,7 +202,7 @@ export const TasksTab: React.FC = () => {
             <View
               style={{
                 height: 8,
-                backgroundColor: '#F3F4F6',
+                backgroundColor: tokens.colors.gray[100],
                 borderRadius: 999,
                 overflow: 'hidden',
               }}
@@ -211,12 +211,12 @@ export const TasksTab: React.FC = () => {
                 style={{
                   height: '100%',
                   width: `${totalProgress}%`,
-                  backgroundColor: totalProgress === 100 ? '#10B981' : '#4F46E5',
+                  backgroundColor: totalProgress === 100 ? tokens.colors.success.main : tokens.colors.primary.main,
                   borderRadius: 999,
                 }}
               />
             </View>
-            <Text style={{ fontSize: 12, color: '#6B7280', textAlign: 'right' }}>
+            <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, textAlign: 'right' }}>
               {Math.round(totalProgress)}% выполнено
             </Text>
           </View>
@@ -225,42 +225,42 @@ export const TasksTab: React.FC = () => {
           {totalProgress === 100 ? (
             <View
               style={{
-                backgroundColor: '#DCFCE7',
+                backgroundColor: tokens.colors.success.light,
                 padding: 12,
                 borderRadius: 8,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#10B981',
+                borderLeftColor: tokens.colors.success.main,
               }}
             >
-              <MaterialCommunityIcons name="check-circle" size={20} color="#059669" />
-              <Text style={{ fontSize: 13, color: '#065F46', fontWeight: '600', flex: 1 }}>
+              <MaterialCommunityIcons name="check-circle" size={20} color={tokens.colors.success.dark} />
+              <Text style={{ fontSize: 13, color: tokens.colors.success.darker, fontWeight: '600', flex: 1 }}>
                 🎉 Отличная работа! Все задачи выполнены!
               </Text>
             </View>
           ) : totalProgress > 50 ? (
             <View
               style={{
-                backgroundColor: '#DBEAFE',
+                backgroundColor: tokens.colors.primary.light,
                 padding: 12,
                 borderRadius: 8,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 8,
                 borderLeftWidth: 4,
-                borderLeftColor: '#3B82F6',
+                borderLeftColor: tokens.colors.info.main,
               }}
             >
-              <MaterialCommunityIcons name="rocket-launch" size={18} color="#1E40AF" />
-              <Text style={{ fontSize: 13, color: '#1E3A8A', flex: 1 }}>
+              <MaterialCommunityIcons name="rocket-launch" size={18} color={tokens.colors.primary.dark} />
+              <Text style={{ fontSize: 13, color: tokens.colors.primary.darker, flex: 1 }}>
                 Отлично! Вы уже прошли больше половины!
               </Text>
             </View>
           ) : null}
         </View>
-      </StyledCard>
+      </Card>
 
       {/* 2) Чек-листы */}
       {CHECKLISTS.map((cl) => {
@@ -271,7 +271,7 @@ export const TasksTab: React.FC = () => {
         if (isCompleted) return null; // Скрываем завершённые
 
         return (
-          <StyledCard key={cl.id}>
+          <Card key={cl.id}>
             <View style={{ gap: 12 }}>
               {/* Заголовок чек-листа */}
               <Pressable
@@ -280,12 +280,12 @@ export const TasksTab: React.FC = () => {
               >
                 <View style={{ flex: 1 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <MaterialCommunityIcons name="clipboard-check-outline" size={20} color="#6B7280" />
-                    <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                    <MaterialCommunityIcons name="clipboard-check-outline" size={20} color={tokens.colors.text.secondary} />
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                       {cl.title}
                     </Text>
                   </View>
-                  <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+                  <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginTop: 2 }}>
                     {progress.completed} из {progress.total} фото
                   </Text>
                 </View>
@@ -296,21 +296,21 @@ export const TasksTab: React.FC = () => {
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      backgroundColor: '#F3F4F6',
+                      backgroundColor: tokens.colors.gray[100],
                       alignItems: 'center',
                       justifyContent: 'center',
                       borderWidth: 3,
-                      borderColor: progress.percent === 100 ? '#10B981' : '#E5E7EB',
+                      borderColor: progress.percent === 100 ? tokens.colors.success.main : '#E5E7EB',
                     }}
                   >
-                    <Text style={{ fontSize: 11, fontWeight: '700', color: progress.percent === 100 ? '#10B981' : '#6B7280' }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: progress.percent === 100 ? tokens.colors.success.main : '#6B7280' }}>
                       {progress.completed}/{progress.total}
                     </Text>
                   </View>
                   <MaterialCommunityIcons
                     name={isExpanded ? 'chevron-up' : 'chevron-down'}
                     size={24}
-                    color="#6B7280"
+                    color={tokens.colors.text.secondary}
                   />
                 </View>
               </Pressable>
@@ -319,7 +319,7 @@ export const TasksTab: React.FC = () => {
               <View
                 style={{
                   height: 6,
-                  backgroundColor: '#F3F4F6',
+                  backgroundColor: tokens.colors.gray[100],
                   borderRadius: 3,
                   overflow: 'hidden',
                 }}
@@ -328,7 +328,7 @@ export const TasksTab: React.FC = () => {
                   style={{
                     height: '100%',
                     width: `${progress.percent}%`,
-                    backgroundColor: progress.percent === 100 ? '#10B981' : '#4F46E5',
+                    backgroundColor: progress.percent === 100 ? tokens.colors.success.main : tokens.colors.primary.main,
                     borderRadius: 3,
                   }}
                 />
@@ -355,26 +355,26 @@ export const TasksTab: React.FC = () => {
                               width: 24,
                               height: 24,
                               borderRadius: 12,
-                              backgroundColor: photoUri ? '#10B981' : '#F3F4F6',
+                              backgroundColor: photoUri ? tokens.colors.success.main : '#F3F4F6',
                               alignItems: 'center',
                               justifyContent: 'center',
                               borderWidth: 2,
-                              borderColor: photoUri ? '#059669' : '#E5E7EB',
+                              borderColor: photoUri ? tokens.colors.success.dark : '#E5E7EB',
                             }}
                           >
                             {photoUri ? (
-                              <MaterialCommunityIcons name="check" size={14} color="#FFFFFF" />
+                              <MaterialCommunityIcons name="check" size={14} color={tokens.colors.surface} />
                             ) : (
-                              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#D1D5DB' }} />
+                              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: tokens.colors.gray[300] }} />
                             )}
                           </View>
 
                           {/* Текст */}
                           <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 14, fontWeight: '500', color: '#111827' }}>
+                            <Text style={{ fontSize: 14, fontWeight: '500', color: tokens.colors.text.primary }}>
                               {it.title}
                             </Text>
-                            <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+                            <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginTop: 2 }}>
                               {it.desc}
                             </Text>
                           </View>
@@ -389,7 +389,7 @@ export const TasksTab: React.FC = () => {
                               placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
                             />
                           ) : (
-                            <SquareIconButton
+                            <IconButton
                               icon="camera"
                               onPress={() =>
                                 takePhoto((uri) =>
@@ -412,53 +412,53 @@ export const TasksTab: React.FC = () => {
               ) : null}
 
               {/* Кнопка отправки */}
-              <StyledButton
+              <Button
                 mode="contained"
                 disabled={!isChecklistReady(cl.id)}
                 onPress={() => submitChecklist(cl.id, cl.title)}
                 icon={isChecklistReady(cl.id) ? 'send' : 'camera-outline'}
               >
                 {isChecklistReady(cl.id) ? 'Отправить чек-лист' : `Осталось ${progress.total - progress.completed} фото`}
-              </StyledButton>
+              </Button>
             </View>
-          </StyledCard>
+          </Card>
         );
       })}
 
       {/* Плейсхолдер для пустых чек-листов */}
       {allChecklistsSubmitted && assignments.length === 0 ? (
-        <StyledCard>
+        <Card>
           <View style={{ alignItems: 'center', paddingVertical: 20, gap: 12 }}>
             <View
               style={{
                 width: 64,
                 height: 64,
                 borderRadius: 32,
-                backgroundColor: '#DCFCE7',
+                backgroundColor: tokens.colors.success.light,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <MaterialCommunityIcons name="checkbox-multiple-marked" size={32} color="#10B981" />
             </View>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827' }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
               Все задачи выполнены!
             </Text>
-            <Text style={{ fontSize: 13, color: '#6B7280', textAlign: 'center' }}>
+            <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, textAlign: 'center' }}>
               Отличная работа! Новые задачи появятся позже.
             </Text>
           </View>
-        </StyledCard>
+        </Card>
       ) : null}
 
       {/* 3) Поручения */}
       {assignments.length > 0 ? (
-        <StyledCard>
+        <Card>
           <View style={{ gap: 12 }}>
             {/* Заголовок */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <MaterialCommunityIcons name="text-box-check-outline" size={20} color="#6B7280" />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+              <MaterialCommunityIcons name="text-box-check-outline" size={20} color={tokens.colors.text.secondary} />
+              <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                 Поручения
               </Text>
               <View
@@ -485,11 +485,11 @@ export const TasksTab: React.FC = () => {
                   <View style={{ gap: 12 }}>
                     {/* Текст задания */}
                     <View>
-                      <Text style={{ fontSize: 14, fontWeight: '500', color: '#111827' }}>
+                      <Text style={{ fontSize: 14, fontWeight: '500', color: tokens.colors.text.primary }}>
                         {it.title}
                       </Text>
                       {it.desc ? (
-                        <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginTop: 4 }}>
                           {it.desc}
                         </Text>
                       ) : null}
@@ -497,7 +497,7 @@ export const TasksTab: React.FC = () => {
 
                     {/* Ввод количества */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <MaterialCommunityIcons name="counter" size={20} color="#6B7280" />
+                      <MaterialCommunityIcons name="counter" size={20} color={tokens.colors.text.secondary} />
                       <TextInput
                         mode="outlined"
                         value={qty}
@@ -537,14 +537,14 @@ export const TasksTab: React.FC = () => {
                               gap: 4,
                             }}
                           >
-                            <MaterialCommunityIcons name="check" size={14} color="#FFFFFF" />
+                            <MaterialCommunityIcons name="check" size={14} color={tokens.colors.surface} />
                             <Text style={{ fontSize: 11, color: '#FFFFFF', fontWeight: '600' }}>
                               Фото готово
                             </Text>
                           </View>
                         </View>
                       ) : (
-                        <StyledButton
+                        <Button
                           mode="outlined"
                           icon="camera"
                           onPress={() =>
@@ -555,12 +555,12 @@ export const TasksTab: React.FC = () => {
                           style={{ flex: 1 }}
                         >
                           Приложить фото
-                        </StyledButton>
+                        </Button>
                       )}
                     </View>
 
                     {/* Кнопка завершения */}
-                    <StyledButton
+                    <Button
                       mode="contained"
                       icon={isReady ? 'check-bold' : 'alert-circle-outline'}
                       onPress={() => {
@@ -571,22 +571,22 @@ export const TasksTab: React.FC = () => {
                         ]);
                       }}
                       disabled={!isReady}
-                      buttonColor={isReady ? '#10B981' : undefined}
+                      buttonColor={isReady ? tokens.colors.success.main : undefined}
                     >
                       {isReady ? 'Завершить поручение' : 'Добавьте фото и количество'}
-                    </StyledButton>
+                    </Button>
                   </View>
                   {idx < assignments.length - 1 ? <Divider style={{ marginVertical: 12 }} /> : null}
                 </View>
               );
             })}
           </View>
-        </StyledCard>
+        </Card>
       ) : null}
 
       {/* 4) Выполненное (сворачиваемое) */}
       {completed.length > 0 ? (
-        <StyledCard>
+        <Card>
           <View>
             <Pressable
               onPress={() => setCompletedExpanded(!completedExpanded)}
@@ -599,18 +599,18 @@ export const TasksTab: React.FC = () => {
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <MaterialCommunityIcons name="check-all" size={20} color="#10B981" />
-                <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                   Выполненное
                 </Text>
                 <View
                   style={{
-                    backgroundColor: '#DCFCE7',
+                    backgroundColor: tokens.colors.success.light,
                     paddingHorizontal: 8,
                     paddingVertical: 2,
                     borderRadius: 999,
                   }}
                 >
-                  <Text style={{ fontSize: 11, color: '#065F46', fontWeight: '600' }}>
+                  <Text style={{ fontSize: 11, color: tokens.colors.success.darker, fontWeight: '600' }}>
                     {completed.length}
                   </Text>
                 </View>
@@ -618,7 +618,7 @@ export const TasksTab: React.FC = () => {
               <MaterialCommunityIcons
                 name={completedExpanded ? 'chevron-up' : 'chevron-down'}
                 size={24}
-                color="#6B7280"
+                color={tokens.colors.text.secondary}
               />
             </Pressable>
             {completedExpanded ? (
@@ -628,8 +628,8 @@ export const TasksTab: React.FC = () => {
                     <View style={{ paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                       <MaterialCommunityIcons name="check-circle" size={18} color="#10B981" />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 14, color: '#111827' }}>{it.title}</Text>
-                        <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+                        <Text style={{ fontSize: 14, color: tokens.colors.text.primary }}>{it.title}</Text>
+                        <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginTop: 2 }}>
                           {new Date(it.completedAt).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -643,8 +643,8 @@ export const TasksTab: React.FC = () => {
               </View>
             ) : null}
           </View>
-        </StyledCard>
+        </Card>
       ) : null}
-    </StyledScrollView>
+    </ScrollView>
   );
 };

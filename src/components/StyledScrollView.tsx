@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, ScrollViewProps } from 'react-native';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 
 export interface StyledScrollViewProps extends ScrollViewProps {
   children: React.ReactNode;
@@ -19,7 +19,7 @@ export const StyledScrollView = React.memo(
       {
         children,
         padding = 16,
-        gap = UI_TOKENS.gap,
+        gap = tokens.spacing.cardGap,
         hideScrollIndicator = true,
         contentContainerStyle,
         ...props

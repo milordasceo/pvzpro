@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-native-paper';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 
 export interface StyledCardProps {
   children: React.ReactNode;
@@ -33,8 +33,8 @@ export const StyledCard: React.FC<StyledCardProps> = React.memo(
     right,
   }) => {
     const defaultStyle = {
-      borderRadius: UI_TOKENS.radius,
-      backgroundColor: '#FFFFFF',
+      borderRadius: tokens.radius.lg,
+      backgroundColor: tokens.colors.surface,
       ...style,
     };
 
@@ -48,14 +48,14 @@ export const StyledCard: React.FC<StyledCardProps> = React.memo(
             subtitleStyle={[{ fontSize: 14, color: '#6B7280' }, subtitleStyle]}
             right={right ? () => <>{right}</> : undefined}
           />
-          <Card.Content style={[{ gap: UI_TOKENS.gap }, contentStyle]}>{children}</Card.Content>
+          <Card.Content style={[{ gap: tokens.spacing.cardGap }, contentStyle]}>{children}</Card.Content>
         </Card>
       );
     }
 
     return (
       <Card mode={mode} style={defaultStyle} onPress={onPress}>
-        <Card.Content style={[{ gap: UI_TOKENS.gap }, contentStyle]}>{children}</Card.Content>
+        <Card.Content style={[{ gap: tokens.spacing.cardGap }, contentStyle]}>{children}</Card.Content>
       </Card>
     );
   },

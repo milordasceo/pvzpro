@@ -7,7 +7,7 @@ import { ProcessTab } from './tabs/ProcessTab';
 import { TasksTab } from './tabs/TasksTab';
 import { useTasksCounter } from './tasks/TasksCounterContext';
 import { useShiftStatus } from '../store/shift.store';
-import { AnimatedTabBar, AnimatedTab } from '../components';
+import { TabBar, Tab, tokens } from '../ui';
 
 const TopTabs = createMaterialTopTabNavigator();
 
@@ -22,13 +22,13 @@ const CustomShiftTabBar: React.FC<{
   const isShiftStarted = shiftStatus === 'active' || shiftStatus === 'break';
 
   // Всегда показываем оба таба
-  const shiftTabs: AnimatedTab[] = [
+  const shiftTabs: Tab[] = [
     { key: 'overview', label: 'Обзор' },
     { 
       key: 'tasks', 
       label: 'Задачи',
       badge: pendingCount > 0 ? (
-        <Badge size={18} style={{ backgroundColor: '#EF4444', fontSize: 12 }}>
+        <Badge size={18} style={{ backgroundColor: tokens.colors.error.main, fontSize: 12 }}>
           {pendingCount > 99 ? '99+' : pendingCount}
         </Badge>
       ) : undefined,
@@ -46,7 +46,7 @@ const CustomShiftTabBar: React.FC<{
     navigation.navigate(tabName);
   };
 
-  return <AnimatedTabBar tabs={shiftTabs} activeIndex={state.index} onTabPress={handleTabPress} />;
+  return <TabBar tabs={shiftTabs} activeIndex={state.index} onTabPress={handleTabPress} />;
 };
 
 export const EmployeeHomeScreen: React.FC = () => {
@@ -75,7 +75,8 @@ export const EmployeeHomeScreen: React.FC = () => {
         initialRouteName="Обзор"
         screenOptions={{
           swipeEnabled: isShiftStarted, // Свайп доступен только после начала смены
-          lazy: false,
+          lazy: true, // Включаем lazy loading для производительности
+          lazyPreloadDistance: 0, // Не предзагружаем соседние табы
         }}
         tabBar={(props) => <CustomShiftTabBar {...props} onShowHint={handleShowHint} />}
       >

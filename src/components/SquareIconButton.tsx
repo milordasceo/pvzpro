@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { TouchableRipple, useTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 
 export interface SquareIconButtonProps {
   icon: any;
@@ -28,13 +28,13 @@ export const SquareIconButton: React.FC<SquareIconButtonProps> = React.memo(({
       onPress={onPress}
       disabled={disabled}
       borderless={false}
-      style={{ borderRadius: UI_TOKENS.radius }}
+      style={{ borderRadius: tokens.radius.md }}
     >
       <View
         style={{
           width: size,
           height: size,
-          borderRadius: UI_TOKENS.radius,
+          borderRadius: tokens.radius.md,
           backgroundColor: disabled ? theme.colors.surfaceVariant : bg || theme.colors.primary,
           alignItems: 'center',
           justifyContent: 'center',

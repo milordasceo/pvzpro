@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, Appbar, Menu } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { placeholderColor } from '../theme';
-import { OwnerTabParamList } from '../types/navigation';
+import { OwnerTabParamList, RoleType } from '../types/navigation';
 import { StyledScrollView } from '../components';
+import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<OwnerTabParamList>();
 
@@ -14,14 +15,52 @@ const Tab = createBottomTabNavigator<OwnerTabParamList>();
  * Содержит экраны для управления всей сетью ПВЗ
  */
 export const OwnerTabNavigator: React.FC = () => {
+  const { user, updateUser } = useAuthStore();
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const subtitle = useMemo(() => {
+    const role = user?.role as RoleType | undefined;
+    return role === 'owner'
+      ? 'Роль: Владелец'
+      : role === 'admin'
+        ? 'Роль: Администратор'
+        : 'Роль: Сотрудник';
+  }, [user?.role]);
+
+  const handleRoleChange = (role: RoleType) => {
+    if (user) updateUser({ role });
+    setMenuVisible(false);
+  };
+
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: placeholderColor,
-        headerShown: false,
-      }}
-    >
+    <View style={{ flex: 1 }}>
+      {/* Хедер с переключателем ролей */}
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="WB ПВЗ (Владелец)" subtitle={subtitle} />
+        <Menu
+          visible={menuVisible}
+          onDismiss={() => setMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="account-switch"
+              onPress={() => setMenuVisible(true)}
+            />
+          }
+        >
+          <Menu.Item onPress={() => handleRoleChange('employee')} title="👷 Сотрудник" />
+          <Menu.Item onPress={() => handleRoleChange('admin')} title="👔 Администратор" />
+          <Menu.Item onPress={() => handleRoleChange('owner')} title="👑 Владелец" />
+        </Menu>
+      </Appbar.Header>
+
+      {/* Табы */}
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: '#4F46E5',
+          tabBarInactiveTintColor: placeholderColor,
+          headerShown: false,
+        }}
+      >
       <Tab.Screen
         name="Дашборд"
         component={PlaceholderScreen}
@@ -55,6 +94,7 @@ export const OwnerTabNavigator: React.FC = () => {
         }}
       />
     </Tab.Navigator>
+    </View>
   );
 };
 

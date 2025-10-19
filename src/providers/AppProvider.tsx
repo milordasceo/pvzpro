@@ -4,6 +4,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { AppTheme } from '../theme';
 import { TasksCounterProvider } from '../employee/tasks/TasksCounterContext';
+import { DevUICatalogFAB } from '../components/DevUICatalogFAB';
 
 /**
  * Объединяет все провайдеры приложения в одном месте
@@ -25,6 +26,8 @@ export const AppProvider: React.FC<{
             onStateChange={onStateChange}
           >
             {children}
+            {/* FAB для быстрого доступа к UI Catalog (только в DEV) */}
+            <DevUICatalogFAB />
           </NavigationContainer>
         </TasksCounterProvider>
       </PaperProvider>

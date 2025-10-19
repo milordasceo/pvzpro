@@ -1,65 +1,73 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, Appbar, Menu } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { placeholderColor } from '../theme';
-import { AdminTabParamList } from '../types/navigation';
+import { AdminTabParamList, RoleType } from '../types/navigation';
 import { AdminDashboardScreen } from '../admin/screens/AdminDashboardScreen';
 import { ScheduleScreen } from '../admin/screens/ScheduleScreen';
+import { UICatalogScreen } from '../admin/screens/UICatalogScreen';
+import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
-// const Stack = createNativeStackNavigator<AdminTabParamList>(); // Временно не используется
 
-/**
- * Stack навигатор для модуля ПВЗ
- * ВРЕМЕННО ОТКЛЮЧЕНО для отладки
- */
-// const PvzStack: React.FC = () => {
-//   return (
-//     <Stack.Navigator
-//       screenOptions={{
-//         headerShown: false,
-//       }}
-//     >
-//       <Stack.Screen name="ПВЗ" component={PvzListScreen} />
-//       <Stack.Screen 
-//         name="PvzDetails" 
-//         component={PvzDetailsScreen}
-//         options={{
-//           headerShown: true,
-//           title: 'Детали ПВЗ',
-//         }}
-//       />
-//       <Stack.Screen 
-//         name="PvzSettings" 
-//         component={PvzSettingsScreen}
-//         options={{
-//           headerShown: true,
-//           title: 'Настройки ПВЗ',
-//         }}
-//       />
-//     </Stack.Navigator>
-//   );
-// };
+// Модуль "Сотрудники" будет создан после унификации UI
 
 /**
  * Таб навигатор для администраторов
  * 5 табов: Обзор, ПВЗ, Сотрудники, График, Чат
  */
 export const AdminTabNavigator: React.FC = () => {
+  const { user, updateUser } = useAuthStore();
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const subtitle = useMemo(() => {
+    const role = user?.role as RoleType | undefined;
+    return role === 'owner'
+      ? 'Роль: Владелец'
+      : role === 'admin'
+        ? 'Роль: Администратор'
+        : 'Роль: Сотрудник';
+  }, [user?.role]);
+
+  const handleRoleChange = (role: RoleType) => {
+    if (user) updateUser({ role });
+    setMenuVisible(false);
+  };
+
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: placeholderColor,
-        headerShown: false,
-        tabBarLabelStyle: {
-          fontSize: 11,
-        },
-      }}
-    >
+    <View style={{ flex: 1 }}>
+      {/* Хедер с переключателем ролей */}
+      <Appbar.Header mode="center-aligned">
+        <Appbar.Content title="WB ПВЗ (Админ)" subtitle={subtitle} />
+        <Menu
+          visible={menuVisible}
+          onDismiss={() => setMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon="account-switch"
+              onPress={() => setMenuVisible(true)}
+            />
+          }
+        >
+          <Menu.Item onPress={() => handleRoleChange('employee')} title="👷 Сотрудник" />
+          <Menu.Item onPress={() => handleRoleChange('admin')} title="👔 Администратор" />
+          <Menu.Item onPress={() => handleRoleChange('owner')} title="👑 Владелец" />
+        </Menu>
+      </Appbar.Header>
+
+      {/* Табы */}
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: '#4F46E5',
+          tabBarInactiveTintColor: placeholderColor,
+          headerShown: false,
+          tabBarLabelStyle: {
+            fontSize: 11,
+          },
+        }}
+      >
       {/* 1. Обзор (Dashboard) */}
       <Tab.Screen
         name="Обзор"
@@ -72,14 +80,14 @@ export const AdminTabNavigator: React.FC = () => {
         }}
       />
 
-      {/* 2. ПВЗ (Список точек + настройки) - ВРЕМЕННО ОТКЛЮЧЕНО */}
+      {/* 2. UI Catalog (Для разработки) */}
       <Tab.Screen
         name="ПВЗ"
-        component={PlaceholderScreen}
+        component={UICatalogScreen}
         options={{
-          title: 'ПВЗ',
+          title: 'UI',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="store-outline" size={size} color={color} />
+            <MaterialCommunityIcons name="palette-outline" size={size} color={color} />
           ),
         }}
       />
@@ -120,6 +128,7 @@ export const AdminTabNavigator: React.FC = () => {
         }}
       />
     </Tab.Navigator>
+    </View>
   );
 };
 

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text, useTheme, TouchableRipple, Snackbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { UI_TOKENS } from '../ui/themeTokens';
+import { tokens } from '../ui';
 import { MetaRow } from '../components/MetaRow';
 import { useRequestsStore, buildDateKey } from '../store/requests.store';
 import { StyledCard, StyledButton } from '../components';
