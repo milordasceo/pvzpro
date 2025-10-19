@@ -33,8 +33,10 @@ export type EmployeeTabParamList = {
 export type AdminTabParamList = {
   Обзор: undefined;
   ПВЗ: undefined;
+  PvzDetails: { pvzId: string }; // Детали конкретного ПВЗ (новый экран)
+  PvzSettings: { pvzId: string }; // Настройки конкретного ПВЗ (старый, оставлен для совместимости)
   Сотрудники: undefined;
-  График: undefined;
+  График: { screen?: string } | undefined; // Поддержка вложенных экранов (Календарь, Запросы)
   Чат: NavigatorScreenParams<RootStackParamList> | undefined;
 };
 

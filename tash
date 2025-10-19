@@ -1,0 +1,20 @@
+[33md06088e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m feat(admin): Р­С‚Р°Рї 1 - РўРёРїС‹, РјРѕРєРѕРІС‹Рµ РґР°РЅРЅС‹Рµ, store Рё РЅР°РІРёРіР°С†РёСЏ
+[33m3dbc83d[m docs: add OPTIMIZATION_GUIDELINES.md and update all docs for new session - ready to develop admin functionality
+[33mf3da2ec[m docs: update PROJECT.md with new folder structure (employee/admin/owner)
+[33m2cfbac7[m refactor: migrate to role-based folder structure - moved admin files from src/screens/admin to src/admin, created src/owner for future
+[33m39f2f56[m docs: add project structure architecture - role-based folders (employee/admin/owner + shared)
+[33md81ff23[m docs: update admin functionality - multi-PVZ management, permissions system, 5 tabs structure (15-20 sessions)
+[33mb08aedd[m docs: add detailed admin functionality plan (ADMIN_FUNCTIONALITY.md) - 8-10 screens, 12-18 sessions estimated
+[33med35e82[m docs: update git-status.html with documentation restructuring v3.0
+[33m12cf00f[m docs: СЂРµСЃС‚СЂСѓРєС‚СѓСЂРёР·Р°С†РёСЏ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё v3.0 - СЃРѕР·РґР°РЅ README.md РєР°Рє С‚РѕС‡РєР° РІС…РѕРґР°, РѕР±СЉРµРґРёРЅРµРЅС‹ PROJECT_OVERVIEW/MODULES/ARCHITECTURE РІ PROJECT.md, СЃРѕРєСЂР°С‰С‘РЅ CURSOR_CONTEXT РґРѕ 167 СЃС‚СЂРѕРє, Р°СЂС…РёРІРёСЂРѕРІР°РЅС‹ СЃС‚Р°СЂС‹Рµ Р·Р°РґР°С‡Рё
+[33m50b0c6a[m perf: optimize ScheduleScreen with memoized callbacks and today date
+[33m917ef3e[m docs: complete performance optimization documentation
+[33mb1bc476[m perf: add code splitting with React.lazy and Suspense for heavy screens
+[33m7a05676[m perf: add expo-image with optimized loading and placeholders
+[33m0a2dee2[m docs: update documentation with performance optimizations
+[33me1be53d[m perf: optimize app performance with memoization and image quality reduction
+[33m839b9f6[m feat: Переосмыслен модуль Задачи с современным дизайном и визуализацией
+[33m025275b[m docs: update documentation for new session - all UI improvements and fixes completed
+[33m081c319[m fix: remove overflow hidden from calendar container to restore visibility
+[33m3c1a7eb[m fix: remove navigation background and restore calendar visibility by reverting flex layout
+[33m46c4312[m fix: reduce navigation height, remove calendar border, fix day cells width to be exactly 1/7

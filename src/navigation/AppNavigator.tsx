@@ -1,11 +1,13 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { IconButton } from 'react-native-paper';
 import { useAuthStore } from '../store/auth.store';
 import { MainNavigator } from './MainNavigator';
 import { AuthNavigator } from './AuthNavigator';
 import { FinanceHistoryScreen } from '../employee/FinanceHistoryScreen';
 import { RootStackParamList } from '../types/navigation';
 import PvzSettingsScreen from '../admin/screens/PvzSettingsScreen';
+// import { AdminHeader } from '../admin/components/AdminHeader'; // Удалён
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -14,7 +16,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * Определяет корневую навигацию в зависимости от статуса аутентификации
  */
 export const AppNavigator: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
 
   // Пока приложение загружается, показываем loading screen
   if (isLoading) {
@@ -23,12 +25,21 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'none',
+      }}
       initialRouteName={(isAuthenticated ? 'Main' : 'Auth') as any}
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name={'Main' as any} component={MainNavigator} />
+          <Stack.Screen
+            name={'Main' as any} 
+            component={MainNavigator}
+            options={{
+              headerShown: false, // AdminHeader удалён
+            }}
+          />
           <Stack.Screen
             name={'FinanceHistory' as any}
             component={FinanceHistoryScreen}

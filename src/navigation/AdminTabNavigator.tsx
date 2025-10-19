@@ -2,11 +2,47 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { placeholderColor } from '../theme';
 import { AdminTabParamList } from '../types/navigation';
+import { AdminDashboardScreen } from '../admin/screens/AdminDashboardScreen';
+import { ScheduleScreen } from '../admin/screens/ScheduleScreen';
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
+// const Stack = createNativeStackNavigator<AdminTabParamList>(); // Временно не используется
+
+/**
+ * Stack навигатор для модуля ПВЗ
+ * ВРЕМЕННО ОТКЛЮЧЕНО для отладки
+ */
+// const PvzStack: React.FC = () => {
+//   return (
+//     <Stack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//     >
+//       <Stack.Screen name="ПВЗ" component={PvzListScreen} />
+//       <Stack.Screen 
+//         name="PvzDetails" 
+//         component={PvzDetailsScreen}
+//         options={{
+//           headerShown: true,
+//           title: 'Детали ПВЗ',
+//         }}
+//       />
+//       <Stack.Screen 
+//         name="PvzSettings" 
+//         component={PvzSettingsScreen}
+//         options={{
+//           headerShown: true,
+//           title: 'Настройки ПВЗ',
+//         }}
+//       />
+//     </Stack.Navigator>
+//   );
+// };
 
 /**
  * Таб навигатор для администраторов
@@ -27,7 +63,7 @@ export const AdminTabNavigator: React.FC = () => {
       {/* 1. Обзор (Dashboard) */}
       <Tab.Screen
         name="Обзор"
-        component={PlaceholderScreen}
+        component={AdminDashboardScreen}
         options={{
           title: 'Обзор',
           tabBarIcon: ({ color, size }) => (
@@ -36,7 +72,7 @@ export const AdminTabNavigator: React.FC = () => {
         }}
       />
 
-      {/* 2. ПВЗ (Список точек) */}
+      {/* 2. ПВЗ (Список точек + настройки) - ВРЕМЕННО ОТКЛЮЧЕНО */}
       <Tab.Screen
         name="ПВЗ"
         component={PlaceholderScreen}
@@ -63,7 +99,7 @@ export const AdminTabNavigator: React.FC = () => {
       {/* 4. График */}
       <Tab.Screen
         name="График"
-        component={PlaceholderScreen}
+        component={ScheduleScreen}
         options={{
           title: 'График',
           tabBarIcon: ({ color, size }) => (

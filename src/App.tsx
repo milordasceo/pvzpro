@@ -102,7 +102,7 @@ const App: React.FC = () => {
       }}
     >
       <GestureHandlerRootView style={styles.container}>
-        {!isChatContext && (
+        {!isChatContext && user?.role !== 'admin' && (
           <Appbar.Header mode="center-aligned">
             <Appbar.Content title="WB ПВЗ" subtitle={subtitle} />
             <Menu
@@ -119,18 +119,6 @@ const App: React.FC = () => {
               <Menu.Item onPress={() => handleRoleChange('employee')} title="Сотрудник" />
               <Menu.Item onPress={() => handleRoleChange('admin')} title="Администратор" />
               <Menu.Item onPress={() => handleRoleChange('owner')} title="Владелец" />
-              {user?.role === 'admin' ? (
-                <>
-                  <Divider />
-                  <Menu.Item
-                    onPress={() => {
-                      setMenuVisible(false);
-                      navRef.current?.navigate('PvzSettings' as any);
-                    }}
-                    title="Настройки ПВЗ"
-                  />
-                </>
-              ) : null}
             </Menu>
           </Appbar.Header>
         )}

@@ -148,25 +148,25 @@ export interface AdminPvz {
       start: number; // час (0-23)
       end: number; // час (0-23)
     };
-    
+
     // Правила смен
     shiftRules: {
-      minShiftDuration: number; // минут (например, 240 = 4 часа)
-      maxShiftDuration: number; // минут (например, 720 = 12 часов)
+      breakCount: number; // количество перерывов (0-5)
       maxBreakDuration: number; // минут (например, 60)
-      overtimeThreshold: number; // минут (например, 480 = 8 часов)
+      // Длительность смен и переработка - по умолчанию
     };
-    
+
     // Геозона
     geofence: {
       enabled: boolean;
-      radius: number; // метров
+      radius: number; // метров (всегда 100 по умолчанию)
     };
-    
+
     // QR-коды
     qrCodes: {
       enabled: boolean;
       regenerateDaily: boolean;
+      // TTL всегда 5 минут (300 сек) по умолчанию
     };
   };
   
@@ -199,6 +199,10 @@ export interface ScheduleRequest {
   description: string;
   requestedDate: Date; // Дата, на которую запрос
   alternativeDate?: Date; // Альтернативная дата (для обмена сменами)
+  
+  // Для отображения "с ... на ..."
+  currentSchedule?: string; // Текущее время (например, "09:00 - 18:00")
+  requestedSchedule?: string; // Запрашиваемое время (например, "10:00 - 19:00")
   
   // Статус
   status: 'pending' | 'approved' | 'rejected' | 'cancelled';
@@ -369,6 +373,45 @@ export interface AdminTask {
   // Даты
   createdAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Алерт для администратора
+ */
+export interface AdminAlert {
+  id: string;
+  type: 'late' | 'urgent_request' | 'long_break' | 'overtime' | 'unclosed_shift' | 'no_employees';
+  priority: 'critical' | 'important' | 'warning' | 'info';
+  title: string;
+  description: string;
+  timestamp: Date;
+  
+  // Ссылки на сущности
+  employeeId?: string;
+  employeeName?: string;
+  shiftId?: string;
+  requestId?: string;
+  pvzId: string;
+  pvzName?: string;
+  
+  // Действия
+  actions: Array<{
+    label: string;
+    action: 'approve' | 'reject' | 'contact' | 'view_details' | 'dismiss' | 'remind' | 'go_to_pvz';
+    variant: 'primary' | 'secondary' | 'danger';
+  }>;
+  
+  // Флаги
+  isDismissed: boolean;
+  isResolved: boolean;
+  
+  // Дополнительные данные
+  metadata?: {
+    lateMinutes?: number;
+    breakMinutes?: number;
+    requestType?: string;
+    shiftStartTime?: Date;
+  };
 }
 
 /**

@@ -9,3 +9,6 @@ export * from './geo';
 
 // Хранилище
 export * from './storage';
+
+// Форматирование
+export * from './formatters';
