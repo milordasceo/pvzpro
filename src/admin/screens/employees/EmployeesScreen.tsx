@@ -80,7 +80,7 @@ export const EmployeesScreen = () => {
           renderItem={({ item }) => (
             <EmployeeCard employee={item} onPress={() => handleEmployeePress(item)} />
           )}
-          contentContainerStyle={{ padding: 16, gap: 12 }}
+          contentContainerStyle={{ padding: 16 }}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={refresh} />
           }

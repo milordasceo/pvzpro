@@ -16,6 +16,12 @@ export const EmployeeCard = ({ employee, onPress }: EmployeeCardProps) => {
     return tokens.colors.text.secondary;
   };
 
+  const getStatusBgColor = () => {
+    if (!employee.isActive) return tokens.colors.gray[100];
+    if (employee.isOnShift) return tokens.colors.success.lighter;
+    return tokens.colors.gray[50];
+  };
+
   const getStatusText = () => {
     if (!employee.isActive) return 'Неактивен';
     if (employee.isOnShift) return 'На смене';
@@ -27,96 +33,108 @@ export const EmployeeCard = ({ employee, onPress }: EmployeeCardProps) => {
       onPress={onPress}
       style={{
         backgroundColor: tokens.colors.surface,
-        borderRadius: tokens.radius.md,
+        borderRadius: tokens.radius.lg,
         padding: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        elevation: 1,
+        marginBottom: 12,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
       }}
     >
-      {/* Аватар */}
-      {employee.avatar ? (
-        <Avatar.Image
-          size={56}
-          source={{ uri: employee.avatar }}
-          style={{ backgroundColor: tokens.colors.primary.light }}
-        />
-      ) : (
-        <Avatar.Icon
-          size={56}
-          icon="account"
-          style={{ backgroundColor: tokens.colors.primary.light }}
-        />
-      )}
-
-      {/* Информация */}
-      <View style={{ flex: 1 }}>
-        {/* Имя и статус */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <Text variant="titleMedium" style={{ flex: 1 }}>
-            {employee.name}
-          </Text>
-          <View
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: getStatusColor(),
-            }}
+      <View style={{ flexDirection: 'row', gap: 12, flex: 1 }}>
+        {/* Аватар */}
+        {employee.avatar ? (
+          <Avatar.Image
+            size={56}
+            source={{ uri: employee.avatar }}
+            style={{ backgroundColor: tokens.colors.primary.light }}
           />
-        </View>
-
-        {/* ПВЗ */}
-        {employee.pvzName && (
-          <Text variant="bodySmall" style={{ color: tokens.colors.text.secondary }} numberOfLines={1}>
-            {employee.pvzName}
-          </Text>
+        ) : (
+          <Avatar.Icon
+            size={56}
+            icon="account"
+            color={tokens.colors.primary.main}
+            style={{ backgroundColor: tokens.colors.primary.light }}
+          />
         )}
 
-        {/* Телефон */}
-        <Text variant="bodySmall" style={{ marginTop: 2, color: tokens.colors.text.secondary }}>
-          {employee.phone}
-        </Text>
+        {/* Информация */}
+        <View style={{ flex: 1 }}>
+          {/* Имя */}
+          <Text variant="titleMedium" style={{ marginBottom: 4 }}>
+            {employee.name}
+          </Text>
 
-        {/* Статистика */}
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-          <Chip
-            compact
-            mode="outlined"
-            style={{ height: 24, borderColor: tokens.colors.border }}
-            textStyle={{ fontSize: 11, marginVertical: 0 }}
-          >
-            {`Смен: ${employee.stats.currentMonthShifts}`}
-          </Chip>
-          <Chip
-            compact
-            mode="outlined"
-            style={{ height: 24, borderColor: tokens.colors.border }}
-            textStyle={{ fontSize: 11, marginVertical: 0 }}
-          >
-            {`${Math.round(employee.stats.totalHours)}ч`}
-          </Chip>
-          {employee.stats.pendingRequests > 0 && (
-            <Badge
-              size={20}
+          {/* Статус и контакты */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <Chip
+              compact
+              mode="flat"
               style={{
-                backgroundColor: tokens.colors.warning.main,
+                height: 24,
+                backgroundColor: getStatusBgColor(),
+              }}
+              textStyle={{
+                fontSize: 11,
+                color: getStatusColor(),
+                fontWeight: '600',
               }}
             >
-              {employee.stats.pendingRequests}
-            </Badge>
-          )}
+              {getStatusText()}
+            </Chip>
+            {employee.stats.pendingRequests > 0 && (
+              <Chip
+                compact
+                mode="flat"
+                icon="alert-circle"
+                style={{
+                  height: 24,
+                  backgroundColor: tokens.colors.warning.light,
+                }}
+                textStyle={{
+                  fontSize: 11,
+                  color: tokens.colors.warning.dark,
+                  fontWeight: '600',
+                }}
+              >
+                {`${employee.stats.pendingRequests} запрос${employee.stats.pendingRequests > 1 ? 'а' : ''}`}
+              </Chip>
+            )}
+          </View>
+
+          {/* ПВЗ и телефон */}
+          <View style={{ gap: 2 }}>
+            {employee.pvzName && (
+              <Text variant="bodySmall" style={{ color: tokens.colors.text.secondary }} numberOfLines={1}>
+                📍 {employee.pvzName}
+              </Text>
+            )}
+            <Text variant="bodySmall" style={{ color: tokens.colors.text.secondary }}>
+              📱 {employee.phone}
+            </Text>
+          </View>
+
+          {/* Статистика */}
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+            <Text variant="bodySmall" style={{ color: tokens.colors.text.muted }}>
+              {`${employee.stats.currentMonthShifts} смен`}
+            </Text>
+            <Text variant="bodySmall" style={{ color: tokens.colors.text.muted }}>
+              {`${Math.round(employee.stats.totalHours)}ч`}
+            </Text>
+          </View>
         </View>
       </View>
 
       {/* Заработок */}
-      <View style={{ alignItems: 'flex-end' }}>
-        <Text variant="titleMedium" style={{ color: tokens.colors.primary.main }}>
+      <View style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
+        <Text variant="headlineSmall" style={{ color: tokens.colors.primary.main, fontWeight: '600' }}>
           {`${employee.salary.total.toLocaleString('ru-RU')} ₽`}
         </Text>
-        <Text variant="bodySmall" style={{ color: tokens.colors.text.secondary }}>
-          {getStatusText()}
+        <Text variant="bodySmall" style={{ color: tokens.colors.text.muted, marginTop: 2 }}>
+          {`за месяц`}
         </Text>
       </View>
     </TouchableOpacity>
