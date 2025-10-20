@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl } from 'react-native';
-import { Searchbar } from 'react-native-paper';
-import { tokens, ScrollView, EmptyState, ErrorState } from '../../../ui';
+import { IconButton } from 'react-native-paper';
+import { tokens, ScrollView, EmptyState, ErrorState, SearchInput } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
 import { EmployeeFilters } from './EmployeeFilters';
@@ -51,12 +51,20 @@ export const EmployeesScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
       {/* Поиск */}
-      <View style={{ padding: 16, backgroundColor: tokens.colors.surface }}>
-        <Searchbar
-          placeholder="Поиск по имени, телефону, ПВЗ..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          style={{ elevation: 0, backgroundColor: tokens.colors.gray[100] }}
+      <View style={{ padding: 16, backgroundColor: tokens.colors.surface, flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+        <View style={{ flex: 1 }}>
+          <SearchInput
+            placeholder="Поиск по имени, телефону, ПВЗ..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={{ backgroundColor: tokens.colors.gray[100], borderColor: tokens.colors.gray[200] }}
+          />
+        </View>
+        <IconButton
+          icon={showFilters ? 'filter-off' : 'filter'}
+          size={24}
+          onPress={() => setShowFilters(!showFilters)}
+          iconColor={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
         />
       </View>
 
