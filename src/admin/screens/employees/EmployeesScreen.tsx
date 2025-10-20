@@ -105,7 +105,7 @@ export const EmployeesScreen = () => {
           />
         </View>
 
-      {/* Фильтры с анимацией */}
+      {/* Фильтры с анимацией и тенью */}
       {showFilters && (
         <Animated.View
           style={{
@@ -115,12 +115,17 @@ export const EmployeesScreen = () => {
             }),
             opacity: filterHeight,
             overflow: 'hidden',
+            // Тень панели фильтров
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 3,
           }}
         >
           <EmployeeFilters 
             filters={filters} 
             onFiltersChange={setFilters}
-            isVisible={true}
           />
         </Animated.View>
       )}

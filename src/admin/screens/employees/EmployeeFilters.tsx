@@ -10,10 +10,9 @@ interface EmployeeFiltersProps {
     onShift: boolean | undefined;
   };
   onFiltersChange: (filters: EmployeeFiltersProps['filters']) => void;
-  isVisible?: boolean; // Для управления тенью
 }
 
-export const EmployeeFilters = ({ filters, onFiltersChange, isVisible = true }: EmployeeFiltersProps) => {
+export const EmployeeFilters = ({ filters, onFiltersChange }: EmployeeFiltersProps) => {
   const statusOptions = [
     { value: 'all', label: 'Все' },
     { value: 'active', label: 'Активные' },
@@ -21,20 +20,7 @@ export const EmployeeFilters = ({ filters, onFiltersChange, isVisible = true }: 
   ] as const;
 
   return (
-    <View style={[
-      styles.container,
-      // Тень появляется только когда панель открыта
-      isVisible ? {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
-        elevation: 3,
-      } : {
-        shadowOpacity: 0,
-        elevation: 0,
-      },
-    ]}>
+    <View style={styles.container}>
       {/* Статус - чипы вместо сегментов */}
       <View style={styles.section}>
         <Text variant="labelSmall" style={styles.label}>
