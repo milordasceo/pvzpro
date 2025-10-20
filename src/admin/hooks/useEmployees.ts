@@ -1,135 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AdminEmployee } from '../../types/admin';
+import { MOCK_EMPLOYEES } from '../services/mockData';
 
 interface EmployeeFilters {
   status: 'all' | 'active' | 'inactive';
   pvzId: string;
   onShift?: boolean;
 }
-
-// Mock data для разработки
-const mockEmployees: AdminEmployee[] = [
-  {
-    id: '1',
-    name: 'Иванов Иван',
-    email: 'ivanov@example.com',
-    phone: '+7 (999) 123-45-67',
-    avatar: undefined,
-    role: 'employee',
-    pvzId: 'pvz1',
-    pvzName: 'ПВЗ на Ленина, 15',
-    stats: {
-      totalShifts: 45,
-      currentMonthShifts: 12,
-      totalHours: 180,
-      averageRating: 4.5,
-      completedTasks: 89,
-      pendingRequests: 1,
-    },
-    salary: {
-      earned: 45000,
-      bonuses: 5000,
-      penalties: 0,
-      total: 50000,
-    },
-    isActive: true,
-    isOnShift: true,
-    lastShiftDate: new Date(),
-    hiredAt: new Date('2024-01-15'),
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    name: 'Петрова Мария',
-    email: 'petrova@example.com',
-    phone: '+7 (999) 234-56-78',
-    avatar: undefined,
-    role: 'employee',
-    pvzId: 'pvz1',
-    pvzName: 'ПВЗ на Ленина, 15',
-    stats: {
-      totalShifts: 38,
-      currentMonthShifts: 10,
-      totalHours: 152,
-      averageRating: 4.8,
-      completedTasks: 76,
-      pendingRequests: 0,
-    },
-    salary: {
-      earned: 40000,
-      bonuses: 3000,
-      penalties: 500,
-      total: 42500,
-    },
-    isActive: true,
-    isOnShift: false,
-    lastShiftDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    hiredAt: new Date('2024-02-01'),
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date(),
-  },
-  {
-    id: '3',
-    name: 'Сидоров Петр',
-    email: undefined,
-    phone: '+7 (999) 345-67-89',
-    avatar: undefined,
-    role: 'employee',
-    pvzId: 'pvz2',
-    pvzName: 'ПВЗ на Гагарина, 23',
-    stats: {
-      totalShifts: 52,
-      currentMonthShifts: 15,
-      totalHours: 208,
-      averageRating: 4.2,
-      completedTasks: 104,
-      pendingRequests: 2,
-    },
-    salary: {
-      earned: 52000,
-      bonuses: 8000,
-      penalties: 1000,
-      total: 59000,
-    },
-    isActive: true,
-    isOnShift: true,
-    lastShiftDate: new Date(),
-    hiredAt: new Date('2023-12-01'),
-    createdAt: new Date('2023-12-01'),
-    updatedAt: new Date(),
-  },
-  {
-    id: '4',
-    name: 'Смирнова Анна',
-    email: 'smirnova@example.com',
-    phone: '+7 (999) 456-78-90',
-    avatar: undefined,
-    role: 'employee',
-    pvzId: 'pvz1',
-    pvzName: 'ПВЗ на Ленина, 15',
-    stats: {
-      totalShifts: 12,
-      currentMonthShifts: 4,
-      totalHours: 48,
-      averageRating: 4.0,
-      completedTasks: 24,
-      pendingRequests: 0,
-    },
-    salary: {
-      earned: 15000,
-      bonuses: 1000,
-      penalties: 0,
-      total: 16000,
-    },
-    isActive: false,
-    isOnShift: false,
-    lastShiftDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    hiredAt: new Date('2024-09-01'),
-    createdAt: new Date('2024-09-01'),
-    updatedAt: new Date(),
-  },
-];
 
 export const useEmployees = (filters: EmployeeFilters) => {
   const [employees, setEmployees] = useState<AdminEmployee[]>([]);
@@ -142,10 +19,10 @@ export const useEmployees = (filters: EmployeeFilters) => {
 
     try {
       // Симуляция API запроса
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Применение фильтров
-      let filtered = [...mockEmployees];
+      // Применение фильтров к централизованным данным
+      let filtered = [...MOCK_EMPLOYEES];
 
       if (filters.status !== 'all') {
         filtered = filtered.filter((emp) =>
