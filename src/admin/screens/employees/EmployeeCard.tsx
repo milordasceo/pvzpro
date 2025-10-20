@@ -49,7 +49,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
     const status = employee.employmentStatus;
 
     if (status === 'fired' || !employee.isActive) {
-      return { text: 'Уволен', color: tokens.colors.text.disabled, icon: 'account-off' };
+      return { text: 'Уволен', color: tokens.colors.text.secondary, icon: 'account-off' };
     }
 
     if (status === 'sick_leave') {
