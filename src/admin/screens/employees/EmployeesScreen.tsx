@@ -61,7 +61,7 @@ export const EmployeesScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
-        {/* Поиск */}
+        {/* Поиск - тень исчезает когда открыты фильтры */}
         <View 
           style={{ 
             padding: 16, 
@@ -69,6 +69,12 @@ export const EmployeesScreen = () => {
             flexDirection: 'row', 
             gap: 8, 
             alignItems: 'center',
+            // Тень панели поиска (исчезает при showFilters)
+            shadowColor: showFilters ? 'transparent' : '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: showFilters ? 0 : 0.08,
+            shadowRadius: 4,
+            elevation: showFilters ? 0 : 3,
           }}
         >
           <View style={{ flex: 1 }}>
@@ -79,7 +85,7 @@ export const EmployeesScreen = () => {
               style={{ 
                 backgroundColor: tokens.colors.surface, 
                 borderColor: tokens.colors.gray[200],
-                // Внутренняя тень
+                // Внутренняя тень (всегда)
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
@@ -111,7 +117,11 @@ export const EmployeesScreen = () => {
         }}
       >
         {showFilters && (
-          <EmployeeFilters filters={filters} onFiltersChange={setFilters} />
+          <EmployeeFilters 
+            filters={filters} 
+            onFiltersChange={setFilters}
+            isVisible={showFilters}
+          />
         )}
       </Animated.View>
 
