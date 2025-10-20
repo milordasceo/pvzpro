@@ -107,15 +107,9 @@ export const EmployeesScreen = () => {
 
       {/* Фильтры с анимацией и тенью */}
       {showFilters && (
-        <Animated.View
+        <View
           style={{
-            maxHeight: filterHeight.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 200], // Максимальная высота панели фильтров
-            }),
-            opacity: filterHeight,
-            overflow: 'hidden',
-            // Тень панели фильтров
+            // Тень панели фильтров (на внешнем контейнере)
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.08,
@@ -123,11 +117,22 @@ export const EmployeesScreen = () => {
             elevation: 3,
           }}
         >
-          <EmployeeFilters 
-            filters={filters} 
-            onFiltersChange={setFilters}
-          />
-        </Animated.View>
+          <Animated.View
+            style={{
+              maxHeight: filterHeight.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 200], // Максимальная высота панели фильтров
+              }),
+              opacity: filterHeight,
+              overflow: 'hidden',
+            }}
+          >
+            <EmployeeFilters 
+              filters={filters} 
+              onFiltersChange={setFilters}
+            />
+          </Animated.View>
+        </View>
       )}
 
       {/* Список сотрудников */}
