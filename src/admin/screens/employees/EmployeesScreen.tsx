@@ -61,7 +61,7 @@ export const EmployeesScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
-        {/* Поиск с тенью */}
+        {/* Поиск */}
         <View 
           style={{ 
             padding: 16, 
@@ -69,13 +69,6 @@ export const EmployeesScreen = () => {
             flexDirection: 'row', 
             gap: 8, 
             alignItems: 'center',
-            // Тень
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-            zIndex: 10,
           }}
         >
           <View style={{ flex: 1 }}>
@@ -83,7 +76,16 @@ export const EmployeesScreen = () => {
               placeholder="Поиск по имени, телефону, ПВЗ..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              style={{ backgroundColor: tokens.colors.surface, borderColor: tokens.colors.gray[200] }}
+              style={{ 
+                backgroundColor: tokens.colors.surface, 
+                borderColor: tokens.colors.gray[200],
+                // Внутренняя тень
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 1,
+              }}
             />
           </View>
           <IconButton
