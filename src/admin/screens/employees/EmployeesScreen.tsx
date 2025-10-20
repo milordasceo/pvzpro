@@ -23,7 +23,7 @@ export const EmployeesScreen = () => {
   useEffect(() => {
     Animated.timing(filterHeight, {
       toValue: showFilters ? 1 : 0,
-      duration: 250,
+      duration: 200, // Быстрее и одинаково в обе стороны
       useNativeDriver: false,
     }).start();
   }, [showFilters]);

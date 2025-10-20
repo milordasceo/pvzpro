@@ -74,7 +74,7 @@ export const EmployeeFilters = ({ filters, onFiltersChange }: EmployeeFiltersPro
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: tokens.colors.gray[50],
+    backgroundColor: tokens.colors.surface, // Белый фон
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 12,
