@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import { tokens, ScrollView, EmptyState, ErrorState, SearchInput } from '../../../ui';
+import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
 import { EmployeeFilters } from './EmployeeFilters';
@@ -62,14 +61,10 @@ export const EmployeesScreen = () => {
         </View>
         <IconButton
           icon={showFilters ? 'filter-off' : 'filter'}
-          size={24}
+          size={48}
           onPress={() => setShowFilters(!showFilters)}
-          iconColor={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
-          style={{ 
-            borderWidth: 1, 
-            borderColor: showFilters ? tokens.colors.primary.main : tokens.colors.gray[300],
-            backgroundColor: showFilters ? tokens.colors.primary.light : tokens.colors.surface,
-          }}
+          bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
+          color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
         />
       </View>
 
