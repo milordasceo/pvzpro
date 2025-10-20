@@ -86,33 +86,25 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
         <View style={styles.cardContent}>
           {/* Основная информация */}
           <View style={styles.mainRow}>
-            {/* Аватар */}
-            {employee.avatar ? (
-              <View style={styles.avatarContainer}>
+            {/* Аватар с индикатором */}
+            <View style={styles.avatarContainer}>
+              {employee.avatar ? (
                 <Avatar.Image size={60} source={{ uri: employee.avatar }} />
-                {/* Индикатор "на смене" */}
-                {employee.isActive && employee.isOnShift && (
-                  <View style={styles.statusDot}>
-                    <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
-                  </View>
-                )}
-              </View>
-            ) : (
-              <View style={styles.avatarContainer}>
+              ) : (
                 <Avatar.Text
                   size={60}
                   label={getInitials()}
                   style={{ backgroundColor: getAvatarColor() }}
                   labelStyle={{ fontSize: 22, fontWeight: '700', color: '#FFF' }}
                 />
-                {/* Индикатор "на смене" */}
-                {employee.isActive && employee.isOnShift && (
-                  <View style={styles.statusDot}>
-                    <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
-                  </View>
-                )}
-              </View>
-            )}
+              )}
+              {/* Зелёная точка - только если на смене */}
+              {employee.isActive && employee.isOnShift && (
+                <View style={styles.statusDot}>
+                  <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
+                </View>
+              )}
+            </View>
 
             {/* Информация */}
             <View style={styles.infoContainer}>
