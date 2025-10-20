@@ -57,3 +57,9 @@ git-status.txt
 test_*.js
 switch_*.js
 scrcpy_*.bat
+
+# Temporary text files
+ГОТОВО_К_КОММИТУ.txt
+ВЕРСИЯ_СОХРАНЕНА.txt
+COMMIT_INSTRUCTIONS.md
+COMMIT_STABLE_VERSION.bat
