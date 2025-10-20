@@ -23,8 +23,17 @@ export const EmployeeFilters = ({ filters, onFiltersChange, isVisible = true }: 
   return (
     <View style={[
       styles.container,
-      // Тень появляется только когда панель видна
-      isVisible && styles.containerShadow,
+      // Тень появляется только когда панель открыта
+      isVisible ? {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
+      } : {
+        shadowOpacity: 0,
+        elevation: 0,
+      },
     ]}>
       {/* Статус - чипы вместо сегментов */}
       <View style={styles.section}>
@@ -85,14 +94,6 @@ const styles = StyleSheet.create({
     gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: tokens.colors.gray[200],
-  },
-  containerShadow: {
-    // Тень (появляется только когда панель открыта)
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
   },
   section: {
     gap: 8,
