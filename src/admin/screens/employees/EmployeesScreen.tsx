@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, FlatList, RefreshControl, Animated } from 'react-native';
+import { View, FlatList, RefreshControl, Animated, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
@@ -59,27 +59,43 @@ export const EmployeesScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
-      {/* Поиск */}
-      <View style={{ padding: 16, backgroundColor: tokens.colors.surface, flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-        <View style={{ flex: 1 }}>
-          <SearchInput
-            placeholder="Поиск по имени, телефону, ПВЗ..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={{ backgroundColor: tokens.colors.gray[100], borderColor: tokens.colors.gray[200] }}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
+        {/* Поиск с тенью */}
+        <View 
+          style={{ 
+            padding: 16, 
+            backgroundColor: tokens.colors.surface, 
+            flexDirection: 'row', 
+            gap: 8, 
+            alignItems: 'center',
+            // Тень
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+            zIndex: 10,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <SearchInput
+              placeholder="Поиск по имени, телефону, ПВЗ..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={{ backgroundColor: tokens.colors.surface, borderColor: tokens.colors.gray[200] }}
+            />
+          </View>
+          <IconButton
+            icon={showFilters ? 'filter-off' : 'filter'}
+            size={48}
+            onPress={() => setShowFilters(!showFilters)}
+            bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
+            color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
+            borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
+            borderWidth={1}
           />
         </View>
-        <IconButton
-          icon={showFilters ? 'filter-off' : 'filter'}
-          size={48}
-          onPress={() => setShowFilters(!showFilters)}
-          bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
-          color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
-          borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
-          borderWidth={1}
-        />
-      </View>
 
       {/* Фильтры с анимацией */}
       <Animated.View
@@ -133,7 +149,8 @@ export const EmployeesScreen = () => {
           }
         />
       )}
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
