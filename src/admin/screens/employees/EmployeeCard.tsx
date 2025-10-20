@@ -30,23 +30,41 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
       : names[0].substring(0, 2);
   };
 
-  // Определяем должность (пока все сотрудники, в будущем добавим поле в типы)
+  // Определяем должность
   const getPosition = () => {
-    // TODO: Добавить поле position в AdminEmployee
-    return 'Сотрудник ПВЗ';
+    switch (employee.position) {
+      case 'trainee':
+        return 'Стажёр';
+      case 'manager':
+        return 'Менеджер ПВЗ';
+      case 'employee':
+      default:
+        return 'Сотрудник ПВЗ';
+    }
   };
 
   // Определяем статус сотрудника
   const getEmployeeStatus = () => {
-    if (!employee.isActive) {
+    // Используем employmentStatus если есть, иначе определяем по isActive/isOnShift
+    const status = employee.employmentStatus;
+
+    if (status === 'fired' || !employee.isActive) {
       return { text: 'Уволен', color: tokens.colors.text.disabled, icon: 'account-off' };
     }
+
+    if (status === 'sick_leave') {
+      return { text: 'Больничный', color: tokens.colors.warning.dark, icon: 'medical-bag' };
+    }
+
+    if (status === 'vacation') {
+      return { text: 'Отпуск', color: tokens.colors.info.dark, icon: 'beach' };
+    }
     
-    if (employee.isOnShift) {
+    if (status === 'working' || employee.isOnShift) {
       return { text: 'На смене', color: tokens.colors.success.dark, icon: 'clock-check' };
     }
 
-    // TODO: В будущем добавить больничный/отпуск из других данных
+    // day_off или по умолчанию
     return { text: 'Выходной', color: tokens.colors.text.secondary, icon: 'home' };
   };
 
@@ -69,24 +87,32 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
           {/* Основная информация */}
           <View style={styles.mainRow}>
             {/* Аватар */}
-            <View style={styles.avatarContainer}>
-              {employee.avatar ? (
+            {employee.avatar ? (
+              <View style={styles.avatarContainer}>
                 <Avatar.Image size={60} source={{ uri: employee.avatar }} />
-              ) : (
+                {/* Индикатор "на смене" */}
+                {employee.isActive && employee.isOnShift && (
+                  <View style={styles.statusDot}>
+                    <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={styles.avatarContainer}>
                 <Avatar.Text
                   size={60}
                   label={getInitials()}
                   style={{ backgroundColor: getAvatarColor() }}
                   labelStyle={{ fontSize: 22, fontWeight: '700', color: '#FFF' }}
                 />
-              )}
-              {/* Индикатор статуса */}
-              {employee.isActive && employee.isOnShift && (
-                <View style={styles.statusDot}>
-                  <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
-                </View>
-              )}
-            </View>
+                {/* Индикатор "на смене" */}
+                {employee.isActive && employee.isOnShift && (
+                  <View style={styles.statusDot}>
+                    <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
+                  </View>
+                )}
+              </View>
+            )}
 
             {/* Информация */}
             <View style={styles.infoContainer}>

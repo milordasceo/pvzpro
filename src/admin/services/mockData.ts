@@ -282,6 +282,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-001',
     pvzName: 'ПВЗ · Тамбовская 41',
+    position: 'employee',
+    employmentStatus: 'working',
     stats: {
       totalShifts: 48,
       currentMonthShifts: 18,
@@ -311,6 +313,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-001',
     pvzName: 'ПВЗ · Тамбовская 41',
+    position: 'manager', // Менеджер
+    employmentStatus: 'working',
     stats: {
       totalShifts: 52,
       currentMonthShifts: 20,
@@ -340,6 +344,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-001',
     pvzName: 'ПВЗ · Тамбовская 41',
+    position: 'trainee', // Стажёр
+    employmentStatus: 'sick_leave', // Больничный
     stats: {
       totalShifts: 45,
       currentMonthShifts: 16,
@@ -369,6 +375,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-001',
     pvzName: 'ПВЗ · Тамбовская 41',
+    position: 'employee',
+    employmentStatus: 'vacation', // Отпуск
     stats: {
       totalShifts: 40,
       currentMonthShifts: 15,
@@ -398,6 +406,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-001',
     pvzName: 'ПВЗ · Тамбовская 41',
+    position: 'employee',
+    employmentStatus: 'day_off', // Выходной
     stats: {
       totalShifts: 38,
       currentMonthShifts: 14,
@@ -420,7 +430,7 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     updatedAt: new Date(),
   },
 
-  // ПВЗ · Ленина 5
+  // ПВЗ · Кропоткина 130/7
   {
     id: 'emp-006',
     name: 'Анна Волкова',
@@ -429,6 +439,8 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
     role: 'employee',
     pvzId: 'pvz-002',
     pvzName: 'ПВЗ · Кропоткина 130/7',
+    position: 'employee',
+    employmentStatus: 'fired', // Уволен
     stats: {
       totalShifts: 42,
       currentMonthShifts: 17,
@@ -443,9 +455,9 @@ export const MOCK_EMPLOYEES: AdminEmployee[] = [
       penalties: 0,
       total: 44000,
     },
-    isActive: true,
-    isOnShift: true,
-    lastShiftDate: new Date(),
+    isActive: false, // НЕ в штате
+    isOnShift: false,
+    lastShiftDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     hiredAt: new Date('2024-02-20'),
     createdAt: new Date('2024-02-20'),
     updatedAt: new Date(),

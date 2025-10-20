@@ -81,8 +81,10 @@ export interface AdminEmployee {
   };
   
   // Статусы
-  isActive: boolean; // Активен ли сотрудник
+  isActive: boolean; // Активен ли сотрудник (в штате)
   isOnShift: boolean; // Сейчас на смене
+  employmentStatus?: 'working' | 'day_off' | 'sick_leave' | 'vacation' | 'fired'; // Детальный статус
+  position?: 'employee' | 'trainee' | 'manager'; // Должность
   lastShiftDate?: Date; // Последняя смена
   
   // Даты
