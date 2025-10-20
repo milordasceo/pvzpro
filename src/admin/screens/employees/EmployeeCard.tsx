@@ -69,6 +69,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
   };
 
   const status = getEmployeeStatus();
+  const isFired = !employee.isActive; // Уволен?
 
   const handleChatPress = (e: any) => {
     e.stopPropagation();
@@ -83,7 +84,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
   return (
     <Surface style={styles.card} elevation={0}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-        <View style={styles.cardContent}>
+        <View style={[styles.cardContent, isFired && { opacity: 0.6 }]}>
           {/* Основная информация */}
           <View style={styles.mainRow}>
             {/* Аватар с индикатором */}
@@ -153,38 +154,40 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
             </View>
           </View>
 
-          {/* Кнопки действий */}
-          <View style={styles.actionsRow}>
-            {/* Кнопка "Чат" - всегда показываем */}
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={handleChatPress}
-            >
-              <MaterialCommunityIcons 
-                name="chat" 
-                size={18} 
-                color={tokens.colors.primary.main} 
-              />
-              <Text style={styles.actionButtonText}>Чат</Text>
-            </TouchableOpacity>
-
-            {/* Кнопка "+Задача" - только если на смене */}
-            {employee.isOnShift && (
+          {/* Кнопки действий - НЕ показываем для уволенных */}
+          {!isFired && (
+            <View style={styles.actionsRow}>
+              {/* Кнопка "Чат" - всегда показываем */}
               <TouchableOpacity 
-                style={[styles.actionButton, styles.taskButton]}
-                onPress={handleTaskPress}
+                style={styles.actionButton}
+                onPress={handleChatPress}
               >
                 <MaterialCommunityIcons 
-                  name="plus-circle" 
+                  name="chat" 
                   size={18} 
-                  color={tokens.colors.success.dark} 
+                  color={tokens.colors.primary.main} 
                 />
-                <Text style={[styles.actionButtonText, { color: tokens.colors.success.dark }]}>
-                  Задача
-                </Text>
+                <Text style={styles.actionButtonText}>Чат</Text>
               </TouchableOpacity>
-            )}
-          </View>
+
+              {/* Кнопка "+Задача" - только если на смене */}
+              {employee.isOnShift && (
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.taskButton]}
+                  onPress={handleTaskPress}
+                >
+                  <MaterialCommunityIcons 
+                    name="plus-circle" 
+                    size={18} 
+                    color={tokens.colors.success.dark} 
+                  />
+                  <Text style={[styles.actionButtonText, { color: tokens.colors.success.dark }]}>
+                    Задача
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     </Surface>
