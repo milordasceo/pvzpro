@@ -106,24 +106,24 @@ export const EmployeesScreen = () => {
         </View>
 
       {/* Фильтры с анимацией */}
-      <Animated.View
-        style={{
-          maxHeight: filterHeight.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 200], // Максимальная высота панели фильтров
-          }),
-          opacity: filterHeight,
-          overflow: 'hidden',
-        }}
-      >
-        {showFilters && (
+      {showFilters && (
+        <Animated.View
+          style={{
+            maxHeight: filterHeight.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 200], // Максимальная высота панели фильтров
+            }),
+            opacity: filterHeight,
+            overflow: 'hidden',
+          }}
+        >
           <EmployeeFilters 
             filters={filters} 
             onFiltersChange={setFilters}
-            isVisible={showFilters}
+            isVisible={true}
           />
-        )}
-      </Animated.View>
+        </Animated.View>
+      )}
 
       {/* Список сотрудников */}
       {filteredEmployees.length === 0 ? (
