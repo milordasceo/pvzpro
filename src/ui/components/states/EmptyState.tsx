@@ -20,7 +20,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { tokens } from '../../theme';
-import { StyledButton } from '../../../components/StyledButton';
+import { Button } from '../buttons/Button';
 
 export interface EmptyStateProps {
   /** Имя иконки из MaterialCommunityIcons */
@@ -66,14 +66,14 @@ export const EmptyState = React.memo<EmptyStateProps>(({
       )}
       
       {action && (
-        <StyledButton
+        <Button
           mode="contained"
           onPress={action.onPress}
           icon={action.icon}
           style={styles.button}
         >
           {action.label}
-        </StyledButton>
+        </Button>
       )}
     </View>
   );

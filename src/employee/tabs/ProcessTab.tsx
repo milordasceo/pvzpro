@@ -382,7 +382,7 @@ export const ProcessTab: React.FC = () => {
               >
                 <MaterialCommunityIcons name="alert-circle-outline" size={18} color={tokens.colors.warning.dark} />
                 <Text style={{ fontSize: 13, color: tokens.colors.warning.dark, flex: 1 }}>
-                  У вас {pendingCount} {pendingCount === 1 ? 'невыполненная задача' : pendingCount < 5 ? 'невыполненные задачи' : 'невыполненных задач'}
+                  {`У вас ${pendingCount} ${pendingCount === 1 ? 'невыполненная задача' : pendingCount < 5 ? 'невыполненные задачи' : 'невыполненных задач'}`}
                 </Text>
               </View>
             ) : null}
@@ -563,7 +563,7 @@ export const ProcessTab: React.FC = () => {
               </Text>
             ) : onBreak ? (
               <Text style={{ color: tokens.colors.warning.main, fontSize: 13, marginTop: 4 }}>
-                ⏸️ Завершите перерыв, чтобы закрыть смену
+                Завершите перерыв, чтобы закрыть смену
               </Text>
             ) : null}
           </View>
@@ -684,7 +684,7 @@ export const ProcessTab: React.FC = () => {
                 }}
               >
                 <Text style={{ fontSize: 15, color: tokens.colors.error.dark, fontWeight: '600', marginBottom: 8 }}>
-                  ⚠️ Внимание!
+                  Внимание!
                 </Text>
                 <Text style={{ fontSize: 14, color: tokens.colors.error.darker, lineHeight: 20 }}>
                   Вы действительно хотите завершить смену сейчас?
@@ -697,7 +697,7 @@ export const ProcessTab: React.FC = () => {
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
                     <MaterialCommunityIcons name="alert-octagon" size={20} color={tokens.colors.warning.main} />
                     <Text style={{ fontSize: 14, color: tokens.colors.gray[700], lineHeight: 20, flex: 1 }}>
-                      У вас ещё <Text style={{ fontWeight: '700', color: tokens.colors.error.main }}>{pendingCount} {pendingCount === 1 ? 'незавершённая задача' : pendingCount < 5 ? 'незавершённые задачи' : 'незавершённых задач'}</Text>
+                      У вас ещё <Text style={{ fontWeight: '700', color: tokens.colors.error.main }}>{`${pendingCount} ${pendingCount === 1 ? 'незавершённая задача' : pendingCount < 5 ? 'незавершённые задачи' : 'незавершённых задач'}`}</Text>
                     </Text>
                   </View>
                 ) : null}

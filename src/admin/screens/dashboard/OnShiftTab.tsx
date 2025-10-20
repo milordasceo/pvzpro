@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, TouchableOpacity, RefreshControl, ScrollView } from 'react-native';
 import { Text, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyledScrollView } from '../../../components';
+import { tokens } from '../../../ui';
 
 interface Employee {
   id: string;
@@ -46,7 +46,7 @@ const EmployeeCard = React.memo<{
   return (
     <View
       style={{
-        backgroundColor: '#FAFAFA',
+        backgroundColor: tokens.colors.gray[50],
         borderRadius: 12,
         padding: 12,
         marginBottom: 8,
@@ -59,30 +59,30 @@ const EmployeeCard = React.memo<{
           source={{ uri: employee.photo || 'https://via.placeholder.com/48' }}
         />
         <View style={{ flex: 1, gap: 4 }}>
-          <Text style={{ fontSize: 16, fontWeight: '400', color: '#111827' }}>
+          <Text style={{ fontSize: 16, fontWeight: '400', color: tokens.colors.text.primary }}>
             {employee.name}
           </Text>
           
           {/* Бейджи: Должность и тип занятости */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <View style={{ 
-              backgroundColor: '#EEF2FF', 
+              backgroundColor: tokens.colors.primary.light, 
               paddingHorizontal: 8, 
               paddingVertical: 3, 
               borderRadius: 6 
             }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: '#4F46E5' }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.primary.main }}>
                 {positionText}
               </Text>
             </View>
             
             <View style={{ 
-              backgroundColor: '#F3F4F6', 
+              backgroundColor: tokens.colors.gray[100], 
               paddingHorizontal: 8, 
               paddingVertical: 3, 
               borderRadius: 6 
             }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: '#6B7280' }}>
+              <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.text.secondary }}>
                 {employmentText}
               </Text>
             </View>
@@ -91,18 +91,18 @@ const EmployeeCard = React.memo<{
           {/* Статус прихода */}
           {employee.status === 'on_time' && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <MaterialCommunityIcons name="check-circle" size={14} color="#10B981" />
-              <Text style={{ fontSize: 13, color: '#10B981' }}>
-                Пришёл в {employee.arrivalTime}
+              <MaterialCommunityIcons name="check-circle" size={14} color={tokens.colors.success.main} />
+              <Text style={{ fontSize: 13, color: tokens.colors.success.main }}>
+                {`Пришёл в ${employee.arrivalTime}`}
               </Text>
             </View>
           )}
 
           {employee.status === 'late' && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <MaterialCommunityIcons name="clock-alert-outline" size={14} color="#F59E0B" />
-              <Text style={{ fontSize: 13, color: '#F59E0B' }}>
-                Опоздал на {employee.lateMinutes} мин
+              <MaterialCommunityIcons name="clock-alert-outline" size={14} color={tokens.colors.warning.main} />
+              <Text style={{ fontSize: 13, color: tokens.colors.warning.main }}>
+                {`Опоздал на ${employee.lateMinutes || 0} мин`}
               </Text>
             </View>
           )}
@@ -110,7 +110,7 @@ const EmployeeCard = React.memo<{
       </View>
 
       {/* Разделитель */}
-      <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 12 }} />
+      <View style={{ height: 1, backgroundColor: tokens.colors.border, marginBottom: 12 }} />
 
       {/* Кнопки действий */}
       <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -121,16 +121,16 @@ const EmployeeCard = React.memo<{
             flexDirection: 'row', 
             alignItems: 'center', 
             justifyContent: 'center',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: tokens.colors.surface,
             borderRadius: 8,
             paddingVertical: 10,
             gap: 6,
             borderWidth: 1,
-            borderColor: '#E5E7EB',
+            borderColor: tokens.colors.border,
           }}
         >
-          <MaterialCommunityIcons name="chat-outline" size={18} color="#4F46E5" />
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#4F46E5' }}>
+          <MaterialCommunityIcons name="chat-outline" size={18} color={tokens.colors.primary.main} />
+          <Text style={{ fontSize: 14, fontWeight: '500', color: tokens.colors.primary.main }}>
             Чат
           </Text>
         </TouchableOpacity>
@@ -142,16 +142,16 @@ const EmployeeCard = React.memo<{
             flexDirection: 'row', 
             alignItems: 'center', 
             justifyContent: 'center',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: tokens.colors.surface,
             borderRadius: 8,
             paddingVertical: 10,
             gap: 6,
             borderWidth: 1,
-            borderColor: '#E5E7EB',
+            borderColor: tokens.colors.border,
           }}
         >
-          <MaterialCommunityIcons name="plus-circle-outline" size={18} color="#4F46E5" />
-          <Text style={{ fontSize: 14, fontWeight: '500', color: '#4F46E5' }}>
+          <MaterialCommunityIcons name="plus-circle-outline" size={18} color={tokens.colors.primary.main} />
+          <Text style={{ fontSize: 14, fontWeight: '500', color: tokens.colors.primary.main }}>
             Задача
           </Text>
         </TouchableOpacity>
@@ -179,31 +179,31 @@ const PvzGroup = React.memo<{
       style={{ 
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: hasShortage ? '#FCA5A5' : '#E5E7EB',
+        borderColor: hasShortage ? tokens.colors.error.light : tokens.colors.border,
         borderRadius: 12,
         paddingVertical: 16,
         paddingHorizontal: 16,
-        backgroundColor: hasShortage ? '#FEF2F2' : '#FFFFFF',
+        backgroundColor: hasShortage ? tokens.colors.error.light : tokens.colors.surface,
       }}
     >
       {/* Заголовок ПВЗ */}
       <View style={{ marginBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <MaterialCommunityIcons name="store" size={16} color="#4F46E5" />
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+            <MaterialCommunityIcons name="store" size={16} color={tokens.colors.primary.main} />
+            <Text style={{ fontSize: 14, fontWeight: '600', color: tokens.colors.text.primary }}>
               {firstEmployee.pvzName}
             </Text>
           </View>
           <Text style={{ 
             fontSize: 13, 
             fontWeight: '600', 
-            color: hasShortage ? '#DC2626' : '#10B981' 
+            color: hasShortage ? tokens.colors.error.main : tokens.colors.success.main 
           }}>
-            ({active}/{planned})
+            {`(${active}/${planned})`}
           </Text>
         </View>
-        <Text style={{ fontSize: 12, color: '#6B7280', marginLeft: 22 }}>
+        <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginLeft: 22 }}>
           {firstEmployee.pvzWorkingHours}
         </Text>
         
@@ -214,13 +214,13 @@ const PvzGroup = React.memo<{
             alignItems: 'center', 
             gap: 6, 
             marginTop: 8,
-            backgroundColor: '#FEE2E2',
+            backgroundColor: tokens.colors.error.light,
             padding: 8,
             borderRadius: 8,
           }}>
-            <MaterialCommunityIcons name="alert-circle" size={16} color="#DC2626" />
-            <Text style={{ fontSize: 12, color: '#DC2626', fontWeight: '500' }}>
-              Нехватка {planned - active} {planned - active === 1 ? 'сотрудника' : 'сотрудников'}
+            <MaterialCommunityIcons name="alert-circle" size={16} color={tokens.colors.error.main} />
+            <Text style={{ fontSize: 12, color: tokens.colors.error.main, fontWeight: '500' }}>
+              {`Нехватка ${planned - active} ${planned - active === 1 ? 'сотрудника' : 'сотрудников'}`}
             </Text>
           </View>
         )}
@@ -266,42 +266,23 @@ export const OnShiftTab = React.memo<OnShiftTabProps>(({ employees, onShiftCount
   }, [employees]);
 
   return (
-    <StyledScrollView
-      style={{ backgroundColor: '#F3F4F6' }}
+    <ScrollView
+      style={{ backgroundColor: tokens.colors.gray[100] }}
+      contentContainerStyle={{ padding: 16 }}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={onRefresh} />
       }
     >
-      {/* Шапка вкладки */}
-      <View style={{ 
-        backgroundColor: '#FFFFFF', 
-        padding: 16, 
-        borderBottomWidth: 1, 
-        borderBottomColor: '#E5E7EB',
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12,
-      }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>
-            На смене
-          </Text>
-          <TouchableOpacity>
-            <MaterialCommunityIcons name="tune" size={24} color="#9CA3AF" />
-          </TouchableOpacity>
+      {employees.length === 0 ? (
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <Text style={{ color: tokens.colors.text.secondary }}>Нет сотрудников на смене</Text>
         </View>
-
-        <Text style={{ fontSize: 14, color: '#6B7280' }}>
-          Сейчас работает: {onShiftCount} из {totalPlanned}
-        </Text>
-      </View>
-
-      {/* Контент */}
-      <View style={{ paddingTop: 12 }}>
-        {Object.entries(employeesByPvz).map(([pvzId, pvzEmployees]) => (
+      ) : (
+        Object.entries(employeesByPvz).map(([pvzId, pvzEmployees]) => (
           <PvzGroup key={pvzId} pvzId={pvzId} employees={pvzEmployees} />
-        ))}
-      </View>
-    </StyledScrollView>
+        ))
+      )}
+    </ScrollView>
   );
 });
 

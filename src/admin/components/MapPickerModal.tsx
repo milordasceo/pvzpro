@@ -10,6 +10,7 @@ import {
   Button,
 } from 'react-native-paper';
 import MapView, { Marker, Region } from 'react-native-maps';
+import { tokens } from '../../ui';
 import { suggestAddresses, reverseGeocode } from '../../services/geo.service';
 
 export type MapPickerResult = { lat: number; lon: number; address: string };
@@ -155,7 +156,7 @@ export const MapPickerModal: React.FC<{
                 selectedCity ? (
                   <TextInput.Icon
                     icon="check-circle"
-                    color="#10B981"
+                    color={tokens.colors.success.main}
                   />
                 ) : undefined
               }
@@ -164,7 +165,7 @@ export const MapPickerModal: React.FC<{
 
             {/* Подсказки городов */}
             {citySuggest.length > 0 && !selectedCity ? (
-              <View style={{ maxHeight: 150, backgroundColor: '#F9FAFB', borderRadius: 8 }}>
+              <View style={{ maxHeight: 150, backgroundColor: tokens.colors.gray[50], borderRadius: 8 }}>
                 {citySuggest.map((s, idx) => {
                   // Извлекаем короткое название города (первая часть до запятой)
                   const shortName = s.title.split(',')[0].trim();
@@ -208,7 +209,7 @@ export const MapPickerModal: React.FC<{
 
             {/* Подсказки улиц */}
             {streetSuggest.length > 0 ? (
-              <View style={{ maxHeight: 150, backgroundColor: '#F9FAFB', borderRadius: 8 }}>
+              <View style={{ maxHeight: 150, backgroundColor: tokens.colors.gray[50], borderRadius: 8 }}>
                 {streetSuggest.map((s, idx) => (
                   <List.Item
                     key={idx}

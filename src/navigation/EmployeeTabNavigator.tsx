@@ -4,9 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text } from 'react-native-paper';
+import { tokens, AnimatedTabBar, AnimatedTab, LoadingState } from '../ui';
 import { useTasksCounter } from '../employee/tasks/TasksCounterContext';
 import { placeholderColor } from '../theme';
-import { AnimatedTabBar, AnimatedTab } from '../components';
 import { EmployeeHomeScreen } from '../employee/EmployeeHomeScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { ChatListScreen } from '../chat/ChatListScreen';
@@ -23,12 +23,7 @@ const Stack = createNativeStackNavigator();
 const FinanceTopTabs = createMaterialTopTabNavigator();
 
 // Компонент загрузки для Suspense
-const LoadingFallback: React.FC = () => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F9FAFB' }}>
-    <ActivityIndicator size="large" color="#4F46E5" />
-    <Text style={{ marginTop: 12, color: '#6B7280', fontSize: 14 }}>Загрузка...</Text>
-  </View>
-);
+const LoadingFallback: React.FC = () => <LoadingState text="Загрузка..." />;
 
 /**
  * Стек навигатор для чата
@@ -56,16 +51,16 @@ export const EmployeeTabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#4F46E5',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: tokens.colors.primary.main,
+        tabBarInactiveTintColor: tokens.colors.text.muted,
         headerShown: false,
         tabBarStyle: {
           height: 64,
           paddingBottom: 8,
           paddingTop: 8,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: tokens.colors.surface,
           borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
+          borderTopColor: tokens.colors.border,
           elevation: 8,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
@@ -231,7 +226,7 @@ const TabBarIconWithBadge: React.FC<{
             position: 'absolute',
             top: -4,
             right: -4,
-            backgroundColor: '#EF4444',
+            backgroundColor: tokens.colors.error.main,
             borderRadius: 10,
             minWidth: 20,
             height: 20,
@@ -239,7 +234,7 @@ const TabBarIconWithBadge: React.FC<{
             justifyContent: 'center',
             paddingHorizontal: 5,
             borderWidth: 2,
-            borderColor: '#FFFFFF',
+            borderColor: tokens.colors.surface,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
@@ -249,7 +244,7 @@ const TabBarIconWithBadge: React.FC<{
         >
           <Text
             style={{
-              color: '#FFFFFF',
+              color: tokens.colors.surface,
               fontSize: 11,
               fontWeight: '700',
               lineHeight: 14,

@@ -16,7 +16,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { tokens } from '../../theme';
-import { StyledButton } from '../../../components/StyledButton';
+import { Button } from '../buttons/Button';
 
 export interface ErrorStateProps {
   /** Заголовок ошибки */
@@ -56,14 +56,14 @@ export const ErrorState = React.memo<ErrorStateProps>(({
       </Text>
       
       {onRetry && (
-        <StyledButton
+        <Button
           mode="contained"
           onPress={onRetry}
           icon="refresh"
           style={styles.button}
         >
           {retryLabel}
-        </StyledButton>
+        </Button>
       )}
     </View>
   );

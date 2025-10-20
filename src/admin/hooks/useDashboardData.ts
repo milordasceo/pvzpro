@@ -7,17 +7,23 @@ import { getDashboardData, type DashboardData } from '../services/mockData';
 export const useDashboardData = () => {
   const [data, setData] = useState<DashboardData>(getDashboardData());
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError(null);
     
-    // Имитация загрузки
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Получаем свежие данные
-    setData(getDashboardData());
-    
-    setLoading(false);
+    try {
+      // Имитация загрузки
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Получаем свежие данные
+      setData(getDashboardData());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка загрузки данных');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -26,6 +32,6 @@ export const useDashboardData = () => {
     return () => clearInterval(interval);
   }, [refresh]);
 
-  return { data, loading, refresh };
+  return { data, loading, error, refresh };
 };
 

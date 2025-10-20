@@ -1,11 +1,18 @@
 @echo off
+setlocal enabledelayedexpansion
 cls
-echo ================================
-echo Starting Expo with ADB
-echo ================================
+
+title WB Biz App Launcher
+
+echo ================================================
+echo       WB Biz App - Full Start
+echo       Metro + App + scrcpy
+echo ================================================
 echo.
 
-REM Check if ADB is available
+REM ============================================
+REM Check ADB
+REM ============================================
 where adb >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] ADB not found!
@@ -17,62 +24,118 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-REM Get local IP address
-echo [1/5] Getting local IP address...
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4 Address"') do (
-    set IP=%%a
-    goto :got_ip
+REM ============================================
+REM Clean ports (only port processes, not all Node!)
+REM ============================================
+echo [1/6] Cleaning ports...
+
+REM Kill port 8081 if occupied
+netstat -ano | findstr :8081 | findstr LISTENING >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8081 ^| findstr LISTENING') do (
+        taskkill /F /PID %%a >nul 2>nul
+    )
 )
-:got_ip
-set IP=%IP:~1%
-echo [OK] Local IP: %IP%
+
+REM Kill port 8097 if occupied
+netstat -ano | findstr :8097 | findstr LISTENING >nul 2>nul
+if %ERRORLEVEL% EQU 0 (
+    for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8097 ^| findstr LISTENING') do (
+        taskkill /F /PID %%a >nul 2>nul
+    )
+)
+
+REM Stop old Expo app
+adb shell am force-stop host.exp.exponent >nul 2>nul
+
+echo [OK] Ports cleaned
 echo.
 
-echo [2/5] Checking ADB devices...
+REM ============================================
+REM Start scrcpy
+REM ============================================
+echo [2/6] Starting scrcpy (screen mirroring)...
+
+set SCRCPY_PATH=C:\Users\%USERNAME%\AppData\Local\Microsoft\WinGet\Packages\Genymobile.scrcpy_Microsoft.Winget.Source_8wekyb3d8bbwe\scrcpy-win64-v3.3\scrcpy.exe
+
+if not exist "%SCRCPY_PATH%" (
+    where scrcpy >nul 2>nul
+    if %ERRORLEVEL% NEQ 0 (
+        echo [WARNING] scrcpy not found - install: winget install scrcpy
+        echo Continuing without screen mirroring...
+        set SCRCPY_DISABLED=1
+    ) else (
+        set SCRCPY_PATH=scrcpy
+    )
+)
+
+if not defined SCRCPY_DISABLED (
+    start "scrcpy - WB Biz App" "%SCRCPY_PATH%" ^
+        --window-title "WB Biz App" ^
+        --stay-awake ^
+        --window-x 0 ^
+        --window-y 0
+    
+    timeout /t 2 /nobreak >nul
+    echo [OK] scrcpy started
+) else (
+    echo [SKIPPED] scrcpy not available
+)
+echo.
+
+REM ============================================
+REM Setup ADB
+REM ============================================
+echo [3/6] Starting ADB and checking devices...
+adb start-server >nul 2>nul
+timeout /t 1 /nobreak >nul
 adb devices
 echo.
 
-echo [3/5] Setting up port forwarding...
+echo [4/6] Setting up port forwarding...
 adb reverse tcp:8081 tcp:8081
 adb reverse tcp:8097 tcp:8097
 if %ERRORLEVEL% EQU 0 (
     echo [OK] Port forwarding configured
 ) else (
-    echo [WARNING] Port forwarding failed - make sure USB debugging is enabled
+    echo [WARNING] Port forwarding failed - check USB debugging
 )
 echo.
 
-echo [4/5] Preparing environment...
-taskkill /F /IM node.exe >nul 2>nul
-adb shell am force-stop host.exp.exponent
-echo [OK] Ready
-echo.
-
-echo [5/5] Starting Metro and launching app...
-echo.
-echo ================================
-echo App will open on device!
-echo ================================
-echo.
-
+REM ============================================
 REM Start Metro
-start /B npm run dev
+REM ============================================
+echo [5/6] Starting Metro Bundler...
+start /B npx expo start --localhost
+
+echo Waiting for Metro to initialize...
+timeout /t 7 /nobreak >nul
+echo.
+
+REM ============================================
+REM Open App
+REM ============================================
+echo [6/6] Opening app on Android device...
+adb shell am start -a android.intent.action.VIEW -d "exp://localhost:8081"
+timeout /t 2 /nobreak >nul
 
 echo.
-echo ================================
-echo Metro is starting...
-echo App will open automatically!
-echo ================================
+echo ================================================
+echo All Started Successfully!
+echo ================================================
+echo.
+echo - scrcpy: Screen mirroring active
+echo - Metro: Running on localhost:8081
+echo - App: Opening on device
+echo.
+echo Press 'r' in Metro to reload
+echo Press Ctrl+C to stop
+echo.
+echo Metro logs:
+echo ------------------------------------------------
 echo.
 
-echo.
-echo ================================
-echo Press any key to stop Metro...
-echo ================================
-pause >nul
-
-REM Clean exit
-echo.
-echo Stopping Metro...
-taskkill /F /IM node.exe >nul 2>nul
-echo Goodbye!
+REM Keep console open for Metro logs
+:wait_loop
+timeout /t 300 /nobreak >nul
+goto wait_loop

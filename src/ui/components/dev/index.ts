@@ -4,8 +4,4 @@
  * Компоненты для разработки (только для DEV режима)
  */
 
-export * from './UICatalogFAB';
-
-// Экспортируем также старое имя для обратной совместимости
-export { UICatalogFAB as DevUICatalogFAB } from './UICatalogFAB';
-
+// UI Catalog был удалён. Новый каталог будет создан позже.

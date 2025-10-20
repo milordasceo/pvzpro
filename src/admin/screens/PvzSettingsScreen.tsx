@@ -4,11 +4,12 @@
  */
 
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import { View, StyleSheet, Alert, Keyboard, Pressable, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, Keyboard, Pressable } from 'react-native';
 import { Text, TextInput, List, Switch, Divider, ActivityIndicator } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
-import { StyledScrollView, StyledCard, StyledButton } from '../../components';
+import { ScrollView, Card, Button } from '../../ui';
+import { tokens } from '../../ui';
 import { usePvzStore } from '../store/pvz.store';
 import { MapPickerModal } from '../components/MapPickerModal';
 import { suggestAddresses } from '../../services/geo.service';
@@ -186,27 +187,27 @@ export const PvzSettingsScreen: React.FC = () => {
   if (!pvz || !editedPvz) {
     return (
       <View style={styles.container}>
-        <StyledScrollView>
-          <StyledCard>
+        <ScrollView>
+          <Card>
             <View style={styles.emptyState}>
-              <MaterialCommunityIcons name="store-off-outline" size={64} color="#9CA3AF" />
+              <MaterialCommunityIcons name="store-off-outline" size={64} color={tokens.colors.text.muted} />
               <Text style={styles.emptyTitle}>ПВЗ не найден</Text>
               <Text style={styles.emptyText}>Проверьте правильность ID</Text>
             </View>
-          </StyledCard>
-        </StyledScrollView>
+          </Card>
+        </ScrollView>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-          <StyledScrollView>
+          <ScrollView>
         {/* 1. Основная информация */}
-        <StyledCard>
+        <Card>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="information-outline" size={20} color="#6B7280" />
+              <MaterialCommunityIcons name="information-outline" size={20} color={tokens.colors.text.secondary} />
               <Text style={styles.sectionTitle}>Основная информация</Text>
             </View>
 
@@ -218,13 +219,13 @@ export const PvzSettingsScreen: React.FC = () => {
               style={styles.input}
             />
           </View>
-        </StyledCard>
+        </Card>
 
         {/* 2. Адрес и локация */}
-        <StyledCard>
+        <Card>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="map-marker" size={20} color="#6B7280" />
+              <MaterialCommunityIcons name="map-marker" size={20} color={tokens.colors.text.secondary} />
               <Text style={styles.sectionTitle}>Адрес и локация</Text>
             </View>
 
@@ -248,7 +249,7 @@ export const PvzSettingsScreen: React.FC = () => {
                     ]}
                   >
                     <View style={styles.suggestionContent}>
-                      <MaterialCommunityIcons name="map-marker" size={20} color="#6B7280" style={styles.suggestionIcon} />
+                      <MaterialCommunityIcons name="map-marker" size={20} color={tokens.colors.text.secondary} style={styles.suggestionIcon} />
                       <Text numberOfLines={2} style={styles.suggestionText}>
                         {suggestion.title}
                 </Text>
@@ -271,17 +272,17 @@ export const PvzSettingsScreen: React.FC = () => {
               right={isLoadingAddress ? <TextInput.Icon icon={() => <ActivityIndicator size={20} />} /> : undefined}
             />
             
-              <StyledButton
+              <Button
                 mode="outlined"
               icon="map-search"
               onPress={() => setMapModalVisible(true)}
               style={styles.fullWidthButton}
             >
               Выбрать на карте
-              </StyledButton>
+              </Button>
 
             <Text style={styles.coordinatesText}>
-              📍 {editedPvz.coordinates.latitude.toFixed(6)}, {editedPvz.coordinates.longitude.toFixed(6)}
+              {editedPvz.coordinates.latitude.toFixed(6)}, {editedPvz.coordinates.longitude.toFixed(6)}
             </Text>
 
             <Divider style={styles.divider} />
@@ -299,13 +300,13 @@ export const PvzSettingsScreen: React.FC = () => {
               />
             </View>
           </View>
-        </StyledCard>
+        </Card>
 
         {/* 3. QR-коды */}
-        <StyledCard>
+        <Card>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="qrcode" size={20} color="#6B7280" />
+              <MaterialCommunityIcons name="qrcode" size={20} color={tokens.colors.text.secondary} />
               <Text style={styles.sectionTitle}>QR-коды</Text>
             </View>
 
@@ -322,13 +323,13 @@ export const PvzSettingsScreen: React.FC = () => {
               />
             </View>
           </View>
-            </StyledCard>
+            </Card>
 
         {/* 4. Рабочие часы */}
-        <StyledCard>
+        <Card>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="clock-outline" size={20} color="#6B7280" />
+              <MaterialCommunityIcons name="clock-outline" size={20} color={tokens.colors.text.secondary} />
               <Text style={styles.sectionTitle}>Рабочие часы</Text>
         </View>
 
@@ -370,13 +371,13 @@ export const PvzSettingsScreen: React.FC = () => {
               Укажите время в часах (0-23). Время открытия должно быть раньше времени закрытия.
             </Text>
           </View>
-        </StyledCard>
+        </Card>
 
         {/* 5. Настройки перерывов */}
-        <StyledCard>
+        <Card>
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <MaterialCommunityIcons name="coffee" size={20} color="#6B7280" />
+              <MaterialCommunityIcons name="coffee" size={20} color={tokens.colors.text.secondary} />
               <Text style={styles.sectionTitle}>Настройки перерывов</Text>
             </View>
 
@@ -412,20 +413,20 @@ export const PvzSettingsScreen: React.FC = () => {
               Перерывы: 0-5 шт • Продолжительность: 5-60 мин
                   </Text>
           </View>
-        </StyledCard>
+        </Card>
 
         {/* Кнопка сохранения */}
         <View style={styles.footer}>
-                  <StyledButton
+                  <Button
                     mode="contained"
                     icon="content-save"
             onPress={handleSave}
             disabled={!hasChanges}
                   >
             {hasChanges ? 'Сохранить изменения' : 'Нет изменений'}
-                  </StyledButton>
+                  </Button>
         </View>
-      </StyledScrollView>
+      </ScrollView>
 
       {/* Модал с картой для выбора адреса */}
       <MapPickerModal
@@ -449,7 +450,7 @@ export const PvzSettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: tokens.colors.gray[50],
   },
   section: {
     gap: 12,
@@ -463,26 +464,26 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#111827',
+    color: tokens.colors.text.primary,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.colors.surface,
   },
   fullWidthButton: {
     marginTop: 8,
   },
   coordinatesText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: tokens.colors.text.secondary,
     marginTop: 8,
   },
   suggestionsContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.colors.surface,
     borderRadius: 8,
     marginBottom: 8,
     maxHeight: 240,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: tokens.colors.border,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -494,11 +495,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-    backgroundColor: '#FFFFFF',
+    borderBottomColor: tokens.colors.gray[100],
+    backgroundColor: tokens.colors.surface,
   },
   suggestionItemPressed: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: tokens.colors.gray[100],
   },
   suggestionContent: {
     flexDirection: 'row',
@@ -510,11 +511,11 @@ const styles = StyleSheet.create({
   suggestionText: {
     flex: 1,
     fontSize: 14,
-    color: '#1F2937',
+    color: tokens.colors.text.primary,
   },
   hint: {
     fontSize: 13,
-    color: '#6B7280',
+    color: tokens.colors.text.secondary,
     fontStyle: 'italic',
   },
   settingRow: {
@@ -530,12 +531,12 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#111827',
+    color: tokens.colors.text.primary,
     marginBottom: 2,
   },
   settingDescription: {
     fontSize: 13,
-    color: '#6B7280',
+    color: tokens.colors.text.secondary,
   },
   divider: {
     marginVertical: 4,
@@ -546,7 +547,7 @@ const styles = StyleSheet.create({
   },
   timeInput: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.colors.surface,
   },
   footer: {
     padding: 16,
@@ -559,13 +560,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#111827',
+    color: tokens.colors.text.primary,
     marginTop: 16,
     marginBottom: 4,
   },
   emptyText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: tokens.colors.text.secondary,
   },
 });
 

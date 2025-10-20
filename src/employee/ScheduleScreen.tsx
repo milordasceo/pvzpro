@@ -2,10 +2,8 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text, useTheme, TouchableRipple, Snackbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens } from '../ui';
-import { MetaRow } from '../components/MetaRow';
+import { tokens, Card, Button, MetaRow } from '../ui';
 import { useRequestsStore, buildDateKey } from '../store/requests.store';
-import { StyledCard, StyledButton } from '../components';
 import { getDayState } from '../services/schedule.service';
 
 const WEEKDAY_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
@@ -109,7 +107,7 @@ export const ScheduleScreen: React.FC = () => {
             marginBottom: 12,
           }}
         >
-          <StyledButton
+          <Button
             mode="text"
             onPress={handlePrevWeek}
             style={{ margin: 0 }}
@@ -118,9 +116,9 @@ export const ScheduleScreen: React.FC = () => {
             compact
           >
             ‹
-          </StyledButton>
+          </Button>
           
-          <StyledButton
+          <Button
             mode={isSameDay(selectedDate, today) && weekOffset === 0 ? 'contained' : 'text'}
             disabled={isSameDay(selectedDate, today) && weekOffset === 0}
             icon="calendar-today"
@@ -129,9 +127,9 @@ export const ScheduleScreen: React.FC = () => {
             compact
           >
             Сегодня
-          </StyledButton>
+          </Button>
           
-          <StyledButton
+          <Button
             mode="text"
             onPress={handleNextWeek}
             style={{ margin: 0 }}
@@ -140,7 +138,7 @@ export const ScheduleScreen: React.FC = () => {
             compact
           >
             ›
-          </StyledButton>
+          </Button>
         </View>
         <View
           style={{
@@ -148,7 +146,7 @@ export const ScheduleScreen: React.FC = () => {
             justifyContent: 'flex-start',
             marginBottom: 8,
             paddingVertical: 8,
-            backgroundColor: '#F9FAFB',
+            backgroundColor: tokens.colors.gray[50],
             borderRadius: 8,
           }}
         >
@@ -158,7 +156,7 @@ export const ScheduleScreen: React.FC = () => {
               style={{
                 width: `${100 / 7}%`,
                 textAlign: 'center',
-                color: '#6B7280',
+                color: tokens.colors.text.secondary,
                 fontWeight: '600',
                 fontSize: 13,
               }}
@@ -190,12 +188,12 @@ export const ScheduleScreen: React.FC = () => {
                       width: '100%',
                       paddingVertical: 8,
                       paddingHorizontal: 12,
-                      backgroundColor: '#F3F4F6',
+                      backgroundColor: tokens.colors.gray[100],
                       borderTopWidth: lastMonthHeader > 0 ? 1 : 0,
-                      borderTopColor: '#E5E7EB',
+                      borderTopColor: tokens.colors.border,
                     }}
                   >
-                    <Text style={{ color: '#374151', fontWeight: '600', fontSize: 13 }}>
+                    <Text style={{ color: tokens.colors.text.primary, fontWeight: '600', fontSize: 13 }}>
                       {d.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })} г.
                     </Text>
                   </View>,
@@ -213,7 +211,7 @@ export const ScheduleScreen: React.FC = () => {
               }
 
               const isSelected = isSameDay(d, selectedDate);
-              const baseColor = isSelected ? theme.colors.onPrimary : '#111827';
+              const baseColor = isSelected ? theme.colors.onPrimary : tokens.colors.text.primary;
               const isWork = getDayState(d) === 'work';
               const isToday = isSameDay(d, today);
               const isPast =
@@ -226,9 +224,9 @@ export const ScheduleScreen: React.FC = () => {
                   style={{
                     width: `${100 / 7}%`,
                     borderRightWidth: weekdayMonIndex(d) === 6 ? 0 : 1,
-                    borderRightColor: '#F3F4F6',
+                    borderRightColor: tokens.colors.gray[100],
                     borderBottomWidth: 1,
-                    borderBottomColor: '#F3F4F6',
+                    borderBottomColor: tokens.colors.gray[100],
                   }}
                 >
                   <TouchableRipple
@@ -281,9 +279,9 @@ export const ScheduleScreen: React.FC = () => {
                           const added = editMode && !isWork && adds.has(key);
                           const removed = editMode && isWork && removes.has(key);
                           const effectiveSelected = isSelected && !editMode;
-                          const green = '#D1FAE5';
+                          const green = tokens.colors.success.light;
                           if (effectiveSelected) return { backgroundColor: theme.colors.primary };
-                          if (removed) return { backgroundColor: '#FEE2E2' };
+                          if (removed) return { backgroundColor: tokens.colors.error.light };
                           if (added) return { backgroundColor: green };
                           return isWork ? { backgroundColor: green } : null;
                         })(),
@@ -299,7 +297,7 @@ export const ScheduleScreen: React.FC = () => {
                             right: 0,
                             bottom: 0,
                             borderWidth: 2,
-                            borderColor: '#16A34A',
+                            borderColor: tokens.colors.success.main,
                             borderRadius: 0,
                           }}
                         />
@@ -311,7 +309,7 @@ export const ScheduleScreen: React.FC = () => {
                             isSelected && !editMode
                               ? theme.colors.onPrimary
                               : isToday
-                                ? '#16A34A'
+                                ? tokens.colors.success.main
                                 : baseColor,
                           textAlign: 'center',
                           fontWeight: isToday || (isSelected && !editMode) ? '700' : '500',
@@ -335,7 +333,7 @@ export const ScheduleScreen: React.FC = () => {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
-                                backgroundColor: '#10B981',
+                                backgroundColor: tokens.colors.success.main,
                               }}
                             />
                           );
@@ -349,12 +347,12 @@ export const ScheduleScreen: React.FC = () => {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
-                                backgroundColor: '#EF4444',
+                                backgroundColor: tokens.colors.error.main,
                               }}
                             />
                           );
                         }
-                        return null;
+                        return <></>;
                       })()}
                     </View>
                   </TouchableRipple>
@@ -377,7 +375,7 @@ export const ScheduleScreen: React.FC = () => {
         const totalChanges = addCount + removeCount;
 
         return (
-          <StyledCard title="" style={{ marginHorizontal: 16, marginTop: 12 }}>
+          <Card title="" style={{ marginHorizontal: 16, marginTop: 12 }}>
             <View style={{ gap: 12 }}>
               {editMode ? (
                 <>
@@ -389,22 +387,22 @@ export const ScheduleScreen: React.FC = () => {
                       alignItems: 'center',
                     }}
                   >
-                    <Text variant="titleMedium" style={{ color: '#111827', fontWeight: '600' }}>
+                    <Text variant="titleMedium" style={{ color: tokens.colors.text.primary, fontWeight: '600' }}>
                     Редактирование графика
                   </Text>
                     {totalChanges > 0 && (
                       <View
                         style={{
-                          backgroundColor: '#EFF6FF',
+                          backgroundColor: tokens.colors.primary.light,
                           paddingHorizontal: 10,
                           paddingVertical: 4,
                           borderRadius: 12,
                           borderWidth: 1,
-                          borderColor: '#BFDBFE',
+                          borderColor: tokens.colors.primary.light,
                         }}
                       >
-                        <Text style={{ fontSize: 13, fontWeight: '600', color: '#1E40AF' }}>
-                          {totalChanges} {totalChanges === 1 ? 'изменение' : 'изменения'}
+                        <Text style={{ fontSize: 13, fontWeight: '600', color: tokens.colors.primary.main }}>
+                          {`${totalChanges} ${totalChanges === 1 ? 'изменение' : 'изменения'}`}
                         </Text>
                       </View>
                     )}
@@ -418,7 +416,7 @@ export const ScheduleScreen: React.FC = () => {
                         gap: 8,
                         paddingVertical: 8,
                         paddingHorizontal: 12,
-                        backgroundColor: '#F9FAFB',
+                        backgroundColor: tokens.colors.gray[50],
                         borderRadius: 8,
                       }}
                     >
@@ -429,11 +427,11 @@ export const ScheduleScreen: React.FC = () => {
                               width: 8,
                               height: 8,
                               borderRadius: 4,
-                              backgroundColor: '#10B981',
+                              backgroundColor: tokens.colors.success.main,
                             }}
                           />
-                          <Text style={{ fontSize: 13, color: '#111827' }}>
-                            +{addCount} {addCount === 1 ? 'день' : 'дня'}
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.primary }}>
+                            {`+${addCount} ${addCount === 1 ? 'день' : 'дня'}`}
                           </Text>
                         </View>
                       )}
@@ -444,11 +442,11 @@ export const ScheduleScreen: React.FC = () => {
                               width: 8,
                               height: 8,
                               borderRadius: 4,
-                              backgroundColor: '#EF4444',
+                              backgroundColor: tokens.colors.error.main,
                             }}
                           />
-                          <Text style={{ fontSize: 13, color: '#111827' }}>
-                            -{removeCount} {removeCount === 1 ? 'день' : 'дня'}
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.primary }}>
+                            {`-${removeCount} ${removeCount === 1 ? 'день' : 'дня'}`}
                           </Text>
                         </View>
                       )}
@@ -475,51 +473,51 @@ export const ScheduleScreen: React.FC = () => {
                         }}
                       >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                          <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                             {selectedDate.toLocaleDateString('ru-RU', {
                               day: 'numeric',
                               month: 'long',
                               weekday: 'short',
                             })}
                           </Text>
-                          <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                          <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
                             Рабочая смена
                           </Text>
                         </View>
                         <View
                           style={{
-                            backgroundColor: '#D1FAE5',
+                            backgroundColor: tokens.colors.success.light,
                             paddingHorizontal: 8,
                             paddingVertical: 3,
                             borderRadius: 10,
                           }}
                         >
-                          <Text style={{ fontSize: 11, fontWeight: '600', color: '#059669' }}>
+                          <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.success.main }}>
                             Работа
                           </Text>
                         </View>
                       </View>
 
-                      <View style={{ height: 1, backgroundColor: '#E5E7EB' }} />
+                      <View style={{ height: 1, backgroundColor: tokens.colors.border }} />
 
                       <View style={{ gap: 8 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                          <MaterialCommunityIcons name="store-outline" size={16} color="#6B7280" />
-                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>ПВЗ</Text>
-                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
+                          <MaterialCommunityIcons name="store-outline" size={16} color={tokens.colors.text.secondary} />
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>ПВЗ</Text>
+                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
                             Герцена 12
                           </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                          <MaterialCommunityIcons name="clock-outline" size={16} color="#6B7280" />
-                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>Время</Text>
-                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
+                          <MaterialCommunityIcons name="clock-outline" size={16} color={tokens.colors.text.secondary} />
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Время</Text>
+                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
                             10:00 – 22:00
                           </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                          <MaterialCommunityIcons name="cash" size={16} color="#6B7280" />
-                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>Оплата</Text>
+                          <MaterialCommunityIcons name="cash" size={16} color={tokens.colors.text.secondary} />
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Оплата</Text>
                           <Text
                             style={{
                               fontSize: 16,
@@ -542,26 +540,26 @@ export const ScheduleScreen: React.FC = () => {
                         }}
                       >
                         <View>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                          <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                             {selectedDate.toLocaleDateString('ru-RU', {
                               day: 'numeric',
                               month: 'long',
                               weekday: 'short',
                             })}
                           </Text>
-                          <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                          <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
                             Выходной день
                           </Text>
                         </View>
                         <View
                           style={{
-                            backgroundColor: '#F3F4F6',
+                            backgroundColor: tokens.colors.gray[100],
                             paddingHorizontal: 8,
                             paddingVertical: 3,
                             borderRadius: 10,
                           }}
                         >
-                          <Text style={{ fontSize: 11, fontWeight: '600', color: '#6B7280' }}>
+                          <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.text.secondary }}>
                             Выходной
                   </Text>
                         </View>
@@ -572,24 +570,24 @@ export const ScheduleScreen: React.FC = () => {
               )}
 
               {!editMode ? (
-                <StyledButton
+                <Button
                   mode="contained"
                   onPress={handleEditMode}
                   style={{ marginTop: 4 }}
                   icon="calendar-edit"
                 >
                   Запросить изменение графика
-                </StyledButton>
+                </Button>
               ) : (
                 <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-                  <StyledButton
+                  <Button
                     mode="outlined"
                     onPress={handleCancelEdit}
                     style={{ flex: 1 }}
                   >
                     Отмена
-                  </StyledButton>
-                  <StyledButton
+                  </Button>
+                  <Button
                     mode="contained"
                     disabled={totalChanges === 0}
                     onPress={() => {
@@ -614,11 +612,11 @@ export const ScheduleScreen: React.FC = () => {
                     style={{ flex: 1 }}
                   >
                     Отправить
-                  </StyledButton>
+                  </Button>
                 </View>
               )}
             </View>
-          </StyledCard>
+          </Card>
         );
       })()}
 

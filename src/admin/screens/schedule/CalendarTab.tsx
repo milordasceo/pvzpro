@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, RefreshControl } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyledScrollView } from '../../../components';
+import { tokens, ScrollView } from '../../../ui';
 
 interface CalendarTabProps {
   loading: boolean;
@@ -15,8 +15,8 @@ interface CalendarTabProps {
  */
 export const CalendarTab = React.memo<CalendarTabProps>(({ loading, onRefresh }) => {
   return (
-    <StyledScrollView
-      style={{ backgroundColor: '#F3F4F6' }}
+    <ScrollView
+      style={{ backgroundColor: tokens.colors.gray[100] }}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={onRefresh} />
       }
@@ -25,7 +25,7 @@ export const CalendarTab = React.memo<CalendarTabProps>(({ loading, onRefresh })
         <MaterialCommunityIcons 
           name="calendar-month-outline" 
           size={64} 
-          color="#9CA3AF" 
+          color={tokens.colors.text.muted} 
           style={styles.icon}
         />
         <Text variant="headlineSmall" style={styles.title}>
@@ -35,7 +35,7 @@ export const CalendarTab = React.memo<CalendarTabProps>(({ loading, onRefresh })
           Раздел находится в разработке
         </Text>
       </View>
-    </StyledScrollView>
+    </ScrollView>
   );
 });
 
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: '#9CA3AF',
+    color: tokens.colors.text.muted,
     textAlign: 'center',
   },
 });

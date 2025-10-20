@@ -17,7 +17,7 @@ export const MainNavigator: React.FC = () => {
   const { user } = useAuthStore();
 
   if (!user) {
-    return null; // Это не должно случиться, но на всякий случай
+    return <></>; // Пустой фрагмент вместо null
   }
 
   switch (user.role) {

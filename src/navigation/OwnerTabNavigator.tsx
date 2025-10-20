@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import { Text, Appbar, Menu } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { tokens, ScrollView } from '../ui';
 import { placeholderColor } from '../theme';
 import { OwnerTabParamList, RoleType } from '../types/navigation';
-import { StyledScrollView } from '../components';
 import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<OwnerTabParamList>();
@@ -56,7 +56,7 @@ export const OwnerTabNavigator: React.FC = () => {
       {/* Табы */}
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: '#4F46E5',
+          tabBarActiveTintColor: tokens.colors.primary.main,
           tabBarInactiveTintColor: placeholderColor,
           headerShown: false,
         }}

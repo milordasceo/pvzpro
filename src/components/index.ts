@@ -56,7 +56,4 @@ export {
   AnimatedTab,
 } from '../ui/components/navigation';
 
-export { 
-  DevUICatalogFAB,
-  type UICatalogFABProps as DevUICatalogFABProps,
-} from '../ui/components/dev';
+// DevUICatalogFAB был удалён. Новый UI каталог будет создан позже.

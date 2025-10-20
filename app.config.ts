@@ -1,5 +1,4 @@
 import type { ConfigContext, ExpoConfig } from '@expo/config';
-import 'dotenv/config';
 
 const APP_NAME = 'WB ПВЗ';
 const BUNDLE_ID = process.env.APP_BUNDLE_ID ?? 'com.wbpvz';

@@ -59,6 +59,5 @@ export const AppNavigator: React.FC = () => {
  * Показывается пока приложение инициализируется
  */
 const LoadingScreen: React.FC = () => {
-  // Здесь можно добавить красивый loading экран
-  return null; // Пока просто возвращаем null
+  return <></>;
 };

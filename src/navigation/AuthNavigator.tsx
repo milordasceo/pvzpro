@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyledButton } from '../components';
+import { tokens, Button } from '../ui';
 
 /**
  * Навигация для неавторизованных пользователей
@@ -24,16 +24,16 @@ const AuthPlaceholder: React.FC = () => {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FBFCFE',
+        backgroundColor: tokens.colors.background,
       }}
     >
       <Text variant="titleLarge" style={{ marginBottom: 16 }}>
         Добро пожаловать в WB ПВЗ
       </Text>
-      <Text style={{ color: '#6B7280', textAlign: 'center', marginBottom: 24 }}>
+      <Text style={{ color: tokens.colors.text.secondary, textAlign: 'center', marginBottom: 24 }}>
         Экраны аутентификации находятся в разработке
       </Text>
-      <StyledButton
+      <Button
         mode="contained"
         onPress={() => {
           // Временная заглушка - автоматический вход как сотрудник
@@ -50,7 +50,7 @@ const AuthPlaceholder: React.FC = () => {
         }}
       >
         Войти как демо-пользователь
-      </StyledButton>
+      </Button>
     </View>
   );
 };

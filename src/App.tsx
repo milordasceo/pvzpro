@@ -14,6 +14,7 @@ import {
   scheduleNextShiftReminderTwoOnTwo,
   registerNotificationTapNavigator,
 } from './services/notifications';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 /**
  * Основной компонент приложения
@@ -38,10 +39,12 @@ const AppContent: React.FC = () => {
   }, []);
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <AppNavigator />
-      <StatusBar style="auto" />
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={styles.container}>
+        <AppNavigator />
+        <StatusBar style="auto" />
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 };
 

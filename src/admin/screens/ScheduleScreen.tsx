@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { tokens } from '../../ui';
 import { useDashboardData } from '../hooks/useDashboardData';
 
 // Lazy load вкладок для оптимизации (Code Splitting)
@@ -18,7 +19,7 @@ const Tab = createMaterialTopTabNavigator();
 // Fallback компонент для Suspense
 const LoadingFallback = () => (
   <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color="#4F46E5" />
+    <ActivityIndicator size="large" color={tokens.colors.primary.main} />
   </View>
 );
 
@@ -42,7 +43,7 @@ export const ScheduleScreen = React.memo(() => {
   if (!data) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+        <ActivityIndicator size="large" color={tokens.colors.primary.main} />
       </View>
     );
   }
@@ -51,18 +52,18 @@ export const ScheduleScreen = React.memo(() => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: '#4F46E5',
-          tabBarInactiveTintColor: '#6B7280',
+          tabBarActiveTintColor: tokens.colors.primary.main,
+          tabBarInactiveTintColor: tokens.colors.text.secondary,
           tabBarIndicatorStyle: {
-            backgroundColor: '#4F46E5',
+            backgroundColor: tokens.colors.primary.main,
             height: 3,
           },
           tabBarStyle: {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: tokens.colors.surface,
             elevation: 0,
             shadowOpacity: 0,
             borderBottomWidth: 1,
-            borderBottomColor: '#E5E7EB',
+            borderBottomColor: tokens.colors.border,
           },
           tabBarLabelStyle: {
             fontSize: 14,
@@ -111,13 +112,13 @@ export const ScheduleScreen = React.memo(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: tokens.colors.surface,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: tokens.colors.gray[100],
   },
 });
 

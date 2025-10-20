@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { Text, Button, Snackbar } from 'react-native-paper';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { StyledCard } from '../../components';
+import { Card } from '../../ui';
 import { APP_CONFIG } from '../../config/app';
 
 export const DevicePairScreen: React.FC<{ pvzId: string }> = ({ pvzId }) => {
@@ -49,7 +49,7 @@ export const DevicePairScreen: React.FC<{ pvzId: string }> = ({ pvzId }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <StyledCard title="Привязка ноутбука">
+      <Card title="Привязка ноутбука">
         {!paired ? (
           <>
             <Text>
@@ -73,7 +73,7 @@ export const DevicePairScreen: React.FC<{ pvzId: string }> = ({ pvzId }) => {
         ) : (
           <Text>Готово. Откройте pvzqr.ru — на ноутбуке будет показан рабочий QR.</Text>
         )}
-      </StyledCard>
+      </Card>
       <Snackbar visible={!!snack} onDismiss={() => setSnack(null)} duration={2500}>
         {snack}
       </Snackbar>

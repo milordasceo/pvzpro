@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Appbar, Avatar, Badge, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import { StyledScrollView } from '../components';
+import { tokens, ScrollView } from '../ui';
 
 type ChatListItem = {
   id: string;
@@ -31,7 +31,7 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
         at: Date.now() - 5 * 60_000,
         unreadCount: 2,
         initials: 'АД',
-        color: '#60A5FA',
+        color: tokens.colors.primary.main,
         pinned: true,
       },
       {
@@ -41,7 +41,7 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
         at: Date.now() - 40 * 60_000,
         unreadCount: 0,
         initials: 'ПВ',
-        color: '#34D399',
+        color: tokens.colors.success.main,
         muted: true,
       },
     ],
@@ -54,8 +54,8 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
         <Appbar.Content title="Чаты" titleStyle={{ fontSize: 18, fontWeight: '600' }} />
         <Appbar.Action icon="magnify" onPress={() => {}} />
       </Appbar.Header>
-      <View style={{ height: 1, backgroundColor: '#E5E7EB' }} />
-      <StyledScrollView>
+      <View style={{ height: 1, backgroundColor: tokens.colors.border }} />
+      <ScrollView>
         {items.map((item) => (
           <View key={item.id}>
             <TouchableRipple
@@ -84,18 +84,18 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
                       {item.title}
                     </Text>
                     {item.pinned ? (
-                      <Text style={{ marginLeft: 6, color: '#9CA3AF' }}>📌</Text>
+                      <Text style={{ marginLeft: 6, color: tokens.colors.text.muted }}>📌</Text>
                     ) : null}
                     {item.muted ? (
-                      <Text style={{ marginLeft: 4, color: '#9CA3AF' }}>🔕</Text>
+                      <Text style={{ marginLeft: 4, color: tokens.colors.text.muted }}>🔕</Text>
                     ) : null}
                   </View>
-                  <Text style={{ color: '#6B7280' }} numberOfLines={1}>
+                  <Text style={{ color: tokens.colors.text.secondary }} numberOfLines={1}>
                     {item.lastMessage}
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end', width: 64 }}>
-                  <Text style={{ color: '#9CA3AF', fontSize: 12 }}>{timeFrom(item.at)}</Text>
+                  <Text style={{ color: tokens.colors.text.muted, fontSize: 12 }}>{timeFrom(item.at)}</Text>
                   {item.unreadCount ? (
                     <Badge
                       style={{ marginTop: 6, backgroundColor: theme.colors.primary }}
@@ -107,10 +107,10 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
                 </View>
               </View>
             </TouchableRipple>
-            <View style={{ height: 1, backgroundColor: '#E5E7EB', marginLeft: 76 }} />
+            <View style={{ height: 1, backgroundColor: tokens.colors.border, marginLeft: 76 }} />
           </View>
         ))}
-      </StyledScrollView>
+      </ScrollView>
     </View>
   );
 };

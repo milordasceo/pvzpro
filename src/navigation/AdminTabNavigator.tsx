@@ -3,11 +3,11 @@ import { View, StyleSheet } from 'react-native';
 import { Text, Appbar, Menu } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { tokens } from '../ui';
 import { placeholderColor } from '../theme';
 import { AdminTabParamList, RoleType } from '../types/navigation';
 import { AdminDashboardScreen } from '../admin/screens/AdminDashboardScreen';
 import { ScheduleScreen } from '../admin/screens/ScheduleScreen';
-import { UICatalogScreen } from '../admin/screens/UICatalogScreen';
 import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
@@ -60,7 +60,7 @@ export const AdminTabNavigator: React.FC = () => {
       {/* Табы */}
       <Tab.Navigator
         screenOptions={{
-          tabBarActiveTintColor: '#4F46E5',
+          tabBarActiveTintColor: tokens.colors.primary.main,
           tabBarInactiveTintColor: placeholderColor,
           headerShown: false,
           tabBarLabelStyle: {
@@ -80,14 +80,14 @@ export const AdminTabNavigator: React.FC = () => {
         }}
       />
 
-      {/* 2. UI Catalog (Для разработки) */}
+      {/* 2. ПВЗ */}
       <Tab.Screen
         name="ПВЗ"
-        component={UICatalogScreen}
+        component={PlaceholderScreen}
         options={{
-          title: 'UI',
+          title: 'ПВЗ',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="palette-outline" size={size} color={color} />
+            <MaterialCommunityIcons name="store-outline" size={size} color={color} />
           ),
         }}
       />

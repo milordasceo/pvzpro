@@ -13,7 +13,7 @@ import { Appbar, Avatar, Text, TextInput, useTheme, Menu, Button } from 'react-n
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyledScrollView, SquareIconButton, StyledDialog } from '../components';
+import { tokens, ScrollView, IconButton, Dialog } from '../ui';
 
 type Role = 'me' | 'manager' | 'system';
 
@@ -226,7 +226,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
   }, [scrollToEnd]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#E5DDD5' }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.gray[200] }}>
       <Appbar.Header mode="center-aligned">
         <Appbar.Action 
           icon="arrow-left" 
@@ -247,7 +247,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
           title={title}
           subtitle="был(а) недавно"
           titleStyle={{ fontSize: 16, fontWeight: '600' }}
-          subtitleStyle={{ fontSize: 12, color: '#9CA3AF' }}
+          subtitleStyle={{ fontSize: 12, color: tokens.colors.text.muted }}
         />
         <Menu
           visible={menuVisible}
@@ -301,12 +301,12 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <StyledScrollView ref={scrollViewRef}>
+        <ScrollView ref={scrollViewRef}>
           {messages.map((item) => {
             if (item.role === 'system') {
               return (
                 <View key={item.id} style={{ alignItems: 'center', marginVertical: 6 }}>
-                  <Text style={{ color: '#6B7280', fontSize: 12 }}>
+                  <Text style={{ color: tokens.colors.text.secondary, fontSize: 12 }}>
                     {new Date(item.at).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -335,7 +335,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               >
                 <View
                   style={{
-                    backgroundColor: isMe ? '#DCF8C6' : '#FFFFFF',
+                    backgroundColor: isMe ? tokens.colors.success.lighter : tokens.colors.surface,
                     paddingHorizontal: 12,
                     paddingVertical: 8,
                     borderRadius: 12,
@@ -349,7 +349,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                     elevation: 1,
                   }}
                 >
-                  <Text style={{ color: '#111827' }}>{item.text}</Text>
+                  <Text style={{ color: tokens.colors.text.primary }}>{item.text}</Text>
                   
                   {/* Карточка штрафа */}
                   {item.penaltyAttachment && (
@@ -359,7 +359,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                         padding: 10,
                         backgroundColor: '#FFF',
                         borderWidth: 1,
-                        borderColor: '#FEE2E2',
+                        borderColor: tokens.colors.error.light,
                         borderRadius: 8,
                         gap: 6,
                       }}
@@ -371,21 +371,21 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                           size={16}
                           color={item.penaltyAttachment.color}
                         />
-                        <Text style={{ fontSize: 12, fontWeight: '600', color: '#111827', flex: 1 }}>
+                        <Text style={{ fontSize: 12, fontWeight: '600', color: tokens.colors.text.primary, flex: 1 }}>
                           {item.penaltyAttachment.description}
                         </Text>
                       </View>
                       
                       {/* Дата */}
-                      <Text style={{ fontSize: 10, color: '#6B7280', marginBottom: 8 }}>
+                      <Text style={{ fontSize: 10, color: tokens.colors.text.secondary, marginBottom: 8 }}>
                         {item.penaltyAttachment.date}
                       </Text>
                       
                       {/* Название товара */}
                       {item.penaltyAttachment.itemName && (
                         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
-                          <MaterialCommunityIcons name="package-variant" size={14} color="#6B7280" style={{ marginTop: 1 }} />
-                          <Text style={{ fontSize: 11, color: '#111827', flex: 1 }}>
+                          <MaterialCommunityIcons name="package-variant" size={14} color={tokens.colors.text.secondary} style={{ marginTop: 1 }} />
+                          <Text style={{ fontSize: 11, color: tokens.colors.text.primary, flex: 1 }}>
                             {item.penaltyAttachment.itemName}
                           </Text>
                         </View>
@@ -394,7 +394,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                       {/* Сумма штрафа и стоимость товара */}
                       <View style={{ gap: 4, marginBottom: 6 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={{ fontSize: 11, color: '#6B7280' }}>Сумма штрафа:</Text>
+                          <Text style={{ fontSize: 11, color: tokens.colors.text.secondary }}>Сумма штрафа:</Text>
                           <Text style={{ fontSize: 14, fontWeight: '700', color: item.penaltyAttachment.color }}>
                             {formatRUB(item.penaltyAttachment.amount)}
                           </Text>
@@ -402,8 +402,8 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                         
                         {item.penaltyAttachment.relatedItemPrice && (
                           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ fontSize: 10, color: '#9CA3AF' }}>Стоимость товара:</Text>
-                            <Text style={{ fontSize: 11, color: '#6B7280' }}>
+                            <Text style={{ fontSize: 10, color: tokens.colors.text.muted }}>Стоимость товара:</Text>
+                            <Text style={{ fontSize: 11, color: tokens.colors.text.secondary }}>
                               {formatRUB(item.penaltyAttachment.relatedItemPrice)}
                             </Text>
                           </View>
@@ -414,17 +414,17 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                       {item.penaltyAttachment.adminComment && (
                         <View
                           style={{
-                            backgroundColor: '#FEF3C7',
+                            backgroundColor: tokens.colors.warning.light,
                             padding: 6,
                             borderRadius: 4,
                             borderLeftWidth: 2,
-                            borderLeftColor: '#F59E0B',
+                            borderLeftColor: tokens.colors.warning.main,
                           }}
                         >
-                          <Text style={{ fontSize: 9, fontWeight: '600', color: '#92400E', marginBottom: 2 }}>
+                          <Text style={{ fontSize: 9, fontWeight: '600', color: tokens.colors.warning.dark, marginBottom: 2 }}>
                             От администратора:
                           </Text>
-                          <Text style={{ fontSize: 10, color: '#78350F', lineHeight: 14 }}>
+                          <Text style={{ fontSize: 10, color: tokens.colors.warning.dark, lineHeight: 14 }}>
                             {item.penaltyAttachment.adminComment}
                           </Text>
                         </View>
@@ -433,7 +433,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                   )}
                   
                   <Text
-                    style={{ color: '#6B7280', fontSize: 11, marginTop: 4, alignSelf: 'flex-end' }}
+                    style={{ color: tokens.colors.text.secondary, fontSize: 11, marginTop: 4, alignSelf: 'flex-end' }}
                   >
                     {new Date(item.at).toLocaleTimeString([], {
                       hour: '2-digit',
@@ -444,7 +444,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               </View>
             );
           })}
-        </StyledScrollView>
+        </ScrollView>
 
         {/* Оверлей для закрытия смайликов по клику вне панели */}
         <Animated.View
@@ -460,7 +460,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
             height: emojiHeight,
             backgroundColor: theme.colors.surface,
             borderTopWidth: 1,
-            borderTopColor: '#E5E7EB',
+            borderTopColor: tokens.colors.border,
             overflow: 'hidden',
             zIndex: 3,
           }}
@@ -529,14 +529,14 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
         </View>
       </KeyboardAvoidingView>
 
-      <StyledDialog
+      <Dialog
         visible={attachmentsVisible}
         onDismiss={() => setAttachmentsVisible(false)}
         title="Вложение"
       >
         <View style={{ gap: 12 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-            <SquareIconButton
+            <IconButton
               icon="camera"
               onPress={() => {
                 setAttachmentsVisible(false);
@@ -544,7 +544,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               }}
               size={48}
             />
-            <SquareIconButton
+            <IconButton
               icon="image"
               onPress={() => {
                 setAttachmentsVisible(false);
@@ -552,7 +552,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               }}
               size={48}
             />
-            <SquareIconButton
+            <IconButton
               icon="paperclip"
               onPress={() => {
                 setAttachmentsVisible(false);
@@ -561,13 +561,13 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               size={48}
             />
           </View>
-          <Text style={{ color: '#6B7280', textAlign: 'center' }}>
+          <Text style={{ color: tokens.colors.text.secondary, textAlign: 'center' }}>
             Снимок • Фото из галереи • Файл
           </Text>
         </View>
-      </StyledDialog>
+      </Dialog>
 
-      <StyledDialog
+      <Dialog
         visible={searchVisible}
         onDismiss={() => setSearchVisible(false)}
         title="Поиск по чату"
@@ -591,9 +591,9 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
             </Button>
           </View>
         </View>
-      </StyledDialog>
+      </Dialog>
 
-      <StyledDialog
+      <Dialog
         visible={confirmClearVisible}
         onDismiss={() => setConfirmClearVisible(false)}
         title="Очистить историю чата?"
@@ -613,9 +613,9 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
             </Button>
           </View>
         </View>
-      </StyledDialog>
+      </Dialog>
 
-      <StyledDialog
+      <Dialog
         visible={confirmDeleteVisible}
         onDismiss={() => setConfirmDeleteVisible(false)}
         title="Удалить чат?"
@@ -634,7 +634,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
             </Button>
           </View>
         </View>
-      </StyledDialog>
+      </Dialog>
     </View>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { Text, useTheme, ActivityIndicator } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyledCard, StyledButton, MetaRow } from '../components';
+import { tokens, Card, Button, MetaRow, EmptyState, ErrorState } from '../ui';
 import { ShiftPayment } from '../types/finance';
 import { financeService } from '../services';
 import { useAuthStore } from '../store/auth.store';
@@ -133,13 +133,11 @@ export const FinanceHistoryScreen: React.FC = () => {
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 }}>
-        <MaterialCommunityIcons name="alert-circle" size={48} color={theme.colors.error} />
-        <Text style={{ marginTop: 16, textAlign: 'center' }}>{error}</Text>
-        <StyledButton mode="contained" onPress={loadData} style={{ marginTop: 16 }}>
-          Повторить
-        </StyledButton>
-      </View>
+      <ErrorState
+        title="Ошибка загрузки"
+        message={error}
+        onRetry={loadData}
+      />
     );
   }
 
@@ -153,12 +151,11 @@ export const FinanceHistoryScreen: React.FC = () => {
           {/* Список периодов */}
           <View style={{ gap: 12 }}>
             {periods.length === 0 ? (
-              <View style={{ alignItems: 'center', padding: 32 }}>
-                <MaterialCommunityIcons name="cash-remove" size={48} color="#9CA3AF" />
-                <Text style={{ marginTop: 16, color: '#9CA3AF', textAlign: 'center' }}>
-                  Нет данных о сменах
-                </Text>
-              </View>
+              <EmptyState
+                icon="cash-remove"
+                title="Нет истории"
+                description="История финансовых операций пока пуста. Данные появятся после первой выплаты."
+              />
             ) : (
               periods.map((period) => {
                 const totalEarned = period.shifts.reduce((s, x) => s + x.totalAmount, 0);
@@ -167,7 +164,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                 const isExpanded = expandedPeriods[period.key];
 
                 return (
-                  <StyledCard key={period.key}>
+                  <Card key={period.key}>
                     <View style={{ gap: 12 }}>
                       {/* Заголовок периода */}
                       <View style={{ gap: 4 }}>
@@ -179,10 +176,10 @@ export const FinanceHistoryScreen: React.FC = () => {
                           }}
                         >
                           <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+                            <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
                               {period.label}
                             </Text>
-                            <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                            <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
                               {period.isPaid ? 'Выплачено' : 'К выплате'}{' '}
                               {period.paymentDate.toLocaleDateString('ru-RU', {
                                 day: 'numeric',
@@ -195,14 +192,14 @@ export const FinanceHistoryScreen: React.FC = () => {
                               paddingHorizontal: 8,
                               paddingVertical: 3,
                               borderRadius: 10,
-                              backgroundColor: period.isPaid ? '#D1FAE5' : '#FEF3C7',
+                              backgroundColor: period.isPaid ? tokens.colors.success.light : tokens.colors.warning.light,
                             }}
                           >
                             <Text
                               style={{
                                 fontSize: 11,
                                 fontWeight: '600',
-                                color: period.isPaid ? '#059669' : '#D97706',
+                                color: period.isPaid ? tokens.colors.success.dark : tokens.colors.warning.main,
                               }}
                             >
                               {period.isPaid ? 'Выплачено' : 'Ожидает'}
@@ -212,12 +209,12 @@ export const FinanceHistoryScreen: React.FC = () => {
                       </View>
 
                       {/* Разделитель */}
-                      <View style={{ height: 1, backgroundColor: '#E5E7EB' }} />
+                      <View style={{ height: 1, backgroundColor: tokens.colors.border }} />
 
                       {/* Итоговая сумма - акцент */}
                       <View
                         style={{
-                          backgroundColor: '#F0F9FF',
+                          backgroundColor: tokens.colors.primary.light,
                           padding: 12,
                           borderRadius: 8,
                           borderLeftWidth: 3,
@@ -231,7 +228,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                             alignItems: 'center',
                           }}
                         >
-                          <Text style={{ fontSize: 13, color: '#6B7280', fontWeight: '500' }}>
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, fontWeight: '500' }}>
                             {period.isPaid ? 'Получено' : 'Заработано'}
                           </Text>
                           <Text
@@ -249,18 +246,18 @@ export const FinanceHistoryScreen: React.FC = () => {
                       {/* Детали с иконками */}
                       <View style={{ gap: 8, marginTop: 4 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                          <MaterialCommunityIcons name="briefcase-clock" size={16} color="#6B7280" />
-                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>
+                          <MaterialCommunityIcons name="briefcase-clock" size={16} color={tokens.colors.text.secondary} />
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>
                             Смен отработано
                           </Text>
-                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
+                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
                             {period.shifts.length}
                           </Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                          <MaterialCommunityIcons name="clock-outline" size={16} color="#6B7280" />
-                          <Text style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>Часов</Text>
-                          <Text style={{ fontSize: 14, color: '#111827', fontWeight: '600' }}>
+                          <MaterialCommunityIcons name="clock-outline" size={16} color={tokens.colors.text.secondary} />
+                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Часов</Text>
+                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
                             {totalHours} ч
                           </Text>
                         </View>
@@ -270,7 +267,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                               flexDirection: 'row',
                               alignItems: 'center',
                               gap: 8,
-                              backgroundColor: '#FEE2E2',
+                              backgroundColor: tokens.colors.error.light,
                               padding: 8,
                               borderRadius: 6,
                               marginTop: 4,
@@ -279,12 +276,12 @@ export const FinanceHistoryScreen: React.FC = () => {
                             <MaterialCommunityIcons
                               name="alert-circle-outline"
                               size={16}
-                              color="#DC2626"
+                              color={tokens.colors.error.main}
                             />
-                            <Text style={{ fontSize: 13, color: '#DC2626', flex: 1, fontWeight: '500' }}>
+                            <Text style={{ fontSize: 13, color: tokens.colors.error.main, flex: 1, fontWeight: '500' }}>
                               Штрафы
                             </Text>
-                            <Text style={{ fontSize: 14, color: '#DC2626', fontWeight: '700' }}>
+                            <Text style={{ fontSize: 14, color: tokens.colors.error.main, fontWeight: '700' }}>
                               {formatRUB(totalPenalties)}
                             </Text>
                           </View>
@@ -292,7 +289,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                       </View>
 
                       {/* Кнопка раскрытия */}
-                      <StyledButton
+                      <Button
                         mode="text"
                         onPress={() =>
                           setExpandedPeriods((prev) => ({ ...prev, [period.key]: !isExpanded }))
@@ -301,7 +298,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                         contentStyle={{ flexDirection: 'row-reverse' }}
                       >
                         {isExpanded ? 'Скрыть' : 'Подробнее'}
-                      </StyledButton>
+                      </Button>
 
                       {/* Список смен */}
                       {isExpanded && (
@@ -316,17 +313,17 @@ export const FinanceHistoryScreen: React.FC = () => {
                                 <View
                                   key={shift.shiftId}
                                   style={{
-                                    backgroundColor: shift.penalties < 0 ? '#FFFBEB' : '#F9FAFB',
+                                    backgroundColor: shift.penalties < 0 ? tokens.colors.warning.lighter : tokens.colors.gray[50],
                                     borderRadius: 10,
                                     borderWidth: 1,
-                                    borderColor: shift.penalties < 0 ? '#FEF3C7' : '#E5E7EB',
+                                    borderColor: shift.penalties < 0 ? tokens.colors.warning.light : tokens.colors.border,
                                     overflow: 'hidden',
                                   }}
                                 >
                                   {/* Шапка смены */}
                                   <View
                                     style={{
-                                      backgroundColor: shift.penalties < 0 ? '#FEF3C7' : '#F3F4F6',
+                                      backgroundColor: shift.penalties < 0 ? tokens.colors.warning.light : tokens.colors.gray[100],
                                       padding: 10,
                                       flexDirection: 'row',
                                       justifyContent: 'space-between',
@@ -337,13 +334,13 @@ export const FinanceHistoryScreen: React.FC = () => {
                                       <MaterialCommunityIcons
                                         name="calendar"
                                         size={16}
-                                        color={shift.penalties < 0 ? '#92400E' : '#6B7280'}
+                                        color={shift.penalties < 0 ? tokens.colors.warning.dark : tokens.colors.text.secondary}
                                       />
                                       <Text
                                         style={{
                                           fontSize: 14,
                                           fontWeight: '600',
-                                          color: shift.penalties < 0 ? '#92400E' : '#111827',
+                                          color: shift.penalties < 0 ? tokens.colors.warning.dark : tokens.colors.text.primary,
                                         }}
                                       >
                                         {shift.shiftDate.toLocaleDateString('ru-RU', {
@@ -355,7 +352,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                                       {shift.penalties < 0 && (
                                         <View
                                           style={{
-                                            backgroundColor: '#FCD34D',
+                                            backgroundColor: tokens.colors.warning.main,
                                             paddingHorizontal: 6,
                                             paddingVertical: 2,
                                             borderRadius: 6,
@@ -365,7 +362,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             style={{
                                               fontSize: 10,
                                               fontWeight: '600',
-                                              color: '#92400E',
+                                              color: tokens.colors.warning.dark,
                                             }}
                                           >
                                             Штраф
@@ -377,7 +374,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                                       style={{
                                         fontSize: 17,
                                         fontWeight: '700',
-                                        color: shift.penalties < 0 ? '#D97706' : theme.colors.primary,
+                                        color: shift.penalties < 0 ? tokens.colors.warning.main : theme.colors.primary,
                                       }}
                                     >
                                       {formatRUB(shift.totalAmount)}
@@ -391,9 +388,9 @@ export const FinanceHistoryScreen: React.FC = () => {
                                       <MaterialCommunityIcons
                                         name="map-marker"
                                         size={14}
-                                        color="#9CA3AF"
+                                        color={tokens.colors.text.muted}
                                       />
-                                      <Text style={{ fontSize: 12, color: '#6B7280', flex: 1 }}>
+                                      <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, flex: 1 }}>
                                         {shift.pvzAddress}
                                       </Text>
                                     </View>
@@ -419,13 +416,13 @@ export const FinanceHistoryScreen: React.FC = () => {
                                           <MaterialCommunityIcons
                                             name="clock-check-outline"
                                             size={12}
-                                            color="#10B981"
+                                            color={tokens.colors.success.main}
                                           />
-                                          <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                                          <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>
                                             Основные часы ({shift.hoursWorked} ч)
                                           </Text>
                                         </View>
-                                        <Text style={{ fontSize: 12, color: '#111827', fontWeight: '500' }}>
+                                        <Text style={{ fontSize: 12, color: tokens.colors.text.primary, fontWeight: '500' }}>
                                           {formatRUB(baseEarnings)}
                                         </Text>
                                       </View>
@@ -445,14 +442,14 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             <MaterialCommunityIcons
                                               name="clock-plus-outline"
                                               size={12}
-                                              color="#3B82F6"
+                                              color={tokens.colors.primary.main}
                                             />
-                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                                            <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>
                                               Переработка ({shift.overtimeHours} ч)
                                             </Text>
                                           </View>
                                           <Text
-                                            style={{ fontSize: 12, color: '#3B82F6', fontWeight: '500' }}
+                                            style={{ fontSize: 12, color: tokens.colors.primary.main, fontWeight: '500' }}
                                           >
                                             +{formatRUB(overtimeEarnings)}
                                           </Text>
@@ -474,12 +471,12 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             <MaterialCommunityIcons
                                               name="star-circle"
                                               size={12}
-                                              color="#10B981"
+                                              color={tokens.colors.success.main}
                                             />
-                                            <Text style={{ fontSize: 12, color: '#6B7280' }}>Премия</Text>
+                                            <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>Премия</Text>
                                           </View>
                                           <Text
-                                            style={{ fontSize: 12, color: '#10B981', fontWeight: '500' }}
+                                            style={{ fontSize: 12, color: tokens.colors.success.main, fontWeight: '500' }}
                                           >
                                             +{formatRUB(shift.bonuses)}
                                           </Text>
@@ -493,7 +490,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             flexDirection: 'row',
                                             justifyContent: 'space-between',
                                             alignItems: 'center',
-                                            backgroundColor: '#FEE2E2',
+                                            backgroundColor: tokens.colors.error.light,
                                             padding: 6,
                                             borderRadius: 4,
                                             marginTop: 2,
@@ -505,16 +502,16 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             <MaterialCommunityIcons
                                               name="alert-circle"
                                               size={12}
-                                              color="#DC2626"
+                                              color={tokens.colors.error.main}
                                             />
                                             <Text
-                                              style={{ fontSize: 12, color: '#DC2626', fontWeight: '500' }}
+                                              style={{ fontSize: 12, color: tokens.colors.error.main, fontWeight: '500' }}
                                             >
                                               Штраф
                                             </Text>
                                           </View>
                                           <Text
-                                            style={{ fontSize: 12, color: '#DC2626', fontWeight: '600' }}
+                                            style={{ fontSize: 12, color: tokens.colors.error.main, fontWeight: '600' }}
                                           >
                                             {formatRUB(shift.penalties)}
                                           </Text>
@@ -528,7 +525,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                         </View>
                       )}
                     </View>
-                  </StyledCard>
+                  </Card>
                 );
               })
             )}
