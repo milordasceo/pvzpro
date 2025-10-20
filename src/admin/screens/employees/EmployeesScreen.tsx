@@ -49,14 +49,14 @@ export const EmployeesScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.colors.background }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
       {/* Поиск */}
       <View style={{ padding: 16, backgroundColor: tokens.colors.surface }}>
         <Searchbar
           placeholder="Поиск по имени, телефону, ПВЗ..."
           value={searchQuery}
           onChangeText={setSearchQuery}
-          style={{ elevation: 0, backgroundColor: tokens.colors.background }}
+          style={{ elevation: 0, backgroundColor: tokens.colors.gray[100] }}
         />
       </View>
 
