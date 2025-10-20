@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, FlatList, RefreshControl } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, FlatList, RefreshControl, Animated } from 'react-native';
 import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
@@ -16,6 +16,17 @@ export const EmployeesScreen = () => {
   });
 
   const { employees, loading, error, refresh } = useEmployees(filters);
+
+  // Анимация для панели фильтров
+  const filterHeight = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(filterHeight, {
+      toValue: showFilters ? 1 : 0,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  }, [showFilters]);
 
   // Фильтрация по поиску
   const filteredEmployees = employees.filter((employee) => {
@@ -65,13 +76,26 @@ export const EmployeesScreen = () => {
           onPress={() => setShowFilters(!showFilters)}
           bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
           color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
+          borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
+          borderWidth={1}
         />
       </View>
 
-      {/* Фильтры */}
-      {showFilters && (
-        <EmployeeFilters filters={filters} onFiltersChange={setFilters} />
-      )}
+      {/* Фильтры с анимацией */}
+      <Animated.View
+        style={{
+          maxHeight: filterHeight.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 200], // Максимальная высота панели фильтров
+          }),
+          opacity: filterHeight,
+          overflow: 'hidden',
+        }}
+      >
+        {showFilters && (
+          <EmployeeFilters filters={filters} onFiltersChange={setFilters} />
+        )}
+      </Animated.View>
 
       {/* Список сотрудников */}
       {filteredEmployees.length === 0 ? (

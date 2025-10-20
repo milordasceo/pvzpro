@@ -11,6 +11,8 @@ export interface IconButtonProps {
   bg?: string;
   color?: string;
   size?: number;
+  borderColor?: string;
+  borderWidth?: number;
 }
 
 /**
@@ -54,6 +56,8 @@ export const IconButton: React.FC<IconButtonProps> = React.memo(({
   bg,
   color,
   size = 44,
+  borderColor,
+  borderWidth = 0,
 }) => {
   const theme = useTheme();
 
@@ -74,6 +78,8 @@ export const IconButton: React.FC<IconButtonProps> = React.memo(({
             : bg || theme.colors.primary,
           alignItems: 'center',
           justifyContent: 'center',
+          borderWidth: borderColor ? borderWidth || 1 : 0,
+          borderColor: borderColor,
         }}
       >
         <MaterialCommunityIcons 
