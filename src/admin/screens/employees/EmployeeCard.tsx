@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Avatar, Text, Surface } from 'react-native-paper';
+import { Avatar, Text, Surface, IconButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { tokens } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
@@ -8,9 +8,11 @@ import { AdminEmployee } from '../../../types/admin';
 interface EmployeeCardProps {
   employee: AdminEmployee;
   onPress: () => void;
+  onChat?: () => void;
+  onAddTask?: () => void;
 }
 
-export const EmployeeCard = ({ employee, onPress }: EmployeeCardProps) => {
+export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeCardProps) => {
   // Генерация цвета аватара на основе имени
   const getAvatarColor = () => {
     const colors = [
@@ -28,26 +30,58 @@ export const EmployeeCard = ({ employee, onPress }: EmployeeCardProps) => {
       : names[0].substring(0, 2);
   };
 
+  // Определяем должность (пока все сотрудники, в будущем добавим поле в типы)
+  const getPosition = () => {
+    // TODO: Добавить поле position в AdminEmployee
+    return 'Сотрудник ПВЗ';
+  };
+
+  // Определяем статус сотрудника
+  const getEmployeeStatus = () => {
+    if (!employee.isActive) {
+      return { text: 'Уволен', color: tokens.colors.text.disabled, icon: 'account-off' };
+    }
+    
+    if (employee.isOnShift) {
+      return { text: 'На смене', color: tokens.colors.success.dark, icon: 'clock-check' };
+    }
+
+    // TODO: В будущем добавить больничный/отпуск из других данных
+    return { text: 'Выходной', color: tokens.colors.text.secondary, icon: 'home' };
+  };
+
+  const status = getEmployeeStatus();
+
+  const handleChatPress = (e: any) => {
+    e.stopPropagation();
+    onChat?.();
+  };
+
+  const handleTaskPress = (e: any) => {
+    e.stopPropagation();
+    onAddTask?.();
+  };
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <Surface style={styles.card} elevation={0}>
+    <Surface style={styles.card} elevation={0}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
         <View style={styles.cardContent}>
-          {/* Основная строка */}
+          {/* Основная информация */}
           <View style={styles.mainRow}>
             {/* Аватар */}
             <View style={styles.avatarContainer}>
               {employee.avatar ? (
-                <Avatar.Image size={56} source={{ uri: employee.avatar }} />
+                <Avatar.Image size={60} source={{ uri: employee.avatar }} />
               ) : (
                 <Avatar.Text
-                  size={56}
+                  size={60}
                   label={getInitials()}
                   style={{ backgroundColor: getAvatarColor() }}
-                  labelStyle={{ fontSize: 20, fontWeight: '700', color: '#FFF' }}
+                  labelStyle={{ fontSize: 22, fontWeight: '700', color: '#FFF' }}
                 />
               )}
-              {/* Индикатор "на смене" */}
-              {employee.isOnShift && (
+              {/* Индикатор статуса */}
+              {employee.isActive && employee.isOnShift && (
                 <View style={styles.statusDot}>
                   <View style={[styles.dotInner, { backgroundColor: tokens.colors.success.main }]} />
                 </View>
@@ -56,57 +90,86 @@ export const EmployeeCard = ({ employee, onPress }: EmployeeCardProps) => {
 
             {/* Информация */}
             <View style={styles.infoContainer}>
-              {/* Имя */}
+              {/* Имя и Фамилия */}
               <Text variant="titleMedium" style={styles.name} numberOfLines={1}>
                 {employee.name}
               </Text>
 
-              {/* Вторая строка: ПВЗ или статус */}
-              <View style={styles.secondRow}>
-                {employee.pvzName ? (
-                  <View style={styles.locationRow}>
-                    <MaterialCommunityIcons 
-                      name="map-marker" 
-                      size={14} 
-                      color={tokens.colors.text.secondary} 
-                    />
-                    <Text style={styles.locationText} numberOfLines={1}>
-                      {employee.pvzName}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text style={styles.statusText}>
-                    {employee.isOnShift ? 'На смене' : employee.isActive ? 'Активен' : 'Неактивен'}
+              {/* ПВЗ */}
+              {employee.pvzName && (
+                <View style={styles.row}>
+                  <MaterialCommunityIcons 
+                    name="map-marker" 
+                    size={14} 
+                    color={tokens.colors.text.secondary} 
+                  />
+                  <Text style={styles.secondaryText} numberOfLines={1}>
+                    {employee.pvzName}
                   </Text>
-                )}
+                </View>
+              )}
 
-                {/* Алерт */}
-                {employee.stats.pendingRequests > 0 && (
-                  <View style={styles.alertBadge}>
-                    <MaterialCommunityIcons 
-                      name="alert-circle" 
-                      size={14} 
-                      color={tokens.colors.warning.dark} 
-                    />
-                    <Text style={styles.alertText}>
-                      {employee.stats.pendingRequests}
-                    </Text>
-                  </View>
-                )}
+              {/* Должность */}
+              <View style={styles.row}>
+                <MaterialCommunityIcons 
+                  name="badge-account" 
+                  size={14} 
+                  color={tokens.colors.text.secondary} 
+                />
+                <Text style={styles.secondaryText}>
+                  {getPosition()}
+                </Text>
+              </View>
+
+              {/* Статус */}
+              <View style={styles.row}>
+                <MaterialCommunityIcons 
+                  name={status.icon as any}
+                  size={14} 
+                  color={status.color} 
+                />
+                <Text style={[styles.secondaryText, { color: status.color, fontWeight: '600' }]}>
+                  {status.text}
+                </Text>
               </View>
             </View>
+          </View>
 
-            {/* Зарплата */}
-            <View style={styles.salaryContainer}>
-              <Text style={styles.salaryAmount}>
-                {employee.salary.total.toLocaleString('ru-RU')}
-              </Text>
-              <Text style={styles.salaryCurrency}>₽</Text>
-            </View>
+          {/* Кнопки действий */}
+          <View style={styles.actionsRow}>
+            {/* Кнопка "Чат" - всегда показываем */}
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={handleChatPress}
+            >
+              <MaterialCommunityIcons 
+                name="chat" 
+                size={18} 
+                color={tokens.colors.primary.main} 
+              />
+              <Text style={styles.actionButtonText}>Чат</Text>
+            </TouchableOpacity>
+
+            {/* Кнопка "+Задача" - только если на смене */}
+            {employee.isOnShift && (
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.taskButton]}
+                onPress={handleTaskPress}
+              >
+                <MaterialCommunityIcons 
+                  name="plus-circle" 
+                  size={18} 
+                  color={tokens.colors.success.dark} 
+                />
+                <Text style={[styles.actionButtonText, { color: tokens.colors.success.dark }]}>
+                  Задача
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-      </Surface>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Surface>
   );
 };
 
@@ -114,18 +177,18 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: tokens.colors.surface,
     borderRadius: 12,
-    marginBottom: 8,
+    marginBottom: 12,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: tokens.colors.gray[200],
   },
   cardContent: {
-    padding: 12,
+    padding: 14,
   },
   mainRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 12,
+    marginBottom: 12,
   },
   avatarContainer: {
     position: 'relative',
@@ -147,61 +210,50 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
-    gap: 4,
-    minWidth: 0, // Для корректного ellipsis
+    gap: 6,
+    minWidth: 0,
   },
   name: {
     fontWeight: '600',
     color: tokens.colors.text.primary,
+    marginBottom: 2,
   },
-  secondRow: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
+  },
+  secondaryText: {
+    fontSize: 13,
+    color: tokens.colors.text.secondary,
+    flex: 1,
+  },
+  actionsRow: {
+    flexDirection: 'row',
     gap: 8,
-    flexWrap: 'wrap',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: tokens.colors.gray[200],
   },
-  locationRow: {
+  actionButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    flex: 1,
-    minWidth: 0,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: tokens.colors.primary.light,
+    borderWidth: 1,
+    borderColor: tokens.colors.primary.main,
   },
-  locationText: {
-    fontSize: 13,
-    color: tokens.colors.text.secondary,
-    flex: 1,
+  taskButton: {
+    backgroundColor: tokens.colors.success.lighter,
+    borderColor: tokens.colors.success.dark,
   },
-  statusText: {
-    fontSize: 13,
-    color: tokens.colors.text.secondary,
-  },
-  alertBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: tokens.colors.warning.lighter,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  alertText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: tokens.colors.warning.dark,
-  },
-  salaryContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 2,
-  },
-  salaryAmount: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: tokens.colors.primary.main,
-  },
-  salaryCurrency: {
-    fontSize: 16,
+  actionButtonText: {
+    fontSize: 14,
     fontWeight: '600',
     color: tokens.colors.primary.main,
   },

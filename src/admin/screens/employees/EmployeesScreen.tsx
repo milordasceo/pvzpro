@@ -34,6 +34,16 @@ export const EmployeesScreen = () => {
     console.log('Employee pressed:', employee.id);
   }, []);
 
+  const handleChatPress = useCallback((employee: AdminEmployee) => {
+    // TODO: Открыть чат с сотрудником
+    console.log('Open chat with:', employee.name);
+  }, []);
+
+  const handleAddTaskPress = useCallback((employee: AdminEmployee) => {
+    // TODO: Создать задачу для сотрудника
+    console.log('Add task for:', employee.name);
+  }, []);
+
   if (error) {
     return <ErrorState message={error} onRetry={refresh} />;
   }
@@ -78,7 +88,12 @@ export const EmployeesScreen = () => {
           data={filteredEmployees}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <EmployeeCard employee={item} onPress={() => handleEmployeePress(item)} />
+            <EmployeeCard 
+              employee={item} 
+              onPress={() => handleEmployeePress(item)}
+              onChat={() => handleChatPress(item)}
+              onAddTask={() => handleAddTaskPress(item)}
+            />
           )}
           contentContainerStyle={{ padding: 16 }}
           refreshControl={
