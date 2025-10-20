@@ -65,6 +65,11 @@ export const EmployeesScreen = () => {
           size={24}
           onPress={() => setShowFilters(!showFilters)}
           iconColor={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
+          style={{ 
+            borderWidth: 1, 
+            borderColor: showFilters ? tokens.colors.primary.main : tokens.colors.gray[300],
+            backgroundColor: showFilters ? tokens.colors.primary.light : tokens.colors.surface,
+          }}
         />
       </View>
 

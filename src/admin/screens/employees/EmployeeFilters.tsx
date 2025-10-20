@@ -1,6 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
-import { SegmentedButtons, Switch, Text } from 'react-native-paper';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Switch, Text, Chip } from 'react-native-paper';
 import { tokens } from '../../../ui';
 
 interface EmployeeFiltersProps {
@@ -13,47 +13,51 @@ interface EmployeeFiltersProps {
 }
 
 export const EmployeeFilters = ({ filters, onFiltersChange }: EmployeeFiltersProps) => {
+  const statusOptions = [
+    { value: 'all', label: 'Все' },
+    { value: 'active', label: 'Активные' },
+    { value: 'inactive', label: 'Неактивные' },
+  ] as const;
+
   return (
-    <View
-      style={{
-        backgroundColor: tokens.colors.surface,
-        padding: 16,
-        gap: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: tokens.colors.border,
-      }}
-    >
-      {/* Статус */}
-      <View>
-        <Text variant="labelMedium" style={{ marginBottom: 8 }}>
+    <View style={styles.container}>
+      {/* Статус - чипы вместо сегментов */}
+      <View style={styles.section}>
+        <Text variant="labelSmall" style={styles.label}>
           Статус
         </Text>
-        <SegmentedButtons
-          value={filters.status}
-          onValueChange={(value) =>
-            onFiltersChange({
-              ...filters,
-              status: value as 'all' | 'active' | 'inactive',
-            })
-          }
-          buttons={[
-            { value: 'all', label: 'Все' },
-            { value: 'active', label: 'Активные' },
-            { value: 'inactive', label: 'Неактивные' },
-          ]}
-          style={{ backgroundColor: tokens.colors.background }}
-        />
+        <View style={styles.chipsRow}>
+          {statusOptions.map((option) => (
+            <Chip
+              key={option.value}
+              selected={filters.status === option.value}
+              onPress={() =>
+                onFiltersChange({
+                  ...filters,
+                  status: option.value,
+                })
+              }
+              style={[
+                styles.chip,
+                filters.status === option.value && styles.chipSelected,
+              ]}
+              textStyle={[
+                styles.chipText,
+                filters.status === option.value && styles.chipTextSelected,
+              ]}
+              mode="outlined"
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </View>
       </View>
 
-      {/* Только на смене */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text variant="labelMedium">Только на смене</Text>
+      {/* Только на смене - компактнее */}
+      <View style={styles.switchRow}>
+        <Text variant="labelSmall" style={styles.label}>
+          Только на смене
+        </Text>
         <Switch
           value={filters.onShift === true}
           onValueChange={(value) =>
@@ -64,9 +68,52 @@ export const EmployeeFilters = ({ filters, onFiltersChange }: EmployeeFiltersPro
           }
         />
       </View>
-
-      {/* TODO: Фильтр по ПВЗ (если у админа несколько ПВЗ) */}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: tokens.colors.gray[50],
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: tokens.colors.gray[200],
+  },
+  section: {
+    gap: 8,
+  },
+  label: {
+    color: tokens.colors.text.secondary,
+    fontWeight: '600',
+  },
+  chipsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  chip: {
+    backgroundColor: tokens.colors.surface,
+    borderColor: tokens.colors.gray[300],
+  },
+  chipSelected: {
+    backgroundColor: tokens.colors.primary.light,
+    borderColor: tokens.colors.primary.main,
+  },
+  chipText: {
+    color: tokens.colors.text.secondary,
+    fontSize: 13,
+  },
+  chipTextSelected: {
+    color: tokens.colors.primary.main,
+    fontWeight: '600',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+});
 
