@@ -8,11 +8,10 @@ import { placeholderColor } from '../theme';
 import { AdminTabParamList, RoleType } from '../types/navigation';
 import { AdminDashboardScreen } from '../admin/screens/AdminDashboardScreen';
 import { ScheduleScreen } from '../admin/screens/ScheduleScreen';
+import { EmployeesScreen } from '../admin/screens/employees';
 import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
-
-// Модуль "Сотрудники" будет создан после унификации UI
 
 /**
  * Таб навигатор для администраторов
@@ -95,7 +94,7 @@ export const AdminTabNavigator: React.FC = () => {
       {/* 3. Сотрудники */}
       <Tab.Screen
         name="Сотрудники"
-        component={PlaceholderScreen}
+        component={EmployeesScreen}
         options={{
           title: 'Сотрудники',
           tabBarIcon: ({ color, size }) => (
