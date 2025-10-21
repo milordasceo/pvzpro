@@ -32,6 +32,8 @@ export interface SearchInputProps {
   inputStyle?: TextStyle;
   /** Callback при нажатии Enter */
   onSubmitEditing?: () => void;
+  /** Показывать внутреннюю тень */
+  insetShadow?: boolean;
 }
 
 export const SearchInput = React.memo<SearchInputProps>(({
@@ -42,6 +44,7 @@ export const SearchInput = React.memo<SearchInputProps>(({
   style,
   inputStyle,
   onSubmitEditing,
+  insetShadow = false,
 }) => {
   const handleClear = useCallback(() => {
     onChangeText('');
@@ -51,6 +54,23 @@ export const SearchInput = React.memo<SearchInputProps>(({
 
   return (
     <View style={[styles.container, style]}>
+      {/* Внутренняя тень - полупрозрачный overlay сверху */}
+      {insetShadow && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 8,
+            borderTopLeftRadius: tokens.radius.lg,
+            borderTopRightRadius: tokens.radius.lg,
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
       <MaterialCommunityIcons 
         name="magnify" 
         size={20} 
