@@ -82,7 +82,6 @@ export const EmployeesScreen = () => {
                 placeholder="Поиск по имени, телефону, ПВЗ..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                insetShadow={true}
                 style={{ 
                   backgroundColor: tokens.colors.gray[50],
                   borderColor: tokens.colors.gray[200],
