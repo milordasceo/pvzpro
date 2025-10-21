@@ -46,7 +46,7 @@ const EmployeeCard = React.memo<{
   return (
     <View
       style={{
-        backgroundColor: tokens.colors.gray[50],
+        backgroundColor: tokens.colors.screenBackground,
         borderRadius: 12,
         padding: 12,
         marginBottom: 8,

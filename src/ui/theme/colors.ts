@@ -58,10 +58,11 @@ export const colors = {
   },
 
   // Semantic - специальные семантические цвета
-  background: '#FBFCFE',  // фон приложения (едва заметный голубоватый)
-  surface: '#FFFFFF',     // фон карточек, модалов
-  border: '#E5E7EB',      // границы (= gray[200])
-  divider: '#F3F4F6',     // разделители (= gray[100])
+  background: '#FBFCFE',      // фон приложения (едва заметный голубоватый)
+  screenBackground: '#F9FAFB', // фон всех экранов (= gray[50]) - ЕДИНЫЙ для всего приложения
+  surface: '#FFFFFF',         // фон карточек, модалов
+  border: '#E5E7EB',          // границы (= gray[200])
+  divider: '#F3F4F6',         // разделители (= gray[100])
   
   // Text - иерархия текста (4 уровня)
   text: {

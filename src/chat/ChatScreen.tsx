@@ -226,7 +226,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
   }, [scrollToEnd]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.colors.gray[200] }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.screenBackground }}>
       <Appbar.Header mode="center-aligned">
         <Appbar.Action 
           icon="arrow-left" 

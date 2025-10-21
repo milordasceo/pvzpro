@@ -24,7 +24,7 @@ const AuthPlaceholder: React.FC = () => {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: tokens.colors.background,
+        backgroundColor: tokens.colors.screenBackground,
       }}
     >
       <Text variant="titleLarge" style={{ marginBottom: 16 }}>

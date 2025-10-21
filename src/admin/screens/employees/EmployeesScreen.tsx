@@ -60,7 +60,7 @@ export const EmployeesScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
+      <View style={{ flex: 1, backgroundColor: tokens.colors.screenBackground }}>
         {/* Поиск и фильтры на одной панели */}
         <View 
           style={{ 
@@ -83,7 +83,7 @@ export const EmployeesScreen = () => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 style={{ 
-                  backgroundColor: tokens.colors.gray[50],
+                  backgroundColor: tokens.colors.screenBackground,
                   borderColor: tokens.colors.gray[200],
                 }}
               />
