@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { tokens, ScrollView, EmptyState, ErrorState, SearchInput } from '../../../ui';
+import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
 import { EmployeeFilters } from './EmployeeFilters';
@@ -8,6 +8,7 @@ import { useEmployees } from '../../hooks/useEmployees';
 
 export const EmployeesScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all' as 'all' | 'active' | 'inactive',
     pvzId: 'all' as string,
@@ -63,28 +64,44 @@ export const EmployeesScreen = () => {
             elevation: 3,
           }}
         >
-          {/* Поиск */}
-          <SearchInput
-            placeholder="Поиск по имени, телефону, ПВЗ..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={{ 
-              backgroundColor: tokens.colors.surface, 
-              borderColor: tokens.colors.gray[200],
-              // Внутренняя тень
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 2,
-              elevation: 1,
-            }}
-          />
+          {/* Поиск с кнопкой фильтра */}
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <View style={{ flex: 1 }}>
+              <SearchInput
+                placeholder="Поиск по имени, телефону, ПВЗ..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                style={{ 
+                  backgroundColor: tokens.colors.surface, 
+                  borderColor: tokens.colors.gray[200],
+                  // Внутренняя тень
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 2,
+                  elevation: 1,
+                }}
+              />
+            </View>
+            
+            {/* Кнопка фильтра */}
+            <IconButton
+              icon="filter-variant"
+              size={24}
+              onPress={() => setShowFilters(!showFilters)}
+              borderWidth={1}
+              borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
+              bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
+            />
+          </View>
 
-          {/* Фильтры */}
-          <EmployeeFilters 
-            filters={filters} 
-            onFiltersChange={setFilters}
-          />
+          {/* Фильтры - показываем/скрываем */}
+          {showFilters && (
+            <EmployeeFilters 
+              filters={filters} 
+              onFiltersChange={setFilters}
+            />
+          )}
         </View>
 
       {/* Список сотрудников */}
