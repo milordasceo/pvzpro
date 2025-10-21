@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, FlatList, RefreshControl, Animated, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
+import React, { useState, useCallback } from 'react';
+import { View, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { tokens, ScrollView, EmptyState, ErrorState, SearchInput } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
 import { EmployeeFilters } from './EmployeeFilters';
@@ -8,7 +8,6 @@ import { useEmployees } from '../../hooks/useEmployees';
 
 export const EmployeesScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all' as 'all' | 'active' | 'inactive',
     pvzId: 'all' as string,
@@ -16,17 +15,6 @@ export const EmployeesScreen = () => {
   });
 
   const { employees, loading, error, refresh } = useEmployees(filters);
-
-  // Анимация для панели фильтров
-  const filterHeight = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(filterHeight, {
-      toValue: showFilters ? 1 : 0,
-      duration: 200, // Быстрее и одинаково в обе стороны
-      useNativeDriver: false,
-    }).start();
-  }, [showFilters]);
 
   // Фильтрация по поиску
   const filteredEmployees = employees.filter((employee) => {
@@ -61,79 +49,35 @@ export const EmployeesScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
-        {/* Поиск - тень исчезает когда открыты фильтры */}
+        {/* Поиск */}
         <View 
           style={{ 
             padding: 16, 
-            backgroundColor: tokens.colors.surface, 
-            flexDirection: 'row', 
-            gap: 8, 
-            alignItems: 'center',
-            // Тень панели поиска (исчезает при showFilters)
-            shadowColor: showFilters ? 'transparent' : '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: showFilters ? 0 : 0.08,
-            shadowRadius: 4,
-            elevation: showFilters ? 0 : 3,
+            backgroundColor: tokens.colors.surface,
           }}
         >
-          <View style={{ flex: 1 }}>
-            <SearchInput
-              placeholder="Поиск по имени, телефону, ПВЗ..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={{ 
-                backgroundColor: tokens.colors.surface, 
-                borderColor: tokens.colors.gray[200],
-                // Внутренняя тень (всегда)
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
-                shadowRadius: 2,
-                elevation: 1,
-              }}
-            />
-          </View>
-          <IconButton
-            icon={showFilters ? 'filter-off' : 'filter'}
-            size={48}
-            onPress={() => setShowFilters(!showFilters)}
-            bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
-            color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
-            borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
-            borderWidth={1}
+          <SearchInput
+            placeholder="Поиск по имени, телефону, ПВЗ..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={{ 
+              backgroundColor: tokens.colors.surface, 
+              borderColor: tokens.colors.gray[200],
+              // Внутренняя тень
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 2,
+              elevation: 1,
+            }}
           />
         </View>
 
-      {/* Фильтры с анимацией и тенью */}
-      {showFilters && (
-        <View
-          style={{
-            // Тень панели фильтров (на внешнем контейнере)
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.08,
-            shadowRadius: 4,
-            elevation: 3,
-          }}
-        >
-          <Animated.View
-            style={{
-              maxHeight: filterHeight.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 200], // Максимальная высота панели фильтров
-              }),
-              opacity: filterHeight,
-              overflow: 'hidden',
-            }}
-          >
-            <EmployeeFilters 
-              filters={filters} 
-              onFiltersChange={setFilters}
-            />
-          </Animated.View>
-        </View>
-      )}
+      {/* Фильтры - всегда видны */}
+      <EmployeeFilters 
+        filters={filters} 
+        onFiltersChange={setFilters}
+      />
 
       {/* Список сотрудников */}
       {filteredEmployees.length === 0 ? (
