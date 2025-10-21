@@ -74,18 +74,7 @@ export const EmployeeFilters = ({ filters, onFiltersChange }: EmployeeFiltersPro
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: tokens.colors.surface, // Белый фон
-    paddingHorizontal: 16,
-    paddingVertical: 12,
     gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: tokens.colors.gray[200],
-    // Тень (всегда видна)
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
   },
   section: {
     gap: 8,

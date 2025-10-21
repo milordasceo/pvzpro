@@ -49,13 +49,21 @@ export const EmployeesScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ flex: 1, backgroundColor: tokens.colors.gray[50] }}>
-        {/* Поиск */}
+        {/* Поиск и фильтры на одной панели */}
         <View 
           style={{ 
             padding: 16, 
             backgroundColor: tokens.colors.surface,
+            gap: 16,
+            // Тень панели
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 3,
           }}
         >
+          {/* Поиск */}
           <SearchInput
             placeholder="Поиск по имени, телефону, ПВЗ..."
             value={searchQuery}
@@ -71,13 +79,13 @@ export const EmployeesScreen = () => {
               elevation: 1,
             }}
           />
-        </View>
 
-      {/* Фильтры - всегда видны */}
-      <EmployeeFilters 
-        filters={filters} 
-        onFiltersChange={setFilters}
-      />
+          {/* Фильтры */}
+          <EmployeeFilters 
+            filters={filters} 
+            onFiltersChange={setFilters}
+          />
+        </View>
 
       {/* Список сотрудников */}
       {filteredEmployees.length === 0 ? (
