@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { View, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard, Animated } from 'react-native';
 import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from './EmployeeCard';
@@ -16,6 +16,17 @@ export const EmployeesScreen = () => {
   });
 
   const { employees, loading, error, refresh } = useEmployees(filters);
+
+  // Анимация для плавного раскрытия/сворачивания фильтров
+  const filterHeight = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(filterHeight, {
+      toValue: showFilters ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [showFilters]);
 
   // Фильтрация по поиску
   const filteredEmployees = employees.filter((employee) => {
@@ -72,14 +83,14 @@ export const EmployeesScreen = () => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 style={{ 
-                  backgroundColor: tokens.colors.surface, 
+                  backgroundColor: tokens.colors.gray[50],
                   borderColor: tokens.colors.gray[200],
-                  // Внутренняя тень
+                  // Внутренняя тень для глубины
                   shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 2,
-                  elevation: 1,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 3,
+                  elevation: 2,
                 }}
               />
             </View>
@@ -92,16 +103,26 @@ export const EmployeesScreen = () => {
               borderWidth={1}
               borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
               bg={showFilters ? tokens.colors.primary.light : tokens.colors.surface}
+              color={showFilters ? tokens.colors.primary.main : tokens.colors.text.secondary}
             />
           </View>
 
-          {/* Фильтры - показываем/скрываем */}
-          {showFilters && (
+          {/* Фильтры - плавная анимация */}
+          <Animated.View
+            style={{
+              maxHeight: filterHeight.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 200], // Максимальная высота фильтров
+              }),
+              opacity: filterHeight,
+              overflow: 'hidden',
+            }}
+          >
             <EmployeeFilters 
               filters={filters} 
               onFiltersChange={setFilters}
             />
-          )}
+          </Animated.View>
         </View>
 
       {/* Список сотрудников */}
