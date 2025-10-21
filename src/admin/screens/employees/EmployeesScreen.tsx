@@ -84,10 +84,10 @@ export const EmployeesScreen = () => {
               />
             </View>
             
-            {/* Кнопка фильтра */}
+            {/* Кнопка фильтра - квадратная 48x48, как высота поля поиска */}
             <IconButton
               icon="filter-variant"
-              size={24}
+              size={48}
               onPress={() => setShowFilters(!showFilters)}
               borderWidth={1}
               borderColor={showFilters ? tokens.colors.primary.main : tokens.colors.gray[300]}
