@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { Text, useTheme, ActivityIndicator } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens, Card, Button, MetaRow, EmptyState, ErrorState } from '../ui';
+import { tokens, Card, Button, MetaRow, EmptyState, ErrorState, Title, Body, Label, Caption } from '../ui';
 import { ShiftPayment } from '../types/finance';
 import { financeService } from '../services';
 import { useAuthStore } from '../store/auth.store';
