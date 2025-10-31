@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { Text, useTheme, Divider, List } from 'react-native-paper';
-import { tokens, Card, MetaRow, Button } from '../ui';
+import { tokens, Card, MetaRow, Button, Body, Label, Caption, Title } from '../ui';
 import { financeService } from '../services';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/auth.store';
@@ -225,7 +225,7 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                     alignItems: 'center',
                   }}
                 >
-                  <Text style={{ fontSize: 14, color: tokens.colors.text.secondary }}>Текущий месяц</Text>
+                  <Caption>Текущий месяц</Caption>
                   <Text
                     style={{
                       fontSize: 20,
@@ -243,12 +243,12 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                     paddingTop: 4,
                   }}
                 >
-                  <Text style={{ fontSize: 12, color: tokens.colors.text.muted }}>
+                  <Label size="small">
                     Премии: {formatRUB(currentMonthStats.bonuses)}
-                  </Text>
-                  <Text style={{ fontSize: 12, color: tokens.colors.text.muted }}>
+                  </Label>
+                  <Label size="small">
                     Штрафы: {formatRUB(currentMonthStats.penalties)}
-                  </Text>
+                  </Label>
                 </View>
               </View>
             </Card>
@@ -256,22 +256,16 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
             {/* Следующая выплата */}
             <Card>
               <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 14, color: tokens.colors.text.secondary }}>Следующая выплата</Text>
+                <Caption>Следующая выплата</Caption>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <MaterialCommunityIcons
                     name="calendar-clock"
                     size={20}
                     color={theme.colors.primary}
                   />
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: '600',
-                      color: tokens.colors.text.primary,
-                    }}
-                  >
+                  <Title size="medium">
                     {getNextPaymentDate()}
-                  </Text>
+                  </Title>
                 </View>
               </View>
             </Card>
@@ -367,9 +361,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                             justifyContent: 'space-between',
                           }}
                         >
-                          <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                          <Title size="medium">
                             {day.date.toLocaleDateString('ru-RU')}
-                          </Text>
+                          </Title>
                           <View
                             style={{
                               backgroundColor: tokens.colors.primary.light,
@@ -378,9 +372,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                               paddingVertical: 2,
                             }}
                           >
-                            <Text style={{ color: tokens.colors.primary.main, fontSize: 12 }}>
+                            <Label size="small" style={{ color: tokens.colors.primary.main }}>
                               {weekdayShort(day.date)}
-                            </Text>
+                            </Label>
                           </View>
                         </View>
                         {day.pvzAddress ? (
@@ -396,7 +390,7 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                             alignItems: 'center',
                           }}
                         >
-                          <Text style={{ color: tokens.colors.text.secondary }}>Итого за смену</Text>
+                          <Caption>Итого за смену</Caption>
                           <Text
                             style={{
                               color: day.total >= 0 ? theme.colors.primary : tokens.colors.error.main,
@@ -526,9 +520,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                               size={18}
                                               color={meta.color}
                                             />
-                                            <Text style={{ fontSize: 13, fontWeight: '600', color: tokens.colors.text.primary, flex: 1 }}>
+                                            <Body size="small" style={{ fontWeight: '600', flex: 1 }}>
                                               {p.description || dayLabelFromCategory(p.category ?? p.penaltyCategory)}
-                                            </Text>
+                                            </Body>
                                           </View>
                                         </View>
                                         
@@ -538,9 +532,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                           {p.itemName && (
                                             <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
                                               <MaterialCommunityIcons name="package-variant" size={14} color={tokens.colors.text.secondary} style={{ marginTop: 2 }} />
-                                              <Text style={{ fontSize: 12, color: tokens.colors.text.primary, flex: 1 }}>
+                                              <Body size="small" style={{ flex: 1 }}>
                                                 {p.itemName}
-                                              </Text>
+                                              </Body>
                                             </View>
                                           )}
                                           
@@ -548,9 +542,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                           {p.relatedItemPrice && (
                                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                                               <MaterialCommunityIcons name="cash" size={14} color={tokens.colors.text.secondary} />
-                                              <Text style={{ fontSize: 11, color: tokens.colors.text.secondary }}>
+                                              <Caption style={{ fontSize: 11 }}>
                                                 Стоимость: {formatRUB(p.relatedItemPrice)}
-                                              </Text>
+                                              </Caption>
                                             </View>
                                           )}
                                           
@@ -568,12 +562,12 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                               <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
                                                 <MaterialCommunityIcons name="comment-text" size={14} color={tokens.colors.warning.main} style={{ marginTop: 1 }} />
                                                 <View style={{ flex: 1 }}>
-                                                  <Text style={{ fontSize: 10, fontWeight: '600', color: tokens.colors.warning.main, marginBottom: 2 }}>
+                                                  <Label size="small" style={{ fontWeight: '600', color: tokens.colors.warning.main, marginBottom: 2 }}>
                                                     Комментарий администратора:
-                                                  </Text>
-                                                  <Text style={{ fontSize: 11, color: tokens.colors.warning.main, lineHeight: 16 }}>
+                                                  </Label>
+                                                  <Caption style={{ fontSize: 11, color: tokens.colors.warning.main, lineHeight: 16 }}>
                                                     {p.adminComment}
-                                                  </Text>
+                                                  </Caption>
                                                 </View>
                                               </View>
                                             </View>
@@ -594,9 +588,9 @@ export const FinanceCurrentPeriodScreen: React.FC = () => {
                                               }}
                                             >
                                               <MaterialCommunityIcons name="clock-outline" size={12} color={tokens.colors.warning.main} />
-                                              <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.warning.main }}>
+                                              <Caption style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.warning.main }}>
                                                 На рассмотрении
-                                              </Text>
+                                              </Caption>
                                             </View>
                                           )}
                                         </View>
