@@ -1276,31 +1276,13 @@ export const getAllPvzStats = (): PvzStats => {
 // DASHBOARD DATA
 // ============================================
 
-export interface DashboardEmployeeOnShift {
-  id: string;
-  name: string;
-  photo?: string;
-  pvzId: string;
-  pvzName: string;
-  address: string;
-  pvzWorkingHours: string;
-  status: 'on_time' | 'late';
-  arrivalTime: string;
-  lateMinutes?: number;
-  shiftStartTime: Date;
-  pvzPlannedEmployees?: number;
-  pvzActiveEmployees?: number;
-  employmentType: 'full_time' | 'part_time'; // Полный день / Неполный день
-  position: 'trainee' | 'employee'; // Стажёр / Сотрудник ПВЗ
-}
-
 export interface DashboardRequest {
   id: string;
   employeeName: string;
   employeePhoto?: string;
   type: 'day_off' | 'shift_swap' | 'vacation' | 'sick_leave';
   date: string;
-  comment: string;
+  comment?: string;
 }
 
 export interface DashboardData {
@@ -1308,10 +1290,9 @@ export interface DashboardData {
   employeesCount: number;
   onShiftCount: number;
   plannedTodayCount: number; // Запланировано сотрудников на сегодня
-  employeesOnShift: DashboardEmployeeOnShift[];
+  employeesOnShift: AdminEmployee[];
   requests: DashboardRequest[];
   lateEmployees: number; // Количество опоздавших сотрудников
-  pvzWithShortage: number; // Количество ПВЗ с нехваткой персонала
 }
 
 /**
@@ -1337,44 +1318,7 @@ export const getDashboardData = (): DashboardData => {
   };
 
   // Формируем список сотрудников на смене
-  const employeesOnShift: DashboardEmployeeOnShift[] = activeShifts.map(shift => {
-    const pvz = getPvzById(shift.pvzId);
-    const startTime = new Date(shift.startTime);
-    const plannedStart = new Date(shift.date);
-    plannedStart.setHours(9, 0, 0, 0); // Плановое начало в 9:00
-    
-    const lateMinutes = Math.floor((startTime.getTime() - plannedStart.getTime()) / (1000 * 60));
-    const isLate = lateMinutes > 0;
-
-    // Форматируем часы работы из settings
-    const workingHours = pvz?.settings?.workingHours 
-      ? `${pvz.settings.workingHours.start.toString().padStart(2, '0')}:00 - ${pvz.settings.workingHours.end.toString().padStart(2, '0')}:00`
-      : '09:00 - 21:00';
-
-    // Определяем тип занятости по продолжительности смены
-    const employmentType = shift.plannedDuration >= 480 ? 'full_time' : 'part_time'; // 480 мин = 8 часов
-    
-    // Определяем должность (пока все сотрудники, стажёров добавим позже)
-    const position: 'trainee' | 'employee' = 'employee';
-
-    return {
-      id: shift.employeeId,
-      name: shift.employeeName,
-      photo: shift.employeeAvatar,
-      pvzId: shift.pvzId,
-      pvzName: shift.pvzName,
-      address: pvz?.address || '',
-      pvzWorkingHours: workingHours,
-      status: isLate ? 'late' : 'on_time',
-      arrivalTime: `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`,
-      lateMinutes: isLate ? lateMinutes : undefined,
-      shiftStartTime: startTime,
-      pvzPlannedEmployees: plannedEmployeesPerPvz[shift.pvzId] || 1,
-      pvzActiveEmployees: employeesPerPvz[shift.pvzId] || 0,
-      employmentType,
-      position,
-    };
-  });
+  const employeesOnShift: AdminEmployee[] = MOCK_EMPLOYEES.filter(emp => emp.isOnShift && emp.isActive);
 
   // Формируем список запросов
   const requests: DashboardRequest[] = pendingRequests.map(req => {
@@ -1385,31 +1329,18 @@ export const getDashboardData = (): DashboardData => {
       employeePhoto: req.employeeAvatar,
       type: req.type as 'day_off' | 'shift_swap' | 'vacation' | 'sick_leave',
       date: `с ${dateStr}`,
-      comment: req.description || '',
     };
   });
 
-  // Подсчитываем опоздавших
-  const lateEmployees = employeesOnShift.filter(emp => emp.status === 'late').length;
+  // Подсчитываем опоздавших (упрощенно)
+  const lateEmployees = 0;
 
   // Подсчитываем ПВЗ с нехваткой персонала
   const pvzShortages = new Set<string>();
-  employeesOnShift.forEach(emp => {
-    if (emp.pvzActiveEmployees && emp.pvzPlannedEmployees && 
-        emp.pvzActiveEmployees < emp.pvzPlannedEmployees) {
-      pvzShortages.add(emp.pvzId);
-    }
-  });
 
   // Подсчитываем запланированное количество сотрудников на сегодня
-  // Суммируем pvzPlannedEmployees для каждого уникального ПВЗ
-  const plannedByPvz = new Map<string, number>();
-  employeesOnShift.forEach(emp => {
-    if (emp.pvzPlannedEmployees && !plannedByPvz.has(emp.pvzId)) {
-      plannedByPvz.set(emp.pvzId, emp.pvzPlannedEmployees);
-    }
-  });
-  const plannedTodayCount = Array.from(plannedByPvz.values()).reduce((sum, count) => sum + count, 0);
+  // Упрощенно - считаем по количеству ПВЗ
+  const plannedTodayCount = MOCK_PVZS.length;
 
   return {
     pvzCount: MOCK_PVZS.length,
@@ -1419,7 +1350,6 @@ export const getDashboardData = (): DashboardData => {
     employeesOnShift,
     requests,
     lateEmployees,
-    pvzWithShortage: pvzShortages.size,
   };
 };
 

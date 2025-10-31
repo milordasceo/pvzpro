@@ -95,7 +95,7 @@ export const ScheduleScreen: React.FC = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.screenBackground }}>
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }}>
       <View style={{ paddingHorizontal: 12, marginTop: 8 }}>
         {/* Навигация */}
@@ -146,7 +146,7 @@ export const ScheduleScreen: React.FC = () => {
             justifyContent: 'flex-start',
             marginBottom: 8,
             paddingVertical: 8,
-            backgroundColor: tokens.colors.gray[50],
+            backgroundColor: tokens.colors.screenBackground,
             borderRadius: 8,
           }}
         >
@@ -416,7 +416,7 @@ export const ScheduleScreen: React.FC = () => {
                         gap: 8,
                         paddingVertical: 8,
                         paddingHorizontal: 12,
-                        backgroundColor: tokens.colors.gray[50],
+                        backgroundColor: tokens.colors.screenBackground,
                         borderRadius: 8,
                       }}
                     >

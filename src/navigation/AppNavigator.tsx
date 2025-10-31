@@ -1,6 +1,6 @@
 import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { IconButton } from 'react-native-paper';
 import { useAuthStore } from '../store/auth.store';
 import { MainNavigator } from './MainNavigator';
 import { AuthNavigator } from './AuthNavigator';
@@ -59,5 +59,9 @@ export const AppNavigator: React.FC = () => {
  * Показывается пока приложение инициализируется
  */
 const LoadingScreen: React.FC = () => {
-  return <></>;
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
 };

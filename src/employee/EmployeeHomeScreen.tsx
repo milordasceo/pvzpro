@@ -70,7 +70,7 @@ export const EmployeeHomeScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: tokens.colors.screenBackground }}>
       <TopTabs.Navigator
         initialRouteName="Обзор"
         screenOptions={{

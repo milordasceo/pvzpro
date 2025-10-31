@@ -15,7 +15,7 @@ import { EmployeeTabParamList } from '../types/navigation';
 
 // Ленивая загрузка тяжёлых экранов (Code Splitting)
 const ScheduleScreen = lazy(() => import('../employee/ScheduleScreen').then(m => ({ default: m.ScheduleScreen })));
-const FinanceCurrentPeriodScreen = lazy(() => import('../employee/TestFinanceScreen').then(m => ({ default: m.FinanceCurrentPeriodScreen })));
+const FinanceCurrentPeriodScreen = lazy(() => import('../employee/FinanceCurrentPeriodScreen').then(m => ({ default: m.FinanceCurrentPeriodScreen })));
 const FinanceHistoryScreen = lazy(() => import('../employee/FinanceHistoryScreen').then(m => ({ default: m.FinanceHistoryScreen })));
 
 const Tab = createBottomTabNavigator<EmployeeTabParamList>();

@@ -170,6 +170,6 @@
 
 - 📖 [Архив выполненных задач](archive/TASKS_ARCHIVE.md)
 - 🎨 [Дизайн-система](DESIGN_SYSTEM.md)
-- ⚡ [Руководство по оптимизации](PERFORMANCE.md)
-- 📋 [Обзор проекта](PROJECT_OVERVIEW.md)
+- ⚡ [Руководство по оптимизации](OPTIMIZATION.md)
+- 📋 [Обзор проекта](PROJECT.md)
 - 🧪 [Тестовые сценарии](test-specs/README.md)

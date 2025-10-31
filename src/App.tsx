@@ -7,13 +7,14 @@ import { AppProvider } from './providers/AppProvider';
 import { AppNavigator } from './navigation/AppNavigator';
 import { useAuthStore } from './store/auth.store';
 import { APP_CONFIG } from './config/app';
-import { Appbar, Menu, Divider } from 'react-native-paper';
+import { Appbar, Menu } from 'react-native-paper';
 import { RoleType } from './types/navigation';
-import {
-  initializeNotifications,
-  scheduleNextShiftReminderTwoOnTwo,
-  registerNotificationTapNavigator,
-} from './services/notifications';
+// TODO: Вернуть после перехода на development build
+// import {
+//   initializeNotifications,
+//   scheduleNextShiftReminderTwoOnTwo,
+//   registerNotificationTapNavigator,
+// } from './services/notifications';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 /**

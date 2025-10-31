@@ -16,7 +16,11 @@ export * from './components/buttons';
 export * from './components/overlays';
 export * from './components/navigation';
 export * from './components/display';
+export * from './components/typography';
 export * from './components/dev';
+
+// Утилиты
+export * from './utils';
 
 // Hooks (будут добавлены позже)
 // export * from './hooks';

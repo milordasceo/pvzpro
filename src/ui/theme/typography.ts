@@ -65,6 +65,82 @@ export const paperVariants = {
   labelSmall: 'labelSmall' as const,    // ~11px
 } as const;
 
+/**
+ * Типографические пресеты для частых паттернов
+ * Используются в новых компонентах Heading, Title, Body, Label, Caption
+ */
+export const textPresets = {
+  // Headings
+  heading1: {
+    variant: 'headlineLarge' as const,
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold,
+  },
+  heading2: {
+    variant: 'headlineMedium' as const,
+    fontSize: fontSize.xxl,
+    fontWeight: fontWeight.semibold,
+  },
+  heading3: {
+    variant: 'headlineSmall' as const,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.semibold,
+  },
+
+  // Titles (заголовки карточек/секций)
+  sectionTitle: {
+    variant: 'titleLarge' as const,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+  },
+  cardTitle: {
+    variant: 'titleMedium' as const,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+  },
+  subtitle: {
+    variant: 'titleSmall' as const,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
+  },
+
+  // Body (основной текст)
+  bodyPrimary: {
+    variant: 'bodyMedium' as const,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.regular,
+  },
+  bodySecondary: {
+    variant: 'bodyMedium' as const,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.regular,
+  },
+  bodySmallText: {
+    variant: 'bodySmall' as const,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.regular,
+  },
+
+  // Labels
+  label: {
+    variant: 'labelMedium' as const,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
+  },
+  caption: {
+    variant: 'bodySmall' as const,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.regular,
+  },
+
+  // Meta (время, даты, вспомогательная информация)
+  meta: {
+    variant: 'labelSmall' as const,
+    fontSize: 11,
+    fontWeight: fontWeight.regular,
+  },
+} as const;
+
 export type FontSize = typeof fontSize;
 export type FontWeight = typeof fontWeight;
 export type PaperVariant = typeof paperVariants[keyof typeof paperVariants];

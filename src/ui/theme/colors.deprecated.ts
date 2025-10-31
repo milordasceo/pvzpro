@@ -89,15 +89,43 @@ export const deprecatedBadgeColors = {
 } as const;
 
 /**
+ * @deprecated Удалено в оптимизации 2025-11-01
+ * Эти токены были удалены как неиспользуемые
+ */
+export const removedTokens = {
+  primary: {
+    darker: '#1E3A8A',  // → используйте primary.dark
+  },
+  gray: {
+    700: '#374151',     // → используйте gray[500] или text.primary
+    900: '#111827',     // → используйте text.primary
+  },
+  warning: {
+    dark: '#B45309',    // → используйте warning.main
+  },
+  // Эти токены заменены на прямое использование в компонентах
+  overlay: 'rgba(0, 0, 0, 0.5)',   // → используйте напрямую в компонентах Modal/Dialog
+  backdrop: 'rgba(0, 0, 0, 0.25)', // → используйте напрямую в компонентах Modal/Dialog
+  divider: '#F3F4F6',              // → используйте gray[100]
+} as const;
+
+/**
  * Миграция:
  * 
  * БЫЛО:
  * tokens.colors.primary[100]     → tokens.colors.primary.light
  * tokens.colors.primary[600]     → tokens.colors.primary.dark
+ * tokens.colors.primary.darker   → tokens.colors.primary.dark
  * tokens.colors.success.lighter  → tokens.colors.success.light
  * tokens.colors.success[600]     → tokens.colors.success.main
  * tokens.colors.error[500]       → tokens.colors.error.main
  * tokens.colors.info.main        → tokens.colors.primary.main
  * tokens.colors.badge.success    → tokens.colors.success.main
+ * tokens.colors.gray[700]        → tokens.colors.gray[500] или tokens.colors.text.primary
+ * tokens.colors.gray[900]        → tokens.colors.text.primary
+ * tokens.colors.warning.dark     → tokens.colors.warning.main
+ * tokens.colors.overlay          → 'rgba(0, 0, 0, 0.5)' напрямую
+ * tokens.colors.backdrop         → 'rgba(0, 0, 0, 0.25)' напрямую
+ * tokens.colors.divider          → tokens.colors.gray[100]
  */
 

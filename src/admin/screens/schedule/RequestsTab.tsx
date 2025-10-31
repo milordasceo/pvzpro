@@ -10,7 +10,7 @@ interface Request {
   employeePhoto?: string;
   type: 'day_off' | 'shift_swap' | 'vacation' | 'sick_leave';
   date: string;
-  comment: string;
+  comment?: string;
 }
 
 interface RequestsTabProps {
@@ -102,7 +102,7 @@ export const RequestsTab = React.memo<RequestsTabProps>(({ requests, loading, on
                 {request.comment && (
                   <View style={{ backgroundColor: tokens.colors.gray[50], borderRadius: 8, padding: 12, marginBottom: 12 }}>
                     <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, lineHeight: 18 }}>
-                      "{request.comment}"
+                      &quot;{request.comment}&quot;
                     </Text>
                   </View>
                 )}
