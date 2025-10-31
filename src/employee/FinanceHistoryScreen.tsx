@@ -176,16 +176,16 @@ export const FinanceHistoryScreen: React.FC = () => {
                           }}
                         >
                           <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+                            <Body size="large" style={{ fontWeight: '600' }}>
                               {period.label}
-                            </Text>
-                            <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
+                            </Body>
+                            <Caption style={{ marginTop: 2 }}>
                               {period.isPaid ? 'Выплачено' : 'К выплате'}{' '}
                               {period.paymentDate.toLocaleDateString('ru-RU', {
                                 day: 'numeric',
                                 month: 'long',
                               })}
-                            </Text>
+                            </Caption>
                           </View>
                           <View
                             style={{
@@ -228,9 +228,9 @@ export const FinanceHistoryScreen: React.FC = () => {
                             alignItems: 'center',
                           }}
                         >
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, fontWeight: '500' }}>
+                          <Body size="small" style={{ fontWeight: '500' }}>
                             {period.isPaid ? 'Получено' : 'Заработано'}
-                          </Text>
+                          </Body>
                           <Text
                             style={{
                               fontSize: 24,
@@ -247,19 +247,19 @@ export const FinanceHistoryScreen: React.FC = () => {
                       <View style={{ gap: 8, marginTop: 4 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                           <MaterialCommunityIcons name="briefcase-clock" size={16} color={tokens.colors.text.secondary} />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>
+                          <Caption style={{ flex: 1 }}>
                             Смен отработано
-                          </Text>
-                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
+                          </Caption>
+                          <Body size="small" style={{ fontWeight: '600' }}>
                             {period.shifts.length}
-                          </Text>
+                          </Body>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                           <MaterialCommunityIcons name="clock-outline" size={16} color={tokens.colors.text.secondary} />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Часов</Text>
-                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
+                          <Caption style={{ flex: 1 }}>Часов</Caption>
+                          <Body size="small" style={{ fontWeight: '600' }}>
                             {totalHours} ч
-                          </Text>
+                          </Body>
                         </View>
                         {totalPenalties !== 0 && (
                           <View
@@ -278,12 +278,12 @@ export const FinanceHistoryScreen: React.FC = () => {
                               size={16}
                               color={tokens.colors.error.main}
                             />
-                            <Text style={{ fontSize: 13, color: tokens.colors.error.main, flex: 1, fontWeight: '500' }}>
+                            <Body size="small" style={{ color: tokens.colors.error.main, flex: 1, fontWeight: '500' }}>
                               Штрафы
-                            </Text>
-                            <Text style={{ fontSize: 14, color: tokens.colors.error.main, fontWeight: '700' }}>
+                            </Body>
+                            <Body size="small" style={{ color: tokens.colors.error.main, fontWeight: '700' }}>
                               {formatRUB(totalPenalties)}
-                            </Text>
+                            </Body>
                           </View>
                         )}
                       </View>

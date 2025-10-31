@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Appbar, Avatar, Badge, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import { tokens, ScrollView } from '../ui';
+import { tokens, ScrollView, Title, Body, Caption, Label } from '../ui';
 
 type ChatListItem = {
   id: string;
@@ -51,7 +51,7 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header mode="center-aligned" style={{ backgroundColor: theme.colors.surface }}>
-        <Appbar.Content title="Чаты" titleStyle={{ fontSize: 18, fontWeight: '600' }} />
+        <Appbar.Content title="Чаты" />
         <Appbar.Action icon="magnify" onPress={() => {}} />
       </Appbar.Header>
       <View style={{ height: 1, backgroundColor: tokens.colors.border }} />
@@ -77,12 +77,9 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
                 />
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text
-                      style={{ fontWeight: '600', fontSize: 16, flexShrink: 1 }}
-                      numberOfLines={1}
-                    >
+                    <Title size="medium" style={{ flexShrink: 1 }} numberOfLines={1}>
                       {item.title}
-                    </Text>
+                    </Title>
                     {item.pinned ? (
                       <Text style={{ marginLeft: 6, color: tokens.colors.text.muted }}>📌</Text>
                     ) : null}
@@ -90,12 +87,12 @@ export const ChatListScreen: React.FC<any> = ({ navigation }) => {
                       <Text style={{ marginLeft: 4, color: tokens.colors.text.muted }}>🔕</Text>
                     ) : null}
                   </View>
-                  <Text style={{ color: tokens.colors.text.secondary }} numberOfLines={1}>
+                  <Caption numberOfLines={1}>
                     {item.lastMessage}
-                  </Text>
+                  </Caption>
                 </View>
                 <View style={{ alignItems: 'flex-end', width: 64 }}>
-                  <Text style={{ color: tokens.colors.text.muted, fontSize: 12 }}>{timeFrom(item.at)}</Text>
+                  <Label size="small">{timeFrom(item.at)}</Label>
                   {item.unreadCount ? (
                     <Badge
                       style={{ marginTop: 6, backgroundColor: theme.colors.primary }}

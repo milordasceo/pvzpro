@@ -13,7 +13,7 @@ import { Appbar, Avatar, Text, TextInput, useTheme, Menu, Button } from 'react-n
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens, ScrollView, IconButton, Dialog } from '../ui';
+import { tokens, ScrollView, IconButton, Dialog, Title, Body, Label, Caption } from '../ui';
 
 type Role = 'me' | 'manager' | 'system';
 
@@ -246,8 +246,6 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
         <Appbar.Content
           title={title}
           subtitle="был(а) недавно"
-          titleStyle={{ fontSize: 16, fontWeight: '600' }}
-          subtitleStyle={{ fontSize: 12, color: tokens.colors.text.muted }}
         />
         <Menu
           visible={menuVisible}
@@ -306,13 +304,13 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
             if (item.role === 'system') {
               return (
                 <View key={item.id} style={{ alignItems: 'center', marginVertical: 6 }}>
-                  <Text style={{ color: tokens.colors.text.secondary, fontSize: 12 }}>
+                  <Caption color="secondary">
                     {new Date(item.at).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}{' '}
                     · {item.text}
-                  </Text>
+                  </Caption>
                 </View>
               );
             }
@@ -349,7 +347,7 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                     elevation: 1,
                   }}
                 >
-                  <Text style={{ color: tokens.colors.text.primary }}>{item.text}</Text>
+                  <Body>{item.text}</Body>
                   
                   {/* Карточка штрафа */}
                   {item.penaltyAttachment && (
@@ -371,41 +369,41 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                           size={16}
                           color={item.penaltyAttachment.color}
                         />
-                        <Text style={{ fontSize: 12, fontWeight: '600', color: tokens.colors.text.primary, flex: 1 }}>
+                        <Label size="small" style={{ flex: 1 }}>
                           {item.penaltyAttachment.description}
-                        </Text>
+                        </Label>
                       </View>
                       
                       {/* Дата */}
-                      <Text style={{ fontSize: 10, color: tokens.colors.text.secondary, marginBottom: 8 }}>
+                      <Caption color="secondary" style={{ marginBottom: 8 }}>
                         {item.penaltyAttachment.date}
-                      </Text>
+                      </Caption>
                       
                       {/* Название товара */}
                       {item.penaltyAttachment.itemName && (
                         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 6 }}>
                           <MaterialCommunityIcons name="package-variant" size={14} color={tokens.colors.text.secondary} style={{ marginTop: 1 }} />
-                          <Text style={{ fontSize: 11, color: tokens.colors.text.primary, flex: 1 }}>
+                          <Label size="small" style={{ flex: 1 }}>
                             {item.penaltyAttachment.itemName}
-                          </Text>
+                          </Label>
                         </View>
                       )}
                       
                       {/* Сумма штрафа и стоимость товара */}
                       <View style={{ gap: 4, marginBottom: 6 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={{ fontSize: 11, color: tokens.colors.text.secondary }}>Сумма штрафа:</Text>
-                          <Text style={{ fontSize: 14, fontWeight: '700', color: item.penaltyAttachment.color }}>
+                          <Label size="small" color="secondary">Сумма штрафа:</Label>
+                          <Title size="small" style={{ color: item.penaltyAttachment.color }}>
                             {formatRUB(item.penaltyAttachment.amount)}
-                          </Text>
+                          </Title>
                         </View>
                         
                         {item.penaltyAttachment.relatedItemPrice && (
                           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ fontSize: 10, color: tokens.colors.text.muted }}>Стоимость товара:</Text>
-                            <Text style={{ fontSize: 11, color: tokens.colors.text.secondary }}>
+                            <Caption color="muted">Стоимость товара:</Caption>
+                            <Label size="small" color="secondary">
                               {formatRUB(item.penaltyAttachment.relatedItemPrice)}
-                            </Text>
+                            </Label>
                           </View>
                         )}
                       </View>
@@ -421,25 +419,23 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                             borderLeftColor: tokens.colors.warning.main,
                           }}
                         >
-                          <Text style={{ fontSize: 9, fontWeight: '600', color: tokens.colors.warning.dark, marginBottom: 2 }}>
+                          <Label size="small" style={{ color: tokens.colors.warning.dark, marginBottom: 2 }}>
                             От администратора:
-                          </Text>
-                          <Text style={{ fontSize: 10, color: tokens.colors.warning.dark, lineHeight: 14 }}>
+                          </Label>
+                          <Caption style={{ color: tokens.colors.warning.dark, lineHeight: 14 }}>
                             {item.penaltyAttachment.adminComment}
-                          </Text>
+                          </Caption>
                         </View>
                       )}
                     </View>
                   )}
                   
-                  <Text
-                    style={{ color: tokens.colors.text.secondary, fontSize: 11, marginTop: 4, alignSelf: 'flex-end' }}
-                  >
+                  <Caption color="secondary" style={{ marginTop: 4, alignSelf: 'flex-end' }}>
                     {new Date(item.at).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </Text>
+                  </Caption>
                 </View>
               </View>
             );
@@ -561,9 +557,9 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
               size={48}
             />
           </View>
-          <Text style={{ color: tokens.colors.text.secondary, textAlign: 'center' }}>
+          <Caption color="secondary" style={{ textAlign: 'center' }}>
             Снимок • Фото из галереи • Файл
-          </Text>
+          </Caption>
         </View>
       </Dialog>
 

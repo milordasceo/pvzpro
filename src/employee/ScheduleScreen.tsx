@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { Text, useTheme, TouchableRipple, Snackbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens, Card, Button, MetaRow } from '../ui';
+import { tokens, Card, Button, MetaRow, Title, Body, Label, Caption } from '../ui';
 import { useRequestsStore, buildDateKey } from '../store/requests.store';
 import { getDayState } from '../services/schedule.service';
 
@@ -151,18 +151,17 @@ export const ScheduleScreen: React.FC = () => {
           }}
         >
           {WEEKDAY_SHORT.map((wd) => (
-            <Text
+            <Label
               key={wd}
+              size="medium"
+              color="secondary"
               style={{
                 width: `${100 / 7}%`,
                 textAlign: 'center',
-                color: tokens.colors.text.secondary,
-                fontWeight: '600',
-                fontSize: 13,
               }}
             >
               {wd}
-            </Text>
+            </Label>
           ))}
         </View>
 
@@ -193,9 +192,9 @@ export const ScheduleScreen: React.FC = () => {
                       borderTopColor: tokens.colors.border,
                     }}
                   >
-                    <Text style={{ color: tokens.colors.text.primary, fontWeight: '600', fontSize: 13 }}>
+                    <Label size="medium">
                       {d.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })} г.
-                    </Text>
+                    </Label>
                   </View>,
                 );
                 // паддинг до корректного столбца дня недели
@@ -401,9 +400,9 @@ export const ScheduleScreen: React.FC = () => {
                           borderColor: tokens.colors.primary.light,
                         }}
                       >
-                        <Text style={{ fontSize: 13, fontWeight: '600', color: tokens.colors.primary.main }}>
+                        <Label size="medium" style={{ color: tokens.colors.primary.main }}>
                           {`${totalChanges} ${totalChanges === 1 ? 'изменение' : 'изменения'}`}
-                        </Text>
+                        </Label>
                       </View>
                     )}
                   </View>
@@ -430,9 +429,9 @@ export const ScheduleScreen: React.FC = () => {
                               backgroundColor: tokens.colors.success.main,
                             }}
                           />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.primary }}>
+                          <Label size="medium">
                             {`+${addCount} ${addCount === 1 ? 'день' : 'дня'}`}
-                          </Text>
+                          </Label>
                         </View>
                       )}
                       {removeCount > 0 && (
@@ -445,9 +444,9 @@ export const ScheduleScreen: React.FC = () => {
                               backgroundColor: tokens.colors.error.main,
                             }}
                           />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.primary }}>
+                          <Label size="medium">
                             {`-${removeCount} ${removeCount === 1 ? 'день' : 'дня'}`}
-                          </Text>
+                          </Label>
                         </View>
                       )}
                     </View>
@@ -473,16 +472,16 @@ export const ScheduleScreen: React.FC = () => {
                         }}
                       >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+                          <Title size="small">
                             {selectedDate.toLocaleDateString('ru-RU', {
                               day: 'numeric',
                               month: 'long',
                               weekday: 'short',
                             })}
-                          </Text>
-                          <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
+                          </Title>
+                          <Caption color="muted" style={{ marginTop: 2 }}>
                             Рабочая смена
-                          </Text>
+                          </Caption>
                         </View>
                         <View
                           style={{
@@ -492,9 +491,9 @@ export const ScheduleScreen: React.FC = () => {
                             borderRadius: 10,
                           }}
                         >
-                          <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.success.main }}>
+                          <Label size="small" style={{ color: tokens.colors.success.main }}>
                             Работа
-                          </Text>
+                          </Label>
                         </View>
                       </View>
 
@@ -503,30 +502,24 @@ export const ScheduleScreen: React.FC = () => {
                       <View style={{ gap: 8 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                           <MaterialCommunityIcons name="store-outline" size={16} color={tokens.colors.text.secondary} />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>ПВЗ</Text>
-                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
+                          <Label size="medium" color="secondary" style={{ flex: 1 }}>ПВЗ</Label>
+                          <Body style={{ fontWeight: '600' }}>
                             Герцена 12
-                          </Text>
+                          </Body>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                           <MaterialCommunityIcons name="clock-outline" size={16} color={tokens.colors.text.secondary} />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Время</Text>
-                          <Text style={{ fontSize: 14, color: tokens.colors.text.primary, fontWeight: '600' }}>
+                          <Label size="medium" color="secondary" style={{ flex: 1 }}>Время</Label>
+                          <Body style={{ fontWeight: '600' }}>
                             10:00 – 22:00
-                          </Text>
+                          </Body>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                           <MaterialCommunityIcons name="cash" size={16} color={tokens.colors.text.secondary} />
-                          <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, flex: 1 }}>Оплата</Text>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              color: theme.colors.primary,
-                              fontWeight: '700',
-                            }}
-                          >
+                          <Label size="medium" color="secondary" style={{ flex: 1 }}>Оплата</Label>
+                          <Title size="medium" style={{ color: theme.colors.primary }}>
                             2 200 ₽
-                          </Text>
+                          </Title>
                         </View>
                       </View>
                     </View>
@@ -540,16 +533,16 @@ export const ScheduleScreen: React.FC = () => {
                         }}
                       >
                         <View>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+                          <Title size="small">
                             {selectedDate.toLocaleDateString('ru-RU', {
                               day: 'numeric',
                               month: 'long',
                               weekday: 'short',
                             })}
-                          </Text>
-                          <Text style={{ fontSize: 12, color: tokens.colors.text.muted, marginTop: 2 }}>
+                          </Title>
+                          <Caption color="muted" style={{ marginTop: 2 }}>
                             Выходной день
-                          </Text>
+                          </Caption>
                         </View>
                         <View
                           style={{
@@ -559,9 +552,9 @@ export const ScheduleScreen: React.FC = () => {
                             borderRadius: 10,
                           }}
                         >
-                          <Text style={{ fontSize: 11, fontWeight: '600', color: tokens.colors.text.secondary }}>
+                          <Label size="small" color="secondary">
                             Выходной
-                  </Text>
+                  </Label>
                         </View>
                       </View>
                   </View>

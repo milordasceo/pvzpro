@@ -4,7 +4,7 @@ import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { tokens } from '../../../ui';
+import { tokens, Title, Body, Label, Caption, Heading } from '../../../ui';
 import type { AdminTabParamList } from '../../../types/navigation';
 
 interface StatisticsTabProps {
@@ -52,16 +52,16 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
         {/* ТРЕБУЮТ ВНИМАНИЯ */}
         {issuesCount > 0 && (
           <View>
-            <Text style={{ 
-              fontSize: 11, 
-              fontWeight: '700', 
-              color: tokens.colors.error.main, 
-              letterSpacing: 0.5, 
-              marginBottom: 12,
-              textTransform: 'uppercase',
-            }}>
+            <Label 
+              size="small"
+              style={{ 
+                color: tokens.colors.error.main, 
+                letterSpacing: 0.5, 
+                marginBottom: 12,
+                textTransform: 'uppercase',
+              }}>
               ТРЕБУЮТ ВНИМАНИЯ
-            </Text>
+            </Label>
 
             <View style={{ gap: 8 }}>
               {/* Опоздания */}
@@ -82,13 +82,13 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                       <MaterialCommunityIcons name="clock-alert-outline" size={24} color={tokens.colors.error.main} />
-                      <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                      <Title size="medium">
                         Опоздания
-                      </Text>
+                      </Title>
                     </View>
-                    <Text style={{ fontSize: 14, color: tokens.colors.error.main, marginLeft: 34 }}>
+                    <Body style={{ color: tokens.colors.error.main, marginLeft: 34 }}>
                       {`${data.lateEmployees} ${data.lateEmployees === 1 ? 'сотрудник опоздал' : 'сотрудника опоздали'} на смену`}
-                    </Text>
+                    </Body>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={24} color={tokens.colors.error.main} />
                 </TouchableOpacity>
@@ -112,13 +112,13 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                       <MaterialCommunityIcons name="message-alert-outline" size={24} color={tokens.colors.warning.main} />
-                      <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                      <Title size="medium">
                         Запросы на рассмотрение
-                      </Text>
+                      </Title>
                     </View>
-                    <Text style={{ fontSize: 14, color: tokens.colors.warning.main, marginLeft: 34 }}>
+                    <Body style={{ color: tokens.colors.warning.main, marginLeft: 34 }}>
                       {`${data.requests.length} ${data.requests.length === 1 ? 'запрос ожидает' : 'запросов ожидают'} решения`}
-                    </Text>
+                    </Body>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={24} color={tokens.colors.warning.main} />
                 </TouchableOpacity>
@@ -142,13 +142,13 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   <View style={{ flex: 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                       <MaterialCommunityIcons name="account-alert-outline" size={24} color={tokens.colors.error.main} />
-                      <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                      <Title size="medium">
                         Нехватка персонала
-                      </Text>
+                      </Title>
                     </View>
-                    <Text style={{ fontSize: 14, color: tokens.colors.error.main, marginLeft: 34 }}>
+                    <Body style={{ color: tokens.colors.error.main, marginLeft: 34 }}>
                       {`${data.pvzWithShortage} ${data.pvzWithShortage === 1 ? 'ПВЗ не укомплектован' : 'ПВЗ не укомплектованы'}`}
-                    </Text>
+                    </Body>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={24} color={tokens.colors.error.main} />
                 </TouchableOpacity>
@@ -160,16 +160,16 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
 
         {/* ВСЁ В НОРМЕ */}
         <View>
-          <Text style={{ 
-            fontSize: 11, 
-            fontWeight: '700', 
-            color: tokens.colors.success.main, 
-            letterSpacing: 0.5, 
-            marginBottom: 12,
-            textTransform: 'uppercase',
-          }}>
+          <Label 
+            size="small"
+            style={{ 
+              color: tokens.colors.success.main, 
+              letterSpacing: 0.5, 
+              marginBottom: 12,
+              textTransform: 'uppercase',
+            }}>
             ВСЁ В НОРМЕ
-          </Text>
+          </Label>
 
           <View style={{ gap: 8 }}>
             {/* Всего ПВЗ */}
@@ -184,17 +184,17 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <MaterialCommunityIcons name="store" size={24} color={tokens.colors.primary.main} />
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                  <Title size="medium">
                     Всего ПВЗ
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginLeft: 34 }}>
+                <Body color="secondary" style={{ marginLeft: 34 }}>
                   {`${data.pvzCount} ${data.pvzCount === 1 ? 'пункт' : 'пунктов'} выдачи`}
-                </Text>
+                </Body>
               </View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: tokens.colors.primary.main }}>
+              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
                 {data.pvzCount}
-              </Text>
+              </Heading>
             </View>
 
             {/* Всего сотрудников */}
@@ -209,17 +209,17 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <MaterialCommunityIcons name="account-group" size={24} color={tokens.colors.primary.main} />
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                  <Title size="medium">
                     Всего сотрудников
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginLeft: 34 }}>
+                <Body color="secondary" style={{ marginLeft: 34 }}>
                   {`${data.employeesCount} ${data.employeesCount === 1 ? 'человек' : 'человек'} в базе`}
-                </Text>
+                </Body>
               </View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: tokens.colors.primary.main }}>
+              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
                 {data.employeesCount}
-              </Text>
+              </Heading>
             </View>
 
             {/* На смене */}
@@ -236,17 +236,17 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <MaterialCommunityIcons name="account-clock" size={24} color={tokens.colors.success.main} />
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                  <Title size="medium">
                     На смене
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginLeft: 34 }}>
+                <Body color="secondary" style={{ marginLeft: 34 }}>
                   {`${data.onShiftCount} ${data.onShiftCount === 1 ? 'сотрудник работает' : 'сотрудников работают'} сейчас`}
-                </Text>
+                </Body>
               </View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: tokens.colors.success.main }}>
+              <Heading size="h3" style={{ color: tokens.colors.success.main }}>
                 {data.onShiftCount}
-              </Text>
+              </Heading>
             </View>
 
             {/* Запланировано */}
@@ -261,17 +261,17 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <MaterialCommunityIcons name="calendar-check" size={24} color={tokens.colors.primary.main} />
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: tokens.colors.text.primary }}>
+                  <Title size="medium">
                     Запланировано
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginLeft: 34 }}>
+                <Body color="secondary" style={{ marginLeft: 34 }}>
                   {`${data.plannedTodayCount} ${data.plannedTodayCount === 1 ? 'смена' : 'смен'} на сегодня`}
-                </Text>
+                </Body>
               </View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: tokens.colors.primary.main }}>
+              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
                 {data.plannedTodayCount}
-              </Text>
+              </Heading>
             </View>
           </View>
         </View>

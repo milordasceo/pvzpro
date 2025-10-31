@@ -9,6 +9,10 @@ import {
   Dialog,
   MetaRow,
   tokens,
+  Title,
+  Body,
+  Label,
+  Caption,
 } from '../../ui';
 import { QrScanner } from '../QrScanner';
 import { parseQrPayload, isExpired, verifyParsedQr } from '../../utils/qr';
@@ -121,15 +125,15 @@ export const ProcessTab: React.FC = () => {
             {/* Заголовок и локация */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 11, color: tokens.colors.text.secondary, marginBottom: 2 }}>
+                <Caption color="secondary" style={{ marginBottom: 2 }}>
                   {start.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
-                </Text>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: tokens.colors.text.primary }}>
+                </Caption>
+                <Title size="large">
                   Герцена 12
-                </Text>
-                <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, marginTop: 2 }}>
+                </Title>
+                <Label size="medium" color="secondary" style={{ marginTop: 2 }}>
                   {timeRange}
-                </Text>
+                </Label>
               </View>
               {/* Статус-бейдж */}
               <View
@@ -145,18 +149,14 @@ export const ProcessTab: React.FC = () => {
                   borderRadius: 999,
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '600',
+                <Label size="small" style={{
                     color:
                       status === 'finished'
                         ? tokens.colors.success.darker
                         : status === 'active' || onBreak
                           ? tokens.colors.primary.dark
                           : tokens.colors.text.secondary,
-                  }}
-                >
+                  }}>
                   {status === 'planned'
                     ? 'Не начата'
                     : onBreak
@@ -164,7 +164,7 @@ export const ProcessTab: React.FC = () => {
                       : status === 'active'
                         ? 'В процессе'
                         : 'Завершена'}
-                </Text>
+                </Label>
               </View>
             </View>
 
@@ -189,12 +189,12 @@ export const ProcessTab: React.FC = () => {
                   />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>
+                  <Caption color="secondary">
                     {elapsedHours}ч {elapsedMinutes}м отработано
-                  </Text>
-                  <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>
+                  </Caption>
+                  <Caption color="secondary">
                     {totalHours}ч всего
-                  </Text>
+                  </Caption>
                 </View>
               </View>
             ) : null}
@@ -247,9 +247,9 @@ export const ProcessTab: React.FC = () => {
             {/* Заголовок */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <MaterialCommunityIcons name="chart-line" size={20} color={tokens.colors.text.secondary} />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+              <Title size="small">
                 Статистика смены
-              </Text>
+              </Title>
             </View>
 
             {/* Карточки с прогрессом */}
@@ -271,11 +271,11 @@ export const ProcessTab: React.FC = () => {
                     size={18}
                     color={completedCount > 0 ? tokens.colors.success.main : tokens.colors.text.secondary}
                   />
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: tokens.colors.text.primary }}>
+                  <Title size="large">
                     {completedCount}/{totalTasksCount}
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginBottom: 6 }}>Задачи</Text>
+                <Caption color="secondary" style={{ marginBottom: 6 }}>Задачи</Caption>
                 {/* Прогресс-бар */}
                 <View
                   style={{
@@ -313,13 +313,13 @@ export const ProcessTab: React.FC = () => {
                     size={18}
                     color={(status === 'active' || onBreak) ? (onBreak ? tokens.colors.warning.main : tokens.colors.primary.main) : tokens.colors.text.secondary}
                   />
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: tokens.colors.text.primary }}>
+                  <Title size="large">
                     {(status === 'active' || onBreak || status === 'finished')
                       ? `${elapsedHours}ч ${elapsedMinutes}м`
                       : '0ч 0м'}
-                  </Text>
+                  </Title>
                 </View>
-                <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginBottom: 6 }}>Время</Text>
+                <Caption color="secondary" style={{ marginBottom: 6 }}>Время</Caption>
                 {/* Прогресс-бар */}
                 <View
                   style={{
@@ -355,12 +355,12 @@ export const ProcessTab: React.FC = () => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <MaterialCommunityIcons name="cash-multiple" size={24} color={tokens.colors.success.dark} />
                   <View>
-                    <Text style={{ fontSize: 12, color: tokens.colors.success.darker, marginBottom: 2 }}>
+                    <Caption style={{ color: tokens.colors.success.darker, marginBottom: 2 }}>
                       Заработано сегодня
-                    </Text>
-                    <Text style={{ fontSize: 24, fontWeight: '700', color: tokens.colors.success.darker }}>
+                    </Caption>
+                    <Title size="large" style={{ color: tokens.colors.success.darker }}>
                       2 200₽
-                    </Text>
+                    </Title>
                   </View>
                 </View>
               </View>
@@ -381,9 +381,9 @@ export const ProcessTab: React.FC = () => {
                 }}
               >
                 <MaterialCommunityIcons name="alert-circle-outline" size={18} color={tokens.colors.warning.dark} />
-                <Text style={{ fontSize: 13, color: tokens.colors.warning.dark, flex: 1 }}>
+                <Label size="medium" style={{ color: tokens.colors.warning.dark, flex: 1 }}>
                   {`У вас ${pendingCount} ${pendingCount === 1 ? 'невыполненная задача' : pendingCount < 5 ? 'невыполненные задачи' : 'невыполненных задач'}`}
-                </Text>
+                </Label>
               </View>
             ) : null}
           </View>
@@ -397,9 +397,9 @@ export const ProcessTab: React.FC = () => {
             {/* Заголовок */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <MaterialCommunityIcons name="coffee" size={20} color={tokens.colors.text.secondary} />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+              <Title size="small">
                 Перерывы
-              </Text>
+              </Title>
             </View>
 
             {/* Визуальные индикаторы */}
@@ -430,12 +430,12 @@ export const ProcessTab: React.FC = () => {
               </View>
               {/* Текстовый счётчик */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: tokens.colors.text.primary }}>
+                <Body style={{ fontWeight: '600' }}>
                   {breaksUsed} из {BREAKS_ALLOWED} использовано
-                </Text>
-                <Text style={{ fontSize: 12, color: tokens.colors.text.secondary, marginTop: 2 }}>
+                </Body>
+                <Caption color="secondary" style={{ marginTop: 2 }}>
                   По {Math.floor(BREAK_DURATION_MS / 60000)} минут каждый
-                </Text>
+                </Caption>
               </View>
             </View>
 
@@ -453,9 +453,9 @@ export const ProcessTab: React.FC = () => {
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                     <MaterialCommunityIcons name="timer-sand" size={16} color={tokens.colors.warning.dark} />
-                    <Text style={{ fontSize: 13, fontWeight: '600', color: tokens.colors.warning.dark }}>
+                    <Label size="medium" style={{ color: tokens.colors.warning.dark }}>
                       На перерыве
-                    </Text>
+                    </Label>
                   </View>
                   {/* Прогресс-бар перерыва */}
                   <View
@@ -476,9 +476,9 @@ export const ProcessTab: React.FC = () => {
                       }}
                     />
                   </View>
-                  <Text style={{ fontSize: 12, color: tokens.colors.warning.dark, marginTop: 6, textAlign: 'center' }}>
+                  <Caption style={{ color: tokens.colors.warning.dark, marginTop: 6, textAlign: 'center' }}>
                     {formatLeft(breakLeftMs)} осталось
-                  </Text>
+                  </Caption>
                 </View>
                 <Button
                   mode="contained"
@@ -521,9 +521,9 @@ export const ProcessTab: React.FC = () => {
         {/* 4) Завершение смены */}
         <Card title="Завершение смены">
           <View style={{ gap: 8 }}>
-            <Text style={{ color: tokens.colors.text.secondary, fontSize: 14 }}>
+            <Body color="secondary">
               После завершения смены будут подведены итоги и начислена оплата.
-            </Text>
+            </Body>
             <View
               style={{
                 backgroundColor: tokens.colors.gray[100],
@@ -534,14 +534,14 @@ export const ProcessTab: React.FC = () => {
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <MaterialCommunityIcons name="information-outline" size={16} color={tokens.colors.text.secondary} />
-                <Text style={{ color: tokens.colors.text.secondary, fontSize: 13, fontWeight: '600' }}>
+                <Label size="medium" color="secondary">
                   Обязательно проверьте:
-                </Text>
+                </Label>
               </View>
-              <Text style={{ color: tokens.colors.text.secondary, fontSize: 13, marginLeft: 24 }}>
+              <Label size="medium" color="secondary" style={{ marginLeft: 24 }}>
                 • Все задачи выполнены{'\n'}
                 • Вы находитесь на рабочем месте
-              </Text>
+              </Label>
             </View>
             
             {/* Кнопка завершения (показываем только когда смена активна и не на перерыве) */}
@@ -558,13 +558,13 @@ export const ProcessTab: React.FC = () => {
                 Завершить смену
               </Button>
             ) : status === 'planned' ? (
-              <Text style={{ color: tokens.colors.text.muted, fontSize: 13, marginTop: 4 }}>
+              <Caption color="muted" style={{ marginTop: 4 }}>
                 Кнопка появится после начала смены
-              </Text>
+              </Caption>
             ) : onBreak ? (
-              <Text style={{ color: tokens.colors.warning.main, fontSize: 13, marginTop: 4 }}>
+              <Caption style={{ color: tokens.colors.warning.main, marginTop: 4 }}>
                 Завершите перерыв, чтобы закрыть смену
-              </Text>
+              </Caption>
             ) : null}
           </View>
         </Card>
@@ -584,9 +584,9 @@ export const ProcessTab: React.FC = () => {
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <MaterialCommunityIcons name="history" size={20} color={tokens.colors.text.secondary} />
-                  <Text style={{ fontSize: 15, fontWeight: '600', color: tokens.colors.text.primary }}>
+                  <Title size="small">
                     История событий
-                  </Text>
+                  </Title>
                   <View
                     style={{
                       backgroundColor: tokens.colors.gray[100],
@@ -595,9 +595,9 @@ export const ProcessTab: React.FC = () => {
                       borderRadius: 999,
                     }}
                   >
-                    <Text style={{ fontSize: 11, color: tokens.colors.text.secondary, fontWeight: '600' }}>
+                    <Label size="small" color="secondary">
                       {feed.length}
-                    </Text>
+                    </Label>
                   </View>
                 </View>
                 <MaterialCommunityIcons
@@ -621,9 +621,9 @@ export const ProcessTab: React.FC = () => {
                         />
                         <Text style={{ fontSize: 14, color: tokens.colors.text.primary }}>{e.title}</Text>
                       </View>
-                      <Text style={{ fontSize: 12, color: tokens.colors.text.secondary }}>
+                      <Caption color="secondary">
                         {new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </Text>
+                      </Caption>
                     </View>
                   ))}
                 </View>
@@ -683,12 +683,12 @@ export const ProcessTab: React.FC = () => {
                   borderLeftColor: tokens.colors.error.main,
                 }}
               >
-                <Text style={{ fontSize: 15, color: tokens.colors.error.dark, fontWeight: '600', marginBottom: 8 }}>
+                <Title size="small" style={{ color: tokens.colors.error.dark, marginBottom: 8 }}>
                   Внимание!
-                </Text>
-                <Text style={{ fontSize: 14, color: tokens.colors.error.darker, lineHeight: 20 }}>
+                </Title>
+                <Body style={{ color: tokens.colors.error.darker, lineHeight: 20 }}>
                   Вы действительно хотите завершить смену сейчас?
-                </Text>
+                </Body>
               </View>
               
               {/* Перечисление проблем с иконками */}
@@ -696,18 +696,18 @@ export const ProcessTab: React.FC = () => {
                 {pendingCount > 0 ? (
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
                     <MaterialCommunityIcons name="alert-octagon" size={20} color={tokens.colors.warning.main} />
-                    <Text style={{ fontSize: 14, color: tokens.colors.gray[700], lineHeight: 20, flex: 1 }}>
+                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.gray[700] }}>
                       У вас ещё <Text style={{ fontWeight: '700', color: tokens.colors.error.main }}>{`${pendingCount} ${pendingCount === 1 ? 'незавершённая задача' : pendingCount < 5 ? 'незавершённые задачи' : 'незавершённых задач'}`}</Text>
-                    </Text>
+                    </Body>
                   </View>
                 ) : null}
                 
                 {!canFinishByTime ? (
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
                     <MaterialCommunityIcons name="clock-alert" size={20} color={tokens.colors.info.main} />
-                    <Text style={{ fontSize: 14, color: tokens.colors.gray[700], lineHeight: 20, flex: 1 }}>
+                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.gray[700] }}>
                       Смена завершается <Text style={{ fontWeight: '700', color: tokens.colors.primary.dark }}>раньше планового времени</Text> ({end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
-                    </Text>
+                    </Body>
                   </View>
                 ) : null}
               </View>
@@ -728,13 +728,13 @@ export const ProcessTab: React.FC = () => {
                 }}
               >
                 <MaterialCommunityIcons name="check-circle" size={24} color={tokens.colors.success.dark} />
-                <Text style={{ fontSize: 15, color: tokens.colors.success.darker, fontWeight: '600', flex: 1 }}>
+                <Title size="small" style={{ color: tokens.colors.success.darker, flex: 1 }}>
                   Все задачи выполнены! Отличная работа!
-                </Text>
+                </Title>
               </View>
-              <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginTop: 12, lineHeight: 20 }}>
+              <Body color="secondary" style={{ marginTop: 12, lineHeight: 20 }}>
                 Вы можете завершить смену
-              </Text>
+              </Body>
             </View>
           )}
         </View>
