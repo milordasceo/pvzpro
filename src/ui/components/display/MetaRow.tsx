@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { tokens } from '../../theme';
+import { Body, Label } from '../typography';
 
 export interface MetaRowProps {
   icon: any;
@@ -64,20 +65,17 @@ export const MetaRow: React.FC<MetaRowProps> = React.memo(
           size={16} 
           color={subdued ? tokens.colors.text.muted : tokens.colors.text.secondary} 
         />
-        <Text style={{ 
-          color: subdued ? tokens.colors.text.muted : tokens.colors.text.secondary 
-        }}>
+        <Body color={subdued ? 'muted' : 'secondary'}>
           {label}
-        </Text>
+        </Body>
       </View>
       {rightValue ? (
-        <Text style={{ 
-          color: rightColor ?? tokens.colors.text.primary, 
-          fontWeight: '600', 
+        <Label size="medium" style={{ 
+          color: rightColor ?? tokens.colors.text.primary,
           marginLeft: 12 
         }}>
           {rightValue}
-        </Text>
+        </Label>
       ) : null}
     </View>
   )

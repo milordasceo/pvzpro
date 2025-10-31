@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, RefreshControl } from 'react-native';
 import { Text, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens, Card, ScrollView, EmptyState } from '../../../ui';
+import { tokens, Card, ScrollView, EmptyState, Title, Body, Label, Caption } from '../../../ui';
 
 interface Request {
   id: string;
@@ -36,16 +36,16 @@ export const RequestsTab = React.memo<RequestsTabProps>(({ requests, loading, on
           <View style={{ gap: 0 }}>
             {/* Заголовок */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: tokens.colors.text.primary }}>
+              <Title size="large">
                 Запросы
-              </Text>
+              </Title>
               <MaterialCommunityIcons name="chevron-right" size={24} color={tokens.colors.text.muted} />
             </View>
 
             {/* Количество */}
-            <Text style={{ fontSize: 14, color: tokens.colors.text.secondary, marginBottom: 16 }}>
+            <Body color="secondary" style={{ marginBottom: 16 }}>
               Требуют рассмотрения: {requests.length}
-            </Text>
+            </Body>
 
             {/* Список запросов - белые карточки с рамкой */}
             {requests.map((request, index) => (
@@ -67,9 +67,9 @@ export const RequestsTab = React.memo<RequestsTabProps>(({ requests, loading, on
                     source={{ uri: request.employeePhoto || 'https://via.placeholder.com/48' }}
                   />
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '400', color: tokens.colors.text.primary }}>
+                    <Title size="medium">
                       {request.employeeName}
-                    </Text>
+                    </Title>
                     
                     {/* Тип запроса с иконкой */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -83,27 +83,27 @@ export const RequestsTab = React.memo<RequestsTabProps>(({ requests, loading, on
                         size={14} 
                         color={tokens.colors.primary.main} 
                       />
-                      <Text style={{ fontSize: 13, fontWeight: '600', color: tokens.colors.primary.main, textTransform: 'uppercase' }}>
+                      <Label size="medium" style={{ color: tokens.colors.primary.main, textTransform: 'uppercase' }}>
                         {request.type === 'day_off' ? 'выходной' :
                          request.type === 'shift_swap' ? 'обмен сменой' :
                          request.type === 'vacation' ? 'отпуск' :
                          'больничный'}
-                      </Text>
+                      </Label>
                     </View>
 
                     {/* Дата под типом запроса */}
-                    <Text style={{ fontSize: 13, color: tokens.colors.text.muted }}>
+                    <Caption color="muted">
                       {request.date}
-                    </Text>
+                    </Caption>
                   </View>
                 </View>
 
                 {/* Комментарий в светло-сером блоке */}
                 {request.comment && (
                   <View style={{ backgroundColor: tokens.colors.gray[50], borderRadius: 8, padding: 12, marginBottom: 12 }}>
-                    <Text style={{ fontSize: 13, color: tokens.colors.text.secondary, lineHeight: 18 }}>
+                    <Label size="medium" color="secondary" style={{ lineHeight: 18 }}>
                       &quot;{request.comment}&quot;
-                    </Text>
+                    </Label>
                   </View>
                 )}
 
@@ -122,9 +122,9 @@ export const RequestsTab = React.memo<RequestsTabProps>(({ requests, loading, on
                   }}
                 >
                   <MaterialCommunityIcons name="eye-outline" size={18} color={tokens.colors.primary.main} />
-                  <Text style={{ fontSize: 14, fontWeight: '500', color: tokens.colors.primary.main }}>
+                  <Body style={{ fontWeight: '500', color: tokens.colors.primary.main }}>
                     Рассмотреть запрос
-                  </Text>
+                  </Body>
                 </TouchableOpacity>
               </View>
             ))}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, ReactNode } from 'react';
 import { View, Pressable, StyleSheet, Animated, useWindowDimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { tokens } from '../../theme';
+import { Label } from '../typography';
 
 export interface Tab {
   key: string;
@@ -72,12 +73,12 @@ export const TabBar: React.FC<TabBarProps> = ({
           onPress={() => onTabPress(index)}
         >
           <View style={styles.tabContent}>
-            <Text style={[
-              styles.tabLabel, 
-              activeIndex === index && styles.tabLabelActive
-            ]}>
+            <Label 
+              size="medium"
+              color={activeIndex === index ? 'primary' : 'muted'}
+            >
               {tab.label}
-            </Text>
+            </Label>
             {tab.badge}
           </View>
         </Pressable>
@@ -113,14 +114,6 @@ const styles = StyleSheet.create({
     left: 0,
     height: 2,
     backgroundColor: tokens.colors.text.primary,
-  },
-  tabLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: tokens.colors.text.muted,
-  },
-  tabLabelActive: {
-    color: tokens.colors.text.primary,
   },
 });
 

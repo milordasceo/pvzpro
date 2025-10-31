@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card as PaperCard } from 'react-native-paper';
 import { tokens } from '../../theme';
+import { Title, Body } from '../typography';
 
 export interface CardProps {
   children: React.ReactNode;
@@ -59,21 +60,7 @@ export const Card: React.FC<CardProps> = React.memo(
         <PaperCard mode={mode} style={defaultStyle} onPress={onPress}>
           <PaperCard.Title
             title={title}
-            titleStyle={[
-              { 
-                fontSize: 22, 
-                color: tokens.colors.text.primary 
-              }, 
-              titleStyle
-            ]}
             subtitle={subtitle}
-            subtitleStyle={[
-              { 
-                fontSize: 14, 
-                color: tokens.colors.text.secondary 
-              }, 
-              subtitleStyle
-            ]}
             right={right ? () => <>{right}</> : undefined}
           />
           <PaperCard.Content style={[{ gap: tokens.spacing.cardGap }, contentStyle]}>

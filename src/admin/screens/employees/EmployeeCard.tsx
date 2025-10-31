@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Avatar, Text, Surface, IconButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens } from '../../../ui';
+import { tokens, Title, Label } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 
 interface EmployeeCardProps {
@@ -96,7 +96,6 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
                   size={60}
                   label={getInitials()}
                   style={{ backgroundColor: getAvatarColor() }}
-                  labelStyle={{ fontSize: 22, fontWeight: '700', color: '#FFF' }}
                 />
               )}
               {/* Зелёная точка - только если на смене */}
@@ -147,7 +146,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
                   size={14} 
                   color={status.color} 
                 />
-                <Text style={[styles.secondaryText, { color: status.color, fontWeight: '600' }]}>
+                <Text style={[styles.secondaryText, { color: status.color }]}>
                   {status.text}
                 </Text>
               </View>
@@ -167,7 +166,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
                   size={18} 
                   color={tokens.colors.primary.main} 
                 />
-                <Text style={styles.actionButtonText}>Чат</Text>
+                <Label size="medium" style={{ color: tokens.colors.primary.main }}>Чат</Label>
               </TouchableOpacity>
 
               {/* Кнопка "+Задача" - только если на смене */}
@@ -181,9 +180,9 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
                     size={18} 
                     color={tokens.colors.success.dark} 
                   />
-                  <Text style={[styles.actionButtonText, { color: tokens.colors.success.dark }]}>
+                  <Label size="medium" style={{ color: tokens.colors.success.dark }}>
                     Задача
-                  </Text>
+                  </Label>
                 </TouchableOpacity>
               )}
             </View>
@@ -250,6 +249,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: tokens.colors.text.secondary,
     flex: 1,
+    fontWeight: '600',
   },
   actionsRow: {
     flexDirection: 'row',
@@ -274,11 +274,6 @@ const styles = StyleSheet.create({
   taskButton: {
     backgroundColor: tokens.colors.success.lighter,
     borderColor: tokens.colors.success.dark,
-  },
-  actionButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: tokens.colors.primary.main,
   },
 });
 

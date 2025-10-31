@@ -61,8 +61,6 @@ export const AdminDashboardScreen = React.memo(() => {
             borderBottomColor: tokens.colors.border,
           },
           tabBarLabelStyle: {
-            fontSize: 14,
-            fontWeight: '600',
             textTransform: 'none',
           },
         }}

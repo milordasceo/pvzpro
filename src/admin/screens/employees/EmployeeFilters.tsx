@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
   },
   label: {
     color: tokens.colors.text.secondary,
-    fontWeight: '600',
   },
   chipsRow: {
     flexDirection: 'row',
@@ -98,11 +97,9 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: tokens.colors.text.secondary,
-    fontSize: 13,
   },
   chipTextSelected: {
     color: tokens.colors.primary.main,
-    fontWeight: '600',
   },
   switchRow: {
     flexDirection: 'row',

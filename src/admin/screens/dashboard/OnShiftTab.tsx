@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, RefreshControl, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { tokens } from '../../../ui';
+import { tokens, Title, Body, Label, Caption } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
 import { EmployeeCard } from '../employees/EmployeeCard';
 
@@ -52,17 +52,15 @@ const PvzGroup = React.memo<{
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <MaterialCommunityIcons name="store" size={16} color={tokens.colors.primary.main} />
-            <Text style={{ fontSize: 14, fontWeight: '600', color: tokens.colors.text.primary }}>
+            <Body style={{ fontWeight: '600' }}>
               {pvzName}
-            </Text>
+            </Body>
           </View>
-          <Text style={{ 
-            fontSize: 13, 
-            fontWeight: '600', 
+          <Label size="medium" style={{ 
             color: hasShortage ? tokens.colors.error.main : tokens.colors.success.main 
           }}>
             {`(${active}/${planned})`}
-          </Text>
+          </Label>
         </View>
         
         {/* Предупреждение о нехватке персонала */}
@@ -77,9 +75,9 @@ const PvzGroup = React.memo<{
             borderRadius: 8,
           }}>
             <MaterialCommunityIcons name="alert-circle" size={16} color={tokens.colors.error.main} />
-            <Text style={{ fontSize: 12, color: tokens.colors.error.main, fontWeight: '500' }}>
+            <Caption style={{ color: tokens.colors.error.main, fontWeight: '500' }}>
               {`Нехватка ${planned - active} ${planned - active === 1 ? 'сотрудника' : 'сотрудников'}`}
-            </Text>
+            </Caption>
           </View>
         )}
       </View>
@@ -127,7 +125,7 @@ export const OnShiftTab = React.memo<OnShiftTabProps>(({ employees, onShiftCount
     >
       {employees.length === 0 ? (
         <View style={{ padding: 20, alignItems: 'center' }}>
-          <Text style={{ color: tokens.colors.text.secondary }}>Нет сотрудников на смене</Text>
+          <Body color="secondary">Нет сотрудников на смене</Body>
         </View>
       ) : (
         Object.entries(employeesByPvz).map(([pvzId, pvzEmployees]) => (
