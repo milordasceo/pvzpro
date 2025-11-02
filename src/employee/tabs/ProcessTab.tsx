@@ -231,7 +231,7 @@ export const ProcessTab: React.FC = () => {
                   }}
                   compact
                   buttonColor={tokens.colors.warning.light}
-                  textColor={tokens.colors.warning.dark}
+                  textColor={tokens.colors.warning.main}
                 >
                   🚀 DEV: Старт без QR
                 </Button>
@@ -380,8 +380,8 @@ export const ProcessTab: React.FC = () => {
                   borderLeftColor: tokens.colors.warning.main,
                 }}
               >
-                <MaterialCommunityIcons name="alert-circle-outline" size={18} color={tokens.colors.warning.dark} />
-                <Label size="medium" style={{ color: tokens.colors.warning.dark, flex: 1 }}>
+                <MaterialCommunityIcons name="alert-circle-outline" size={18} color={tokens.colors.warning.main} />
+                <Label size="medium" style={{ color: tokens.colors.warning.main, flex: 1 }}>
                   {`У вас ${pendingCount} ${pendingCount === 1 ? 'невыполненная задача' : pendingCount < 5 ? 'невыполненные задачи' : 'невыполненных задач'}`}
                 </Label>
               </View>
@@ -452,8 +452,8 @@ export const ProcessTab: React.FC = () => {
                   }}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <MaterialCommunityIcons name="timer-sand" size={16} color={tokens.colors.warning.dark} />
-                    <Label size="medium" style={{ color: tokens.colors.warning.dark }}>
+                    <MaterialCommunityIcons name="timer-sand" size={16} color={tokens.colors.warning.main} />
+                    <Label size="medium" style={{ color: tokens.colors.warning.main }}>
                       На перерыве
                     </Label>
                   </View>
@@ -476,7 +476,7 @@ export const ProcessTab: React.FC = () => {
                       }}
                     />
                   </View>
-                  <Caption style={{ color: tokens.colors.warning.dark, marginTop: 6, textAlign: 'center' }}>
+                  <Caption style={{ color: tokens.colors.warning.main, marginTop: 6, textAlign: 'center' }}>
                     {formatLeft(breakLeftMs)} осталось
                   </Caption>
                 </View>
@@ -696,7 +696,7 @@ export const ProcessTab: React.FC = () => {
                 {pendingCount > 0 ? (
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
                     <MaterialCommunityIcons name="alert-octagon" size={20} color={tokens.colors.warning.main} />
-                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.gray[700] }}>
+                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.text.primary }}>
                       У вас ещё <Text style={{ fontWeight: '700', color: tokens.colors.error.main }}>{`${pendingCount} ${pendingCount === 1 ? 'незавершённая задача' : pendingCount < 5 ? 'незавершённые задачи' : 'незавершённых задач'}`}</Text>
                     </Body>
                   </View>
@@ -705,7 +705,7 @@ export const ProcessTab: React.FC = () => {
                 {!canFinishByTime ? (
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
                     <MaterialCommunityIcons name="clock-alert" size={20} color={tokens.colors.info.main} />
-                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.gray[700] }}>
+                    <Body style={{ lineHeight: 20, flex: 1, color: tokens.colors.text.primary }}>
                       Смена завершается <Text style={{ fontWeight: '700', color: tokens.colors.primary.dark }}>раньше планового времени</Text> ({end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                     </Body>
                   </View>

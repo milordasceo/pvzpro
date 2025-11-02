@@ -419,12 +419,12 @@ export const ChatScreen: React.FC<any> = ({ route, navigation }) => {
                             borderLeftColor: tokens.colors.warning.main,
                           }}
                         >
-                          <Label size="small" style={{ color: tokens.colors.warning.dark, marginBottom: 2 }}>
-                            От администратора:
-                          </Label>
-                          <Caption style={{ color: tokens.colors.warning.dark, lineHeight: 14 }}>
-                            {item.penaltyAttachment.adminComment}
-                          </Caption>
+                         <Label size="small" style={{ color: tokens.colors.warning.main, marginBottom: 2 }}>
+                           От администратора:
+                         </Label>
+                         <Caption style={{ color: tokens.colors.warning.main, lineHeight: 14 }}>
+                           {item.penaltyAttachment.adminComment}
+                         </Caption>
                         </View>
                       )}
                     </View>
