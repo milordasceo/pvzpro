@@ -1,12 +1,18 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, FlatList, RefreshControl, TouchableWithoutFeedback, Keyboard, Animated } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { tokens, ScrollView, EmptyState, ErrorState, SearchInput, IconButton } from '../../../ui';
 import { AdminEmployee } from '../../../types/admin';
+import { AdminTabParamList } from '../../../types/navigation';
 import { EmployeeCard } from './EmployeeCard';
 import { EmployeeFilters } from './EmployeeFilters';
 import { useEmployees } from '../../hooks/useEmployees';
 
+type EmployeesScreenNavigationProp = NativeStackNavigationProp<AdminTabParamList, 'Сотрудники'>;
+
 export const EmployeesScreen = () => {
+  const navigation = useNavigation<EmployeesScreenNavigationProp>();
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -40,9 +46,8 @@ export const EmployeesScreen = () => {
   });
 
   const handleEmployeePress = useCallback((employee: AdminEmployee) => {
-    // TODO: Навигация к деталям сотрудника
-    console.log('Employee pressed:', employee.id);
-  }, []);
+    navigation.navigate('EmployeeDetails', { employeeId: employee.id });
+  }, [navigation]);
 
   const handleChatPress = useCallback((employee: AdminEmployee) => {
     // TODO: Открыть чат с сотрудником

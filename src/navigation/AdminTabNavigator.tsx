@@ -2,16 +2,47 @@ import React, { useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, Appbar, Menu } from 'react-native-paper';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { tokens } from '../ui';
 import { placeholderColor } from '../theme';
 import { AdminTabParamList, RoleType } from '../types/navigation';
 import { AdminDashboardScreen } from '../admin/screens/AdminDashboardScreen';
 import { ScheduleScreen } from '../admin/screens/ScheduleScreen';
-import { EmployeesScreen } from '../admin/screens/employees';
+import { EmployeesScreen, EmployeeDetailsScreen, EmployeeFormScreen } from '../admin/screens/employees';
 import { useAuthStore } from '../store/auth.store';
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
+const Stack = createNativeStackNavigator<AdminTabParamList>();
+
+/**
+ * Стек навигатор для модуля сотрудников
+ */
+const EmployeesStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Сотрудники" component={EmployeesScreen} />
+      <Stack.Screen 
+        name="EmployeeDetails" 
+        component={EmployeeDetailsScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Детали сотрудника',
+          headerBackTitle: 'Назад',
+        }}
+      />
+      <Stack.Screen 
+        name="EmployeeForm" 
+        component={EmployeeFormScreen}
+        options={{ 
+          headerShown: true,
+          title: 'Сотрудник',
+          headerBackTitle: 'Назад',
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 /**
  * Таб навигатор для администраторов
@@ -94,13 +125,21 @@ export const AdminTabNavigator: React.FC = () => {
       {/* 3. Сотрудники */}
       <Tab.Screen
         name="Сотрудники"
-        component={EmployeesScreen}
+        component={EmployeesStack}
         options={{
           title: 'Сотрудники',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account-group-outline" size={size} color={color} />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            // Сбрасываем стек сотрудников к начальному экрану
+            (navigation as any).navigate('Сотрудники', {
+              screen: 'Сотрудники',
+            });
+          },
+        })}
       />
 
       {/* 4. График */}
