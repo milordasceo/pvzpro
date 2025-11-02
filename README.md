@@ -35,6 +35,13 @@ npm run start:tunnel # Через tunnel (если нет USB)
 | [`QUICK_START.md`](QUICK_START.md) | ⚡ Быстрый старт |
 | [`START_GUIDE.md`](START_GUIDE.md) | 📱 Подробная инструкция по запуску |
 
+### Обновления и миграция
+| Документ | Описание |
+|----------|----------|
+| [`CHANGELOG.md`](CHANGELOG.md) | 📝 История изменений проекта |
+| [`TECH_STACK_UPDATE.md`](TECH_STACK_UPDATE.md) | 🆕 Обновление технологического стека |
+| [`MIGRATION_GUIDE.md`](MIGRATION_GUIDE.md) | 🔄 Руководство по миграции |
+
 ### Для разработки
 | Документ | Описание |
 |----------|----------|
@@ -73,11 +80,18 @@ npm run start:tunnel # Через tunnel (если нет USB)
 
 ## 🛠️ Технологии
 
-- React Native (Expo SDK 54)
+- React 19.2.0
+- React Native 0.82.1
+- Expo SDK 54.0.21
 - React Native Paper 5 (Material Design 3)
 - React Navigation 7
 - Zustand 5
-- TypeScript (Strict mode)
+- TypeScript 5.9.3 (Strict mode)
+- ESLint 9.39.0 (Flat Config)
+- Prettier 3.6.2
+
+> 🆕 **Обновлено:** Декабрь 2025 - Все зависимости обновлены до последних версий  
+> 📖 См. [`TECH_STACK_UPDATE.md`](TECH_STACK_UPDATE.md) и [`MIGRATION_GUIDE.md`](MIGRATION_GUIDE.md)
 
 ---
 
