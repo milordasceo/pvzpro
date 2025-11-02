@@ -53,7 +53,7 @@ export const EmployeeCard = ({ employee, onPress, onChat, onAddTask }: EmployeeC
     }
 
     if (status === 'sick_leave') {
-      return { text: 'Больничный', color: tokens.colors.warning.dark, icon: 'medical-bag' };
+      return { text: 'Больничный', color: tokens.colors.warning.main, icon: 'medical-bag' };
     }
 
     if (status === 'vacation') {

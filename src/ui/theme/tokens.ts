@@ -22,19 +22,7 @@ export const tokens = {
   paperVariants,
 } as const;
 
-/**
- * Совместимость со старыми константами
- * @deprecated Используй tokens.* вместо UI_TOKENS
- */
-export const UI_TOKENS = {
-  controlHeight: spacing.controlHeight,
-  buttonHeight: spacing.buttonHeight,
-  radius: radius.md,
-  gap: spacing.cardGap,
-} as const;
-
 export type Tokens = typeof tokens;
-export type UITokens = typeof UI_TOKENS;
 
 // Re-export типов
 export type { Colors } from './colors';

@@ -465,7 +465,7 @@ export const TasksTab: React.FC = () => {
                   borderRadius: 999,
                 }}
               >
-                <Label size="small" style={{ color: tokens.colors.warning.dark }}>
+                <Label size="small" style={{ color: tokens.colors.warning.main }}>
                   {assignments.length}
                 </Label>
               </View>

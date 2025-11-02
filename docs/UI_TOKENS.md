@@ -1,7 +1,8 @@
 # 🎨 UI Design Tokens
 
 **Дата создания:** 20 октября 2025  
-**Статус:** ✅ Готово
+**Обновлено:** 1 ноября 2025  
+**Статус:** ✅ Актуально
 
 ---
 
@@ -79,35 +80,57 @@ const styles = StyleSheet.create({
 ### Primary (Основной цвет)
 
 ```tsx
-tokens.colors.primary.main     // '#4F46E5' - основной
-tokens.colors.primary[50]      // '#F5F3FF' - самый светлый
-tokens.colors.primary[900]     // '#4C1D95' - самый тёмный
+tokens.colors.primary.light    // '#EDE9FE' - светлый фиолетовый
+tokens.colors.primary.main     // '#4F46E5' - основной индиго
+tokens.colors.primary.dark     // '#1E40AF' - тёмный синий
 ```
 
 ### Gray (Нейтральные)
 
 ```tsx
 tokens.colors.gray[50]         // '#F9FAFB' - почти белый
-tokens.colors.gray[500]        // '#6B7280' - средний серый
-tokens.colors.gray[900]        // '#111827' - почти чёрный
+tokens.colors.gray[100]        // '#F3F4F6' - фон секций
+tokens.colors.gray[200]        // '#E5E7EB' - границы
+tokens.colors.gray[300]        // '#D1D5DB' - disabled элементы
+tokens.colors.gray[400]        // '#9CA3AF' - muted текст
+tokens.colors.gray[500]        // '#6B7280' - вторичный текст
 ```
 
 ### Status (Статусные цвета)
 
 ```tsx
-tokens.colors.success.main     // '#10B981' - зелёный
-tokens.colors.warning.main     // '#F59E0B' - жёлтый
-tokens.colors.error.main       // '#DC2626' - красный
-tokens.colors.info.main        // '#0891B2' - синий
+// Success (5 оттенков)
+tokens.colors.success.lighter  // '#D1FAE5' - самый светлый
+tokens.colors.success.light    // '#DCFCE7' - светлый фон
+tokens.colors.success.main     // '#10B981' - основной зелёный
+tokens.colors.success.dark     // '#059669' - тёмный текст
+tokens.colors.success.darker   // '#065F46' - самый тёмный
+
+// Warning (3 оттенка)
+tokens.colors.warning.lighter  // '#FEF3C7' - самый светлый
+tokens.colors.warning.light    // '#FEF9E7' - светлый фон
+tokens.colors.warning.main     // '#F59E0B' - основной жёлтый
+
+// Error (4 оттенка)
+tokens.colors.error.light      // '#FEE2E2' - светлый фон
+tokens.colors.error.main       // '#DC2626' - основной красный
+tokens.colors.error.dark       // '#991B1B' - тёмный текст
+tokens.colors.error.darker     // '#7F1D1D' - самый тёмный
+
+// Info (3 оттенка)
+tokens.colors.info.light       // '#DBEAFE' - светлый фон
+tokens.colors.info.main        // '#3B82F6' - основной синий
+tokens.colors.info.dark        // '#1E40AF' - тёмный текст
 ```
 
 ### Semantic (Семантические)
 
 ```tsx
 tokens.colors.background       // '#FBFCFE' - фон приложения
+tokens.colors.screenBackground // '#F9FAFB' - фон экранов
 tokens.colors.surface          // '#FFFFFF' - фон карточек
 tokens.colors.border           // '#E5E7EB' - границы
-tokens.colors.divider          // '#F3F4F6' - разделители
+// Для разделителей используйте tokens.colors.gray[100]
 ```
 
 ### Text (Текст)
@@ -117,18 +140,9 @@ tokens.colors.text.primary     // '#111827' - основной текст
 tokens.colors.text.secondary   // '#6B7280' - второстепенный текст
 tokens.colors.text.muted       // '#9CA3AF' - приглушённый текст
 tokens.colors.text.disabled    // '#D1D5DB' - отключённый текст
-tokens.colors.text.white       // '#FFFFFF' - белый текст
 ```
 
-### Badge (Бейджи)
-
-```tsx
-tokens.colors.badge.success    // Зелёный
-tokens.colors.badge.warning    // Жёлтый
-tokens.colors.badge.error      // Красный
-tokens.colors.badge.info       // Синий
-tokens.colors.badge.neutral    // Серый
-```
+> **Примечание:** Badge цвета удалены. Используйте напрямую `tokens.colors.success.main`, `tokens.colors.warning.main`, и т.д.
 
 ---
 

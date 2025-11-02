@@ -334,13 +334,13 @@ export const FinanceHistoryScreen: React.FC = () => {
                                       <MaterialCommunityIcons
                                         name="calendar"
                                         size={16}
-                                        color={shift.penalties < 0 ? tokens.colors.warning.dark : tokens.colors.text.secondary}
+                                        color={shift.penalties < 0 ? tokens.colors.warning.main : tokens.colors.text.secondary}
                                       />
                                       <Text
                                         style={{
                                           fontSize: 14,
                                           fontWeight: '600',
-                                          color: shift.penalties < 0 ? tokens.colors.warning.dark : tokens.colors.text.primary,
+                                          color: shift.penalties < 0 ? tokens.colors.warning.main : tokens.colors.text.primary,
                                         }}
                                       >
                                         {shift.shiftDate.toLocaleDateString('ru-RU', {
@@ -362,7 +362,7 @@ export const FinanceHistoryScreen: React.FC = () => {
                                             style={{
                                               fontSize: 10,
                                               fontWeight: '600',
-                                              color: tokens.colors.warning.dark,
+                                              color: tokens.colors.surface,
                                             }}
                                           >
                                             Штраф

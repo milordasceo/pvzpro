@@ -17,7 +17,6 @@ export * from './components/overlays';
 export * from './components/navigation';
 export * from './components/display';
 export * from './components/typography';
-export * from './components/dev';
 
 // Утилиты
 export * from './utils';
