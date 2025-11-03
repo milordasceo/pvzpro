@@ -53,6 +53,11 @@ npm run start:tunnel # Через tunnel (если нет USB)
 ### Для разработки
 | Документ | Описание |
 |----------|----------|
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | 🤝 Руководство по внесению изменений |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | 🏗️ Архитектура проекта |
+| [`TESTING.md`](TESTING.md) | 🧪 Руководство по тестированию |
+| [`DECISIONS.md`](DECISIONS.md) | 📝 Архитектурные решения (ADR) |
+| [`docs/AI_PROMPTS.md`](docs/AI_PROMPTS.md) | 🤖 Промпт-шаблоны для AI IDE |
 | [`docs/NEXT_SESSION.md`](docs/NEXT_SESSION.md) | 🚀 Подготовка к следующей сессии |
 | [`docs/AUDIT_REPORT.md`](docs/AUDIT_REPORT.md) | 📋 Отчет о ревизии проекта |
 | [`docs/EMPLOYEES_MODULE_READY.md`](docs/EMPLOYEES_MODULE_READY.md) | 🚀 Готовность к модулю "Персонал" |
