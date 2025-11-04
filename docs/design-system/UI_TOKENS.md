@@ -52,20 +52,20 @@ const styles = StyleSheet.create({
     padding: tokens.spacing.lg,
     backgroundColor: tokens.colors.background,
   },
-  
+
   card: {
     padding: tokens.spacing.md,
     borderRadius: tokens.radius.lg,
     backgroundColor: tokens.colors.surface,
     gap: tokens.spacing.sm,
   },
-  
+
   title: {
     fontSize: tokens.fontSize.lg,
     fontWeight: tokens.fontWeight.semibold,
     color: tokens.colors.text.primary,
   },
-  
+
   subtitle: {
     fontSize: tokens.fontSize.sm,
     color: tokens.colors.text.secondary,
@@ -80,66 +80,66 @@ const styles = StyleSheet.create({
 ### Primary (Основной цвет)
 
 ```tsx
-tokens.colors.primary.light    // '#EDE9FE' - светлый фиолетовый
-tokens.colors.primary.main     // '#4F46E5' - основной индиго
-tokens.colors.primary.dark     // '#1E40AF' - тёмный синий
+tokens.colors.primary.light; // '#EDE9FE' - светлый фиолетовый
+tokens.colors.primary.main; // '#4F46E5' - основной индиго
+tokens.colors.primary.dark; // '#1E40AF' - тёмный синий
 ```
 
 ### Gray (Нейтральные)
 
 ```tsx
-tokens.colors.gray[50]         // '#F9FAFB' - почти белый
-tokens.colors.gray[100]        // '#F3F4F6' - фон секций
-tokens.colors.gray[200]        // '#E5E7EB' - границы
-tokens.colors.gray[300]        // '#D1D5DB' - disabled элементы
-tokens.colors.gray[400]        // '#9CA3AF' - muted текст
-tokens.colors.gray[500]        // '#6B7280' - вторичный текст
+tokens.colors.gray[50]; // '#F9FAFB' - почти белый
+tokens.colors.gray[100]; // '#F3F4F6' - фон секций
+tokens.colors.gray[200]; // '#E5E7EB' - границы
+tokens.colors.gray[300]; // '#D1D5DB' - disabled элементы
+tokens.colors.gray[400]; // '#9CA3AF' - muted текст
+tokens.colors.gray[500]; // '#6B7280' - вторичный текст
 ```
 
 ### Status (Статусные цвета)
 
 ```tsx
 // Success (5 оттенков)
-tokens.colors.success.lighter  // '#D1FAE5' - самый светлый
-tokens.colors.success.light    // '#DCFCE7' - светлый фон
-tokens.colors.success.main     // '#10B981' - основной зелёный
-tokens.colors.success.dark     // '#059669' - тёмный текст
-tokens.colors.success.darker   // '#065F46' - самый тёмный
+tokens.colors.success.lighter; // '#D1FAE5' - самый светлый
+tokens.colors.success.light; // '#DCFCE7' - светлый фон
+tokens.colors.success.main; // '#10B981' - основной зелёный
+tokens.colors.success.dark; // '#059669' - тёмный текст
+tokens.colors.success.darker; // '#065F46' - самый тёмный
 
 // Warning (3 оттенка)
-tokens.colors.warning.lighter  // '#FEF3C7' - самый светлый
-tokens.colors.warning.light    // '#FEF9E7' - светлый фон
-tokens.colors.warning.main     // '#F59E0B' - основной жёлтый
+tokens.colors.warning.lighter; // '#FEF3C7' - самый светлый
+tokens.colors.warning.light; // '#FEF9E7' - светлый фон
+tokens.colors.warning.main; // '#F59E0B' - основной жёлтый
 
 // Error (4 оттенка)
-tokens.colors.error.light      // '#FEE2E2' - светлый фон
-tokens.colors.error.main       // '#DC2626' - основной красный
-tokens.colors.error.dark       // '#991B1B' - тёмный текст
-tokens.colors.error.darker     // '#7F1D1D' - самый тёмный
+tokens.colors.error.light; // '#FEE2E2' - светлый фон
+tokens.colors.error.main; // '#DC2626' - основной красный
+tokens.colors.error.dark; // '#991B1B' - тёмный текст
+tokens.colors.error.darker; // '#7F1D1D' - самый тёмный
 
 // Info (3 оттенка)
-tokens.colors.info.light       // '#DBEAFE' - светлый фон
-tokens.colors.info.main        // '#3B82F6' - основной синий
-tokens.colors.info.dark        // '#1E40AF' - тёмный текст
+tokens.colors.info.light; // '#DBEAFE' - светлый фон
+tokens.colors.info.main; // '#3B82F6' - основной синий
+tokens.colors.info.dark; // '#1E40AF' - тёмный текст
 ```
 
 ### Semantic (Семантические)
 
 ```tsx
-tokens.colors.background       // '#FBFCFE' - фон приложения
-tokens.colors.screenBackground // '#F9FAFB' - фон экранов
-tokens.colors.surface          // '#FFFFFF' - фон карточек
-tokens.colors.border           // '#E5E7EB' - границы
+tokens.colors.background; // '#FBFCFE' - фон приложения
+tokens.colors.screenBackground; // '#F9FAFB' - фон экранов
+tokens.colors.surface; // '#FFFFFF' - фон карточек
+tokens.colors.border; // '#E5E7EB' - границы
 // Для разделителей используйте tokens.colors.gray[100]
 ```
 
 ### Text (Текст)
 
 ```tsx
-tokens.colors.text.primary     // '#111827' - основной текст
-tokens.colors.text.secondary   // '#6B7280' - второстепенный текст
-tokens.colors.text.muted       // '#9CA3AF' - приглушённый текст
-tokens.colors.text.disabled    // '#D1D5DB' - отключённый текст
+tokens.colors.text.primary; // '#111827' - основной текст
+tokens.colors.text.secondary; // '#6B7280' - второстепенный текст
+tokens.colors.text.muted; // '#9CA3AF' - приглушённый текст
+tokens.colors.text.disabled; // '#D1D5DB' - отключённый текст
 ```
 
 > **Примечание:** Badge цвета удалены. Используйте напрямую `tokens.colors.success.main`, `tokens.colors.warning.main`, и т.д.
@@ -151,32 +151,32 @@ tokens.colors.text.disabled    // '#D1D5DB' - отключённый текст
 ### Базовые отступы
 
 ```tsx
-tokens.spacing.xs              // 4
-tokens.spacing.sm              // 8
-tokens.spacing.md              // 12
-tokens.spacing.lg              // 16
-tokens.spacing.xl              // 24
-tokens.spacing.xxl             // 32
-tokens.spacing.xxxl            // 48
+tokens.spacing.xs; // 4
+tokens.spacing.sm; // 8
+tokens.spacing.md; // 12
+tokens.spacing.lg; // 16
+tokens.spacing.xl; // 24
+tokens.spacing.xxl; // 32
+tokens.spacing.xxxl; // 48
 ```
 
 ### Специальные отступы
 
 ```tsx
-tokens.spacing.screenPadding   // 16 - горизонтальный padding экрана
-tokens.spacing.cardGap         // 12 - между карточками
-tokens.spacing.sectionGap      // 16 - между секциями
-tokens.spacing.elementGap      // 8  - между элементами
+tokens.spacing.screenPadding; // 16 - горизонтальный padding экрана
+tokens.spacing.cardGap; // 12 - между карточками
+tokens.spacing.sectionGap; // 16 - между секциями
+tokens.spacing.elementGap; // 8  - между элементами
 ```
 
 ### Высоты элементов
 
 ```tsx
-tokens.spacing.controlHeight   // 48 - высота контролов
-tokens.spacing.buttonHeight    // 44 - высота кнопок
-tokens.spacing.inputHeight     // 48 - высота input
-tokens.spacing.tabBarHeight    // 44 - высота таб бара
-tokens.spacing.headerHeight    // 56 - высота хедера
+tokens.spacing.controlHeight; // 48 - высота контролов
+tokens.spacing.buttonHeight; // 44 - высота кнопок
+tokens.spacing.inputHeight; // 48 - высота input
+tokens.spacing.tabBarHeight; // 44 - высота таб бара
+tokens.spacing.headerHeight; // 56 - высота хедера
 ```
 
 ---
@@ -184,14 +184,14 @@ tokens.spacing.headerHeight    // 56 - высота хедера
 ## 🔲 Радиусы скругления (radius)
 
 ```tsx
-tokens.radius.none             // 0
-tokens.radius.xs               // 4
-tokens.radius.sm               // 6
-tokens.radius.md               // 8  - стандарт
-tokens.radius.lg               // 12 - карточки
-tokens.radius.xl               // 16
-tokens.radius.xxl              // 24
-tokens.radius.full             // 9999 - круг
+tokens.radius.none; // 0
+tokens.radius.xs; // 4
+tokens.radius.sm; // 6
+tokens.radius.md; // 8  - стандарт
+tokens.radius.lg; // 12 - карточки
+tokens.radius.xl; // 16
+tokens.radius.xxl; // 24
+tokens.radius.full; // 9999 - круг
 ```
 
 ---
@@ -199,11 +199,11 @@ tokens.radius.full             // 9999 - круг
 ## 🔳 Elevation (Тени)
 
 ```tsx
-tokens.elevation.none          // 0
-tokens.elevation.sm            // 1
-tokens.elevation.md            // 2
-tokens.elevation.lg            // 3
-tokens.elevation.xl            // 4
+tokens.elevation.none; // 0
+tokens.elevation.sm; // 1
+tokens.elevation.md; // 2
+tokens.elevation.lg; // 3
+tokens.elevation.xl; // 4
 ```
 
 Используется с Paper компонентами:
@@ -221,31 +221,31 @@ tokens.elevation.xl            // 4
 ### Размеры шрифтов
 
 ```tsx
-tokens.fontSize.xs             // 12
-tokens.fontSize.sm             // 14
-tokens.fontSize.md             // 16
-tokens.fontSize.lg             // 18
-tokens.fontSize.xl             // 20
-tokens.fontSize.xxl            // 24
-tokens.fontSize.xxxl           // 32
-tokens.fontSize.huge           // 40
+tokens.fontSize.xs; // 12
+tokens.fontSize.sm; // 14
+tokens.fontSize.md; // 16
+tokens.fontSize.lg; // 18
+tokens.fontSize.xl; // 20
+tokens.fontSize.xxl; // 24
+tokens.fontSize.xxxl; // 32
+tokens.fontSize.huge; // 40
 ```
 
 ### Веса шрифтов
 
 ```tsx
-tokens.fontWeight.regular      // '400'
-tokens.fontWeight.medium       // '500'
-tokens.fontWeight.semibold     // '600'
-tokens.fontWeight.bold         // '700'
+tokens.fontWeight.regular; // '400'
+tokens.fontWeight.medium; // '500'
+tokens.fontWeight.semibold; // '600'
+tokens.fontWeight.bold; // '700'
 ```
 
 ### Line Height
 
 ```tsx
-tokens.lineHeight.tight        // 1.2
-tokens.lineHeight.normal       // 1.5
-tokens.lineHeight.relaxed      // 1.75
+tokens.lineHeight.tight; // 1.2
+tokens.lineHeight.normal; // 1.5
+tokens.lineHeight.relaxed; // 1.75
 ```
 
 ### Paper Typography Variants
@@ -284,11 +284,11 @@ import { Text } from 'react-native-paper';
 Доступ к вариантам через tokens:
 
 ```tsx
-tokens.paperVariants.hero       // 'displayLarge'
-tokens.paperVariants.h1         // 'headlineLarge'
-tokens.paperVariants.title      // 'titleMedium'
-tokens.paperVariants.body       // 'bodyMedium'
-tokens.paperVariants.label      // 'labelMedium'
+tokens.paperVariants.hero; // 'displayLarge'
+tokens.paperVariants.h1; // 'headlineLarge'
+tokens.paperVariants.title; // 'titleMedium'
+tokens.paperVariants.body; // 'bodyMedium'
+tokens.paperVariants.label; // 'labelMedium'
 ```
 
 ---
@@ -331,10 +331,10 @@ const styles = StyleSheet.create({
 import { UI_TOKENS } from '../ui/theme/tokens';
 
 // Эти значения работают, но deprecated
-UI_TOKENS.controlHeight  // -> tokens.spacing.controlHeight
-UI_TOKENS.buttonHeight   // -> tokens.spacing.buttonHeight
-UI_TOKENS.radius         // -> tokens.radius.md
-UI_TOKENS.gap            // -> tokens.spacing.cardGap
+UI_TOKENS.controlHeight; // -> tokens.spacing.controlHeight
+UI_TOKENS.buttonHeight; // -> tokens.spacing.buttonHeight
+UI_TOKENS.radius; // -> tokens.radius.md
+UI_TOKENS.gap; // -> tokens.spacing.cardGap
 ```
 
 ---
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     backgroundColor: tokens.colors.surface,
     borderRadius: tokens.radius.lg,
   },
-  
+
   title: {
     fontSize: tokens.fontSize.lg,
     fontWeight: tokens.fontWeight.semibold,
@@ -367,15 +367,15 @@ const styles = StyleSheet.create({
 // НЕ используй хардкод значений!
 const styles = StyleSheet.create({
   container: {
-    padding: 16,                    // ❌ Используй tokens.spacing.lg
-    backgroundColor: '#FFFFFF',     // ❌ Используй tokens.colors.surface
-    borderRadius: 12,               // ❌ Используй tokens.radius.lg
+    padding: 16, // ❌ Используй tokens.spacing.lg
+    backgroundColor: '#FFFFFF', // ❌ Используй tokens.colors.surface
+    borderRadius: 12, // ❌ Используй tokens.radius.lg
   },
-  
+
   title: {
-    fontSize: 18,                   // ❌ Используй tokens.fontSize.lg
-    fontWeight: '600',              // ❌ Используй tokens.fontWeight.semibold
-    color: '#111827',               // ❌ Используй tokens.colors.text.primary
+    fontSize: 18, // ❌ Используй tokens.fontSize.lg
+    fontWeight: '600', // ❌ Используй tokens.fontWeight.semibold
+    color: '#111827', // ❌ Используй tokens.colors.text.primary
   },
 });
 ```
@@ -386,12 +386,12 @@ const styles = StyleSheet.create({
 // ✅ Правильно
 import { Text } from 'react-native-paper';
 
-<Text variant="bodyMedium">Текст</Text>
+<Text variant="bodyMedium">Текст</Text>;
 
 // ❌ Неправильно
 import { Text } from 'react-native';
 
-<Text style={{ fontSize: 14 }}>Текст</Text>
+<Text style={{ fontSize: 14 }}>Текст</Text>;
 ```
 
 ---
@@ -425,18 +425,18 @@ const styles = StyleSheet.create({
     padding: tokens.spacing.screenPadding,
     backgroundColor: tokens.colors.background,
   },
-  
+
   card: {
     padding: tokens.spacing.lg,
     backgroundColor: tokens.colors.surface,
     borderRadius: tokens.radius.lg,
     gap: tokens.spacing.sm,
   },
-  
+
   title: {
     color: tokens.colors.text.primary,
   },
-  
+
   description: {
     color: tokens.colors.text.secondary,
   },
@@ -454,4 +454,3 @@ const styles = StyleSheet.create({
 ---
 
 **Следующий шаг:** Создание базовых UI компонентов (SearchInput, Badge, Avatar и др.)
-
