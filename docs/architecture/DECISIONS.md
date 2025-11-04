@@ -662,7 +662,7 @@ Expo предоставляет:
 ## Дополнительные ресурсы
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - общая архитектура проекта
-- [CONTRIBUTING.md](CONTRIBUTING.md) - процесс разработки
+- [CONTRIBUTING.md](../guides/CONTRIBUTING.md) - процесс разработки
 - [ADR GitHub Template](https://github.com/joelparkerhenderson/architecture-decision-record)
 
 ---

@@ -6,6 +6,7 @@ type BodySize = 'large' | 'medium' | 'small';
 
 interface BodyProps extends Omit<PaperTextProps<never>, 'variant'> {
   size?: BodySize;
+  color?: string;
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
@@ -18,6 +19,7 @@ const variantMap: Record<BodySize, PaperTextProps<never>['variant']> = {
 
 export const Body: React.FC<BodyProps> = ({ 
   size = 'medium', 
+  color,
   style,
   children,
   ...rest 
@@ -25,7 +27,7 @@ export const Body: React.FC<BodyProps> = ({
   return (
     <PaperText 
       variant={variantMap[size]}
-      style={style}
+      style={[color ? { color } : undefined, style]}
       {...rest}
     >
       {children}

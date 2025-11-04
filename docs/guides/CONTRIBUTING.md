@@ -27,7 +27,7 @@
 ### Прежде чем начать
 
 1. Прочитайте [README.md](README.md) - общий обзор проекта
-2. Изучите [ARCHITECTURE.md](ARCHITECTURE.md) - архитектура проекта
+2. Изучите [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - архитектура проекта
 3. Ознакомьтесь с [.cursorrules](.cursorrules) - правила разработки
 4. Посмотрите [DECISIONS.md](DECISIONS.md) - архитектурные решения
 
@@ -653,7 +653,7 @@ npm run ios              # iOS build (требует Mac)
 ### Документация
 
 - [README.md](README.md) - общий обзор
-- [ARCHITECTURE.md](ARCHITECTURE.md) - архитектура
+- [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - архитектура
 - [TESTING.md](TESTING.md) - тестирование
 - [DECISIONS.md](DECISIONS.md) - архитектурные решения
 - [docs/](docs/) - дополнительная документация

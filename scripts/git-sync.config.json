@@ -1,0 +1,17 @@
+{
+  "workflow": "github-flow",
+  "protectedBranches": ["main", "dev"],
+  "mirrorProtected": true,
+  "autoDeleteMergedLocal": true,
+  "autoDeleteMergedRemote": false,
+  "notifyOnConflicts": true,
+  "writeStatusHtml": true,
+  "statusHtmlPath": "git-status.html",
+  "pollIntervalMinutes": 30,
+  "pollIntervalSeconds": 5,
+  "enableBidirectional": true,
+  "autoSyncApproved": false,
+  "approvalFile": "auto-approve.flag",
+  "logFilePath": "logs/sync.log",
+  "checkMerges": true
+}

@@ -206,7 +206,7 @@ wbapp/
 1. **Перед началом работы:**
    - Прочитайте [.cursorrules](.cursorrules)
    - Изучите [CONTRIBUTING.md](CONTRIBUTING.md)
-   - Ознакомьтесь с [ARCHITECTURE.md](ARCHITECTURE.md)
+- Ознакомьтесь с [ARCHITECTURE.md](../architecture/ARCHITECTURE.md)
 
 2. **При работе с AI IDE (Cursor):**
    - Используйте промпт-шаблоны из [docs/AI_PROMPTS.md](docs/AI_PROMPTS.md)
@@ -226,7 +226,7 @@ wbapp/
 
 1. Начните с [README.md](README.md)
 2. Прочитайте [CONTRIBUTING.md](CONTRIBUTING.md)
-3. Изучите [ARCHITECTURE.md](ARCHITECTURE.md)
+3. Изучите [ARCHITECTURE.md](../architecture/ARCHITECTURE.md)
 4. Посмотрите примеры в [docs/AI_PROMPTS.md](docs/AI_PROMPTS.md)
 
 ---
@@ -293,13 +293,14 @@ npm run dev          # Запуск с очисткой кэша
 Вся документация создана с учётом текущего стека проекта:
 
 - React 19.2.0
-- React Native 0.82.1
-- Expo SDK 54.0.21
+ - React 19.1.0
+ - React Native 0.81.5
+ - Expo SDK 54.0.22
 - TypeScript 5.9.3 (strict mode)
 - React Native Paper 5.14.5
 - React Navigation 7
 - Zustand 5.0.8
-- ESLint 9.39.0
+ - ESLint 9.39.1
 - Prettier 3.6.2
 
 ### Стиль документации

@@ -4,11 +4,13 @@ import { StyleProp, TextStyle } from 'react-native';
 import { tokens } from '../../../ui/theme';
 
 interface CaptionProps extends Omit<PaperTextProps<never>, 'variant'> {
+  color?: string;
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
 
 export const Caption: React.FC<CaptionProps> = ({ 
+  color,
   style,
   children,
   ...rest 
@@ -17,7 +19,7 @@ export const Caption: React.FC<CaptionProps> = ({
     <PaperText 
       variant="bodySmall"
       style={[
-        { color: tokens.colors.text.secondary },
+        { color: color ?? tokens.colors.text.secondary },
         style
       ]}
       {...rest}

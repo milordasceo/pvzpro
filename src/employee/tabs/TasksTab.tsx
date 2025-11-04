@@ -250,7 +250,7 @@ export const TasksTab: React.FC = () => {
               }}
             >
               <MaterialCommunityIcons name="rocket-launch" size={18} color={tokens.colors.primary.dark} />
-              <Label size="medium" style={{ color: tokens.colors.primary.darker, flex: 1 }}>
+              <Label size="medium" style={{ color: tokens.colors.primary.dark, flex: 1 }}>
                 Отлично! Вы уже прошли больше половины!
               </Label>
             </View>

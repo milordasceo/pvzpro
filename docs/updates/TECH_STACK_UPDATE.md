@@ -3,13 +3,15 @@
 ## Дата обновления
 Декабрь 2025
 
+**Актуализация:** 04-11-13-17
+
 ## Обновленные основные зависимости
 
 ### Core
-- **React**: 19.1.0 → 19.2.0 ✅
-- **React Native**: 0.81.4 → 0.82.1 ✅
-- **Expo SDK**: 54.0.13 → 54.0.21 ✅
-- **TypeScript**: 5.9.2 → 5.9.3 ✅
+- **React**: 19.1.0 (оставлено в рамках SDK 54)
+- **React Native**: 0.81.x (оставлено для совместимости SDK 54)
+- **Expo SDK**: 54.0.22 ✅ (патч-обновление)
+- **TypeScript**: 5.9.3 ✅
 
 ### React Navigation
 - **@react-navigation/bottom-tabs**: 7.4.5 → 7.7.3 ✅
@@ -20,17 +22,17 @@
 ### UI & Gestures
 - **@expo/vector-icons**: 15.0.2 → 15.0.3 ✅
 - **expo-image**: 3.0.9 → 3.0.10 ✅
-- **react-native-gesture-handler**: 2.28.0 → 2.29.0 ✅
-- **react-native-maps**: 1.20.1 → 1.26.18 ✅
-- **react-native-safe-area-context**: 5.6.0 → 5.6.2 ✅
-- **react-native-screens**: 4.16.0 → 4.18.0 ✅
+- **react-native-gesture-handler**: 2.28.0 (без изменений)
+- **react-native-maps**: 1.20.1 (без изменений)
+- **react-native-safe-area-context**: 5.6.2 ✅
+- **react-native-screens**: 4.16.0 (без изменений)
 
 ### Dev Dependencies
 - **@babel/core**: 7.25.2 → 7.28.5 ✅
 - **@types/react**: 19.1.10 → 19.2.2 ✅
 - **@typescript-eslint/eslint-plugin**: 8.44.1 → 8.46.2 ✅
 - **@typescript-eslint/parser**: 8.44.1 → 8.46.2 ✅
-- **eslint**: 8.57.1 → 9.39.0 ✅ (major update!)
+- **eslint**: 8.57.1 → 9.39.1 ✅ (major update!)
 - **eslint-plugin-react-hooks**: 5.2.0 → 7.0.1 ✅
 
 ## Важные изменения

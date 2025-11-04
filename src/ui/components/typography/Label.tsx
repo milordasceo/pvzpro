@@ -6,6 +6,7 @@ type LabelSize = 'large' | 'medium' | 'small';
 
 interface LabelProps extends Omit<PaperTextProps<never>, 'variant'> {
   size?: LabelSize;
+  color?: string;
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
@@ -18,6 +19,7 @@ const variantMap: Record<LabelSize, PaperTextProps<never>['variant']> = {
 
 export const Label: React.FC<LabelProps> = ({ 
   size = 'medium', 
+  color,
   style,
   children,
   ...rest 
@@ -25,7 +27,7 @@ export const Label: React.FC<LabelProps> = ({
   return (
     <PaperText 
       variant={variantMap[size]}
-      style={style}
+      style={[color ? { color } : undefined, style]}
       {...rest}
     >
       {children}

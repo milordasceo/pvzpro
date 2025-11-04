@@ -1,6 +1,6 @@
 # Проект WB ПВЗ — Полное описание
 
-> Обновлено: 2025-10-20
+> Обновлено: 04 ноября 2025 - 19:09
 
 ---
 
@@ -35,9 +35,9 @@ Android и iOS (Expo Managed + EAS Build; iOS — без Mac)
 
 ## Технологии
 
-### Основной стек (на 2025-10-03)
-- **React Native** 0.81.4 (Expo SDK 54)
-- **React** 19.1
+### Основной стек (на 04 ноября 2025)
+- **React Native** 0.81.5 (Expo SDK 54.0.22)
+- **React** 19.1.0
 - **React Native Paper** 5 (Material Design 3)
 - **TypeScript** с строгой типизацией
 - **React Navigation** 7.x:

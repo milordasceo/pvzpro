@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed - Tech Stack Update (December 2025)
 
 #### Major Updates 🚀
-- **React** upgraded from 19.1.0 to 19.2.0
-- **React Native** upgraded from 0.81.4 to 0.82.1
-- **Expo SDK** upgraded from 54.0.13 to 54.0.21
-- **ESLint** major upgrade from 8.57.1 to 9.39.0 with flat config migration
+- **React** pinned at 19.1.0 (совместимость с Expo SDK 54)
+- **React Native** upgraded from 0.81.4 to 0.81.5
+- **Expo SDK** upgraded from 54.0.13 to 54.0.22
+- **ESLint** major upgrade from 8.57.1 to 9.39.1 with flat config migration
 - **TypeScript** upgraded from 5.9.2 to 5.9.3
 
 #### Navigation Updates 🧭
@@ -74,11 +74,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **1.0.0-stable** (October 30, 2025) with Tech Stack Update (December 2025)
 
 ### Tech Stack Versions
-- React: 19.2.0
-- React Native: 0.82.1
-- Expo SDK: 54.0.21
+- React: 19.1.0
+- React Native: 0.81.5
+- Expo SDK: 54.0.22
 - TypeScript: 5.9.3
-- ESLint: 9.39.0
+- ESLint: 9.39.1
 - Node: 18+ (recommended)
 - npm: 9+ (recommended)
 

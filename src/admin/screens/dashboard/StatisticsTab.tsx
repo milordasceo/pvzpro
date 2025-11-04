@@ -192,7 +192,7 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   {`${data.pvzCount} ${data.pvzCount === 1 ? 'пункт' : 'пунктов'} выдачи`}
                 </Body>
               </View>
-              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
+              <Heading level={3} style={{ color: tokens.colors.primary.main }}>
                 {data.pvzCount}
               </Heading>
             </View>
@@ -217,7 +217,7 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   {`${data.employeesCount} ${data.employeesCount === 1 ? 'человек' : 'человек'} в базе`}
                 </Body>
               </View>
-              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
+              <Heading level={3} style={{ color: tokens.colors.primary.main }}>
                 {data.employeesCount}
               </Heading>
             </View>
@@ -244,7 +244,7 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   {`${data.onShiftCount} ${data.onShiftCount === 1 ? 'сотрудник работает' : 'сотрудников работают'} сейчас`}
                 </Body>
               </View>
-              <Heading size="h3" style={{ color: tokens.colors.success.main }}>
+              <Heading level={3} style={{ color: tokens.colors.success.main }}>
                 {data.onShiftCount}
               </Heading>
             </View>
@@ -269,7 +269,7 @@ export const StatisticsTab = React.memo<StatisticsTabProps>(({ data, loading, on
                   {`${data.plannedTodayCount} ${data.plannedTodayCount === 1 ? 'смена' : 'смен'} на сегодня`}
                 </Body>
               </View>
-              <Heading size="h3" style={{ color: tokens.colors.primary.main }}>
+              <Heading level={3} style={{ color: tokens.colors.primary.main }}>
                 {data.plannedTodayCount}
               </Heading>
             </View>
