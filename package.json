@@ -12,6 +12,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "qr": "node ./scripts/generate-qr.mjs",
+    "docs:inventory": "node ./scripts/docs-inventory.mjs",
     "lint": "eslint --ext .ts,.tsx src",
     "lint:fix": "eslint --ext .ts,.tsx src --fix",
     "format": "prettier --check ./src",
