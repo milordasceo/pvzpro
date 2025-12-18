@@ -1,85 +1,38 @@
-# Expo config in TS
-app.json
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# Node.js
 node_modules/
+npm-debug.log
+yarn-error.log
 
 # Expo
 .expo/
 dist/
 web-build/
-expo-env.d.ts
 
 # Native
-.kotlin/
-*.orig.*
+android/
+ios/
 *.jks
-*.p8
 *.p12
 *.key
 *.mobileprovision
+*.orig.*
 
-# Android build files
-android/app/build/
-android/build/
-android/.cxx/
-android/.gradle/
-android/local.properties
-android/app/debug.keystore
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-.env
-
-# typescript
-*.tsbuildinfo
-
-# Test coverage
-coverage/
-*.lcov
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# IDE
-.vscode/
+# Editors
 .idea/
+.vscode/
 *.swp
 *.swo
-*~
+.DS_Store
 
-# Temporary and backup files
-*.tar.gz
-*.zip
-*_restore_*/
-git-status.html
-git-status.txt
+# Env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Test scripts and local tools
-test_*.js
-switch_*.js
-scrcpy_*.bat
-
-# Temporary text files
-ГОТОВО_К_КОММИТУ.txt
-ВЕРСИЯ_СОХРАНЕНА.txt
-COMMIT_INSTRUCTIONS.md
-COMMIT_STABLE_VERSION.bat
+# Trae
+.trae/
+_BACKUP_*
+_OLD_PROJECT
+temp_init/
