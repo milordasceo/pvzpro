@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from 'heroui-native';
+import { Button } from '../../shared/ui/Button';
 import { useAuthStore, UserRole } from '../../features/auth/model/auth.store';
 
 export const LoginScreen = () => {
@@ -24,6 +24,7 @@ export const LoginScreen = () => {
             size="lg" 
             className="w-full"
             onPress={() => handleRoleSelect('employee')}
+            logLabel="Select Role: Employee"
           >
             Сотрудник
           </Button>
@@ -33,6 +34,7 @@ export const LoginScreen = () => {
             size="lg" 
             className="w-full"
             onPress={() => handleRoleSelect('manager')}
+            logLabel="Select Role: Manager"
           >
             Менеджер
           </Button>
@@ -42,6 +44,7 @@ export const LoginScreen = () => {
             size="lg" 
             className="w-full"
             onPress={() => handleRoleSelect('owner')}
+            logLabel="Select Role: Owner"
           >
             Владелец
           </Button>
