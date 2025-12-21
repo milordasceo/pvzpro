@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { View, Dimensions, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { View, Dimensions, StatusBar, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Square, Coffee, Wallet, MapPin, Clock, User, ChevronRight, CheckCircle2, Timer, Lock, Zap } from 'lucide-react-native';
+import { Square, Coffee, Wallet, Clock, User, ChevronRight, CheckCircle2, Timer, Lock, Zap, ArrowRight, Power } from 'lucide-react-native';
 import { useShiftStore, MarketplaceType } from '../model/shift.store';
+import { useTasksStore } from '../model/tasks.store';
 import { theme } from '../../../shared/theme';
 import { marketplaceThemes } from '../../../shared/theme/colors';
 import Animated, { 
@@ -15,17 +16,22 @@ import Animated, {
   FadeInDown,
   FadeOutUp,
   withRepeat,
-  withTiming
+  withTiming,
+  withSequence,
+  cancelAnimation
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const SLIDER_WIDTH = SCREEN_WIDTH - (theme.layout.spacing.lg * 4); // Based on horizontal padding
-const KNOB_SIZE = 56;
-const TRAVEL_DISTANCE = SLIDER_WIDTH - KNOB_SIZE - theme.layout.spacing.md;
+const SLIDER_WIDTH = SCREEN_WIDTH - (theme.spacing.lg * 2);
+const KNOB_SIZE = 52;
+const TRAVEL_DISTANCE = SLIDER_WIDTH - KNOB_SIZE - 12;
 
 export const ShiftScreen = () => {
+  const navigation = useNavigation<any>();
   const { 
     isShiftOpen, 
     shiftStartTime, 
@@ -40,9 +46,12 @@ export const ShiftScreen = () => {
     setMarketplace
   } = useShiftStore();
 
+  const { tasks } = useTasksStore();
+
   const [timer, setTimer] = useState('00:00:00');
   const [breakTimer, setBreakBreakTimer] = useState('00:00');
   const [remainingTime, setRemainingTime] = useState('--:--');
+  const [isHolding, setIsHolding] = useState(false);
 
   const currentTheme = marketplaceThemes[pvz.marketplace] || marketplaceThemes.wb;
 
@@ -50,6 +59,8 @@ export const ShiftScreen = () => {
   const translateX = useSharedValue(0);
   const startX = useSharedValue(0);
   const shimmerValue = useSharedValue(0);
+  const holdProgress = useSharedValue(0);
+  const pulseScale = useSharedValue(1);
 
   useEffect(() => {
     if (!isShiftOpen) {
@@ -58,16 +69,34 @@ export const ShiftScreen = () => {
         -1,
         false
       );
+      holdProgress.value = 0;
+      cancelAnimation(pulseScale);
+      pulseScale.value = 1;
     } else {
       shimmerValue.value = 0;
+      // Start a subtle pulse on the end button to attract attention
+      pulseScale.value = withRepeat(
+        withTiming(1.05, { duration: 1500 }),
+        -1,
+        true
+      );
     }
   }, [isShiftOpen]);
 
   const handleAction = useCallback(() => {
-    if (isShiftOpen) endShift();
-    else startShift();
+    if (!isShiftOpen) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      startShift();
+    }
     translateX.value = withSpring(0);
-  }, [isShiftOpen, startShift, endShift]);
+  }, [isShiftOpen, startShift]);
+
+  const handleEndShift = useCallback(() => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    endShift();
+    holdProgress.value = 0;
+    setIsHolding(false);
+  }, [endShift]);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -88,6 +117,28 @@ export const ShiftScreen = () => {
       }
     });
 
+  const holdGesture = Gesture.Pan()
+    .minDistance(0)
+    .onStart(() => {
+      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+      runOnJS(setIsHolding)(true);
+      holdProgress.value = withTiming(1, { duration: 3000 }, (finished) => {
+        if (finished) {
+          runOnJS(handleEndShift)();
+        }
+      });
+    })
+    .onUpdate(() => {
+      // Optional: dynamic haptics as progress increases? 
+      // RN Reanimated can't easily trigger JS functions based on shared value changes without worklets/listeners
+    })
+    .onEnd(() => {
+      runOnJS(setIsHolding)(false);
+      if (holdProgress.value < 1) {
+        holdProgress.value = withSpring(0);
+      }
+    });
+
   const knobStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
@@ -95,6 +146,18 @@ export const ShiftScreen = () => {
   const sliderTextStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateX.value, [0, TRAVEL_DISTANCE * 0.4], [1, 0], Extrapolate.CLAMP),
     transform: [{ translateX: interpolate(translateX.value, [0, TRAVEL_DISTANCE], [0, 40], Extrapolate.CLAMP) }]
+  }));
+
+  const holdFillStyle = useAnimatedStyle(() => ({
+    width: `${holdProgress.value * 100}%`,
+    backgroundColor: theme.colors.danger,
+    opacity: interpolate(holdProgress.value, [0, 0.1], [0.3, 1]),
+  }));
+
+  const holdKnobStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: isHolding ? interpolate(holdProgress.value, [0, 1], [1, 0.85]) : pulseScale.value },
+    ],
   }));
 
   const shimmerStyle = useAnimatedStyle(() => {
@@ -112,6 +175,12 @@ export const ShiftScreen = () => {
     const hours = (Date.now() - shiftStartTime) / 3600000;
     return Math.round(hours * hourlyRate);
   }, [isShiftOpen, shiftStartTime, hourlyRate]);
+
+  const taskProgress = useMemo(() => {
+    if (tasks.length === 0) return 0;
+    const completed = tasks.filter(t => t.status === 'completed').length;
+    return Math.round((completed / tasks.length) * 100);
+  }, [tasks]);
 
   useEffect(() => {
     let interval: any;
@@ -185,38 +254,41 @@ export const ShiftScreen = () => {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <StatusBar barStyle="light-content" backgroundColor={currentTheme.primary} translucent />
       
-      {/* Brand Background */}
+      {/* Background Shape */}
       <View style={{ 
         position: 'absolute', 
         top: 0, left: 0, right: 0, 
-        height: 260, 
+        height: 220, 
         backgroundColor: currentTheme.bg, 
-        borderBottomLeftRadius: theme.layout.radius['6xl'], 
-        borderBottomRightRadius: theme.layout.radius['6xl'] 
+        borderBottomLeftRadius: theme.layout.radius['5xl'], 
+        borderBottomRightRadius: theme.layout.radius['5xl'] 
       }} />
 
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-        <View style={{ flex: 1, paddingHorizontal: theme.layout.spacing.lg }}>
-          
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.md, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Header */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: theme.layout.spacing.sm, marginBottom: theme.layout.spacing.md }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.layout.spacing.sm }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
-                <User size={theme.layout.icon.xl} color={theme.colors.white} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: theme.spacing.xs, marginBottom: theme.spacing.md }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs }}>
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' }}>
+                <User size={18} color={theme.colors.white} />
               </View>
               <View>
-                <Text style={{ color: theme.colors.white, fontSize: 18, fontWeight: 'bold' }}>{employee.name.split(' ')[0]}</Text>
-                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '900', letterSpacing: 0.5 }}>{getMarketplaceName(pvz.marketplace).toUpperCase()}</Text>
+                <Text style={{ ...theme.typography.presets.label, color: theme.colors.white, fontWeight: '800' }}>{employee.name.split(' ')[0]}</Text>
+                <Text style={{ ...theme.typography.presets.caption, color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{getMarketplaceName(pvz.marketplace)}</Text>
               </View>
             </View>
             
-            <View style={{ flexDirection: 'row', gap: theme.layout.spacing.xs }}>
+            <View style={{ flexDirection: 'row', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', padding: 3, borderRadius: theme.borderRadius.lg }}>
               {(['wb', 'ozon', 'yandex'] as MarketplaceType[]).map((m) => (
                 <TouchableOpacity key={m} onPress={() => setMarketplace(m)} style={{ 
-                  paddingHorizontal: theme.layout.spacing.md, paddingVertical: theme.layout.spacing.sm, borderRadius: theme.layout.radius.lg, 
-                  backgroundColor: pvz.marketplace === m ? theme.colors.white : 'rgba(255,255,255,0.15)',
+                  paddingHorizontal: 10, paddingVertical: 5, borderRadius: theme.borderRadius.md, 
+                  backgroundColor: pvz.marketplace === m ? theme.colors.white : 'transparent',
                 }}>
-                  <Text style={{ color: pvz.marketplace === m ? currentTheme.primary : theme.colors.white, fontWeight: '900', fontSize: 10 }}>{m.toUpperCase()}</Text>
+                  <Text style={{ ...theme.typography.presets.caption, color: pvz.marketplace === m ? currentTheme.primary : theme.colors.white, fontWeight: '900', fontSize: 11 }}>{m.toUpperCase()}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -224,106 +296,163 @@ export const ShiftScreen = () => {
 
           {/* MASTER TIMER CARD */}
           <View style={{ 
-            backgroundColor: theme.colors.white, borderRadius: theme.layout.radius['5xl'], padding: theme.layout.spacing.xl, 
-            shadowColor: theme.colors.black, shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.1, shadowRadius: 30, elevation: 15,
-            marginBottom: theme.layout.spacing.lg
+            backgroundColor: theme.colors.white, borderRadius: 24, padding: theme.spacing.lg, 
+            shadowColor: theme.colors.black, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.08, shadowRadius: 15, elevation: 6,
+            marginBottom: theme.spacing.md
           }}>
-            <View style={{ alignItems: 'center', marginBottom: theme.layout.spacing.lg }}>
+            <View style={{ alignItems: 'center', marginBottom: theme.spacing.md }}>
               <Text style={{ 
-                fontSize: 64, 
-                fontWeight: '900', 
-                color: isShiftOpen ? theme.colors.text.primary : theme.colors.text.disabled, 
+                fontSize: 52, 
+                fontWeight: '800', 
+                color: isShiftOpen ? theme.colors.text.primary : theme.colors.text.muted, 
                 fontVariant: ['tabular-nums'], 
-                letterSpacing: -2 
+                letterSpacing: -1,
+                lineHeight: 56
               }}>
                 {timer}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.layout.spacing.xs, marginTop: -6 }}>
-                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isShiftOpen ? theme.colors.success : theme.colors.text.disabled }} />
-                <Text style={{ color: isShiftOpen ? theme.colors.success : theme.colors.text.disabled, fontSize: 10, fontWeight: '900', letterSpacing: 0.5 }}>{isShiftOpen ? 'СМЕНА АКТИВНА' : 'СМЕНА ЗАКРЫТА'}</Text>
+              <View style={{ 
+                flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4,
+                backgroundColor: isShiftOpen ? `${theme.colors.success}10` : `${theme.colors.text.muted}10`,
+                paddingHorizontal: 12, paddingVertical: 4, borderRadius: 100
+              }}>
+                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: isShiftOpen ? theme.colors.success : theme.colors.text.muted }} />
+                <Text style={{ ...theme.typography.presets.caption, color: isShiftOpen ? theme.colors.success : theme.colors.text.muted, fontSize: 11 }}>
+                  {isShiftOpen ? 'ИДЕТ РАБОЧАЯ СМЕНА' : 'СМЕНА НЕ ОТКРЫТА'}
+                </Text>
               </View>
             </View>
 
             {/* Stats Grid */}
-            <View style={{ flexDirection: 'row', gap: theme.layout.spacing.sm, marginBottom: theme.layout.spacing.xl }}>
-              <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.layout.spacing.lg, borderRadius: theme.layout.radius['3xl'] }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.layout.spacing.xs, marginBottom: 4 }}>
-                  <Clock size={theme.layout.icon.sm} color={theme.colors.warning} />
-                  <Text style={{ color: theme.colors.text.disabled, fontSize: 9, fontWeight: '900' }}>ГРАФИК</Text>
+            <View style={{ flexDirection: 'row', gap: theme.spacing.sm, marginBottom: theme.spacing.lg }}>
+              <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: theme.colors.border.light }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <Clock size={14} color={theme.colors.warning} />
+                  <Text style={{ ...theme.typography.presets.caption, color: theme.colors.text.secondary, fontSize: 11 }}>ГРАФИК</Text>
                 </View>
-                <Text style={{ color: theme.colors.text.primary, fontWeight: '800', fontSize: 14 }}>{shift.startTime}—{shift.endTime}</Text>
-                <Text style={{ color: theme.colors.warning, fontSize: 10, fontWeight: '700', marginTop: 2 }}>{isShiftOpen ? `Ост. ${remainingTime}` : '12ч смена'}</Text>
+                <Text style={{ ...theme.typography.presets.bodyLarge, color: theme.colors.text.primary }}>{shift.startTime}—{shift.endTime}</Text>
+                <Text style={{ ...theme.typography.presets.label, color: theme.colors.warning, fontSize: 11, marginTop: 2 }}>
+                  {isShiftOpen ? `До конца ${remainingTime}` : '12-часовая смена'}
+                </Text>
               </View>
-              <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.layout.spacing.lg, borderRadius: theme.layout.radius['3xl'] }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.layout.spacing.xs, marginBottom: 4 }}>
-                  <Wallet size={theme.layout.icon.sm} color={theme.colors.success} />
-                  <Text style={{ color: theme.colors.text.disabled, fontSize: 9, fontWeight: '900' }}>ДОХОД</Text>
+              <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: theme.colors.border.light }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <Wallet size={14} color={theme.colors.success} />
+                  <Text style={{ ...theme.typography.presets.caption, color: theme.colors.text.secondary, fontSize: 11 }}>ДОХОД</Text>
                 </View>
-                <Text style={{ color: theme.colors.text.primary, fontWeight: '800', fontSize: 14 }}>~{shift.salary} ₽</Text>
-                <Text style={{ color: theme.colors.success, fontSize: 10, fontWeight: '700', marginTop: 2 }}>{isShiftOpen ? `+${earnedSoFar} ₽` : `${hourlyRate}₽/час`}</Text>
+                <Text style={{ ...theme.typography.presets.bodyLarge, color: theme.colors.text.primary }}>~{shift.salary} ₽</Text>
+                <Text style={{ ...theme.typography.presets.label, color: theme.colors.success, fontSize: 11, marginTop: 2 }}>
+                  {isShiftOpen ? `За сегодня +${earnedSoFar} ₽` : `${hourlyRate} ₽ в час`}
+                </Text>
               </View>
             </View>
 
-            {/* ACTION SLIDER */}
-            <View style={{ height: 72, backgroundColor: isShiftOpen ? '#FEF2F2' : '#F5F3FF', borderRadius: theme.layout.radius['3xl'], padding: theme.layout.spacing.sm, justifyContent: 'center' }}>
-              <View style={{ position: 'absolute', width: '100%', paddingLeft: KNOB_SIZE + 20, zIndex: 0 }}>
-                <Animated.View style={sliderTextStyle}>
-                  {!isShiftOpen ? (
+            {/* ACTION AREA (SLIDER OR HOLD BUTTON) */}
+            {!isShiftOpen ? (
+              /* START SHIFT SLIDER */
+              <View style={{ 
+                height: 64, backgroundColor: '#F5F3FF', 
+                borderRadius: 18, padding: 4, justifyContent: 'center',
+                borderWidth: 1, borderColor: '#EDE9FE'
+              }}>
+                <View style={{ position: 'absolute', width: '100%', paddingLeft: KNOB_SIZE + 20, zIndex: 0 }}>
+                  <Animated.View style={sliderTextStyle}>
                     <Animated.View style={shimmerStyle}>
-                      <Text style={{ color: currentTheme.primary, fontWeight: '900', fontSize: 14, letterSpacing: 0.5 }}>НАЧАТЬ СМЕНУ</Text>
+                      <Text style={{ ...theme.typography.presets.label, color: currentTheme.primary }}>НАЧАТЬ РАБОТУ</Text>
                     </Animated.View>
-                  ) : (
-                    <Text style={{ color: theme.colors.danger, fontWeight: '900', fontSize: 14, letterSpacing: 0.5 }}>ЗАВЕРШИТЬ СМЕНУ</Text>
-                  )}
-                </Animated.View>
+                  </Animated.View>
+                </View>
+                
+                <GestureDetector gesture={panGesture}>
+                  <Animated.View style={[knobStyle, { 
+                    width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: 14, 
+                    backgroundColor: currentTheme.primary,
+                    alignItems: 'center', justifyContent: 'center',
+                    shadowColor: currentTheme.primary,
+                    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+                    zIndex: 1
+                  }]}>
+                    <ChevronRight size={28} color={theme.colors.white} strokeWidth={3} />
+                  </Animated.View>
+                </GestureDetector>
               </View>
-              
-              <GestureDetector gesture={panGesture}>
-                <Animated.View style={[knobStyle, { 
-                  width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: theme.layout.radius.xl, 
-                  backgroundColor: isShiftOpen ? theme.colors.danger : currentTheme.primary,
-                  alignItems: 'center', justifyContent: 'center',
-                  shadowColor: isShiftOpen ? theme.colors.danger : currentTheme.primary,
-                  shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
-                  zIndex: 1
-                }]}>
-                  {isShiftOpen ? <Square size={theme.layout.icon['2xl']} color={theme.colors.white} fill={theme.colors.white} /> : <ChevronRight size={theme.layout.icon['3xl']} color={theme.colors.white} strokeWidth={3} />}
-                </Animated.View>
-              </GestureDetector>
-            </View>
+            ) : (
+              /* END SHIFT HOLD BUTTON */
+              <View style={{ 
+                height: 64, backgroundColor: '#FFF1F2', 
+                borderRadius: 18, padding: 4, justifyContent: 'center',
+                borderWidth: 1, borderColor: '#FFE4E6',
+                overflow: 'hidden'
+              }}>
+                {/* Filling Background */}
+                <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0 }, holdFillStyle]} />
+                
+                <View style={{ position: 'absolute', width: '100%', alignItems: 'center', zIndex: 1 }}>
+                  <Text style={{ ...theme.typography.presets.label, color: theme.colors.danger }}>
+                    {isHolding ? 'УДЕРЖИВАЙТЕ...' : 'ЗАВЕРШИТЬ РАБОТУ'}
+                  </Text>
+                </View>
+
+                <GestureDetector gesture={holdGesture}>
+                  <Animated.View style={[holdKnobStyle, { 
+                    width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: 14, 
+                    backgroundColor: theme.colors.danger,
+                    alignItems: 'center', justifyContent: 'center',
+                    shadowColor: theme.colors.danger,
+                    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+                    zIndex: 2
+                  }]}>
+                    <Power size={20} color={theme.colors.white} strokeWidth={2.5} />
+                  </Animated.View>
+                </GestureDetector>
+              </View>
+            )}
           </View>
 
           {/* ACTIVE CONTENT AREA */}
           {isShiftOpen ? (
             <Animated.View entering={FadeInDown.duration(400)} exiting={FadeOutUp.duration(300)}>
               {/* TASKS BLOCK */}
-              <View style={{ 
-                backgroundColor: theme.colors.white, padding: theme.layout.spacing.lg, borderRadius: theme.layout.radius['3xl'], marginBottom: theme.layout.spacing.md,
-                borderWidth: 1, borderColor: theme.colors.border.DEFAULT,
-                shadowColor: theme.colors.black, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.02, shadowRadius: 10
-              }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.layout.spacing.sm }}>
-                    <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: `${theme.colors.success}15`, alignItems: 'center', justifyContent: 'center' }}>
-                      <CheckCircle2 size={theme.layout.icon.sm} color={theme.colors.success} />
+              <TouchableOpacity 
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('Tasks')}
+                style={{ 
+                  backgroundColor: theme.colors.white, padding: 16, borderRadius: 20, marginBottom: 12,
+                  borderWidth: 1, borderColor: theme.colors.border.DEFAULT,
+                  shadowColor: theme.colors.black, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 8, elevation: 1
+                }}
+              >
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: `${theme.colors.success}10`, alignItems: 'center', justifyContent: 'center' }}>
+                      <CheckCircle2 size={18} color={theme.colors.success} />
                     </View>
-                    <Text style={{ fontSize: 13, fontWeight: '900', color: theme.colors.text.primary }}>ПЛАН ЗАДАЧ</Text>
+                    <View>
+                      <Text style={{ ...theme.typography.presets.h4, color: theme.colors.text.primary }}>Задачи на смену</Text>
+                      <Text style={{ ...theme.typography.presets.bodySmall, color: theme.colors.text.secondary }}>Выполнено {tasks.filter(t => t.status === 'completed').length} из {tasks.length}</Text>
+                    </View>
                   </View>
-                  <Text style={{ fontSize: 13, fontWeight: '900', color: theme.colors.success }}>65%</Text>
+                  <ArrowRight size={18} color={theme.colors.text.muted} />
                 </View>
-                <View style={{ height: 8, backgroundColor: theme.colors.background, borderRadius: 4, overflow: 'hidden' }}>
-                  <View style={{ height: '100%', width: '65%', backgroundColor: theme.colors.success }} />
+                
+                <View style={{ height: 10, backgroundColor: theme.colors.background, borderRadius: 5, overflow: 'hidden' }}>
+                  <View style={{ height: '100%', width: `${taskProgress}%`, backgroundColor: theme.colors.success }} />
                 </View>
-              </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 4 }}>
+                  <Text style={{ ...theme.typography.presets.caption, color: theme.colors.success }}>{taskProgress}% ГОТОВО</Text>
+                </View>
+              </TouchableOpacity>
 
               {/* BREAKS SECTION */}
-              <View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Text style={{ fontSize: 18, fontWeight: '900', color: theme.colors.text.primary }}>ПЕРЕРЫВЫ</Text>
-                  <Text style={{ color: theme.colors.text.disabled, fontWeight: '900', fontSize: 10, letterSpacing: 0.5 }}>3 ПО 10 МИН</Text>
+              <View style={{ backgroundColor: theme.colors.white, padding: 16, borderRadius: 20, borderWidth: 1, borderColor: theme.colors.border.DEFAULT }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <Text style={{ ...theme.typography.presets.h4, color: theme.colors.text.primary }}>Перерывы</Text>
+                  <View style={{ backgroundColor: `${currentTheme.primary}10`, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                    <Text style={{ ...theme.typography.presets.caption, color: currentTheme.primary }}>3 ПЕРЕРЫВА ПО 10 МИН</Text>
+                  </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', gap: theme.layout.spacing.sm }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
                   {breaks.map((b, index) => {
                     const isActive = b.status === 'active';
                     const isCompleted = b.status === 'completed';
@@ -336,25 +465,25 @@ export const ShiftScreen = () => {
                         disabled={isCompleted || (!isActive && activeBreak !== undefined)}
                         activeOpacity={0.8}
                         style={{ 
-                          flex: 1, minHeight: 88, borderRadius: theme.layout.radius['3xl'], 
-                          backgroundColor: isActive ? theme.colors.danger : (isCompleted ? theme.colors.success : theme.colors.white),
-                          borderWidth: isAvailable ? 1 : 0, borderColor: theme.colors.border.DEFAULT,
-                          padding: 10, justifyContent: 'space-between',
+                          flex: 1, height: 86, borderRadius: 16, 
+                          backgroundColor: isActive ? theme.colors.danger : (isCompleted ? theme.colors.success : theme.colors.background),
+                          padding: 12, justifyContent: 'space-between',
+                          borderWidth: isAvailable ? 1 : 0, borderColor: theme.colors.border.light
                         }}
                       >
                         <View style={{ 
-                          width: 28, height: 28, borderRadius: 8, 
-                          backgroundColor: isActive || isCompleted ? 'rgba(255,255,255,0.2)' : `${currentTheme.primary}10`,
+                          width: 28, height: 28, borderRadius: 9, 
+                          backgroundColor: isActive || isCompleted ? 'rgba(255,255,255,0.2)' : theme.colors.white,
                           alignItems: 'center', justifyContent: 'center'
                         }}>
-                          {isCompleted ? <CheckCircle2 size={theme.layout.icon.sm} color={theme.colors.white} /> : (isActive ? <Timer size={theme.layout.icon.sm} color={theme.colors.white} /> : <Coffee size={theme.layout.icon.sm} color={currentTheme.primary} />)}
+                          {isCompleted ? <CheckCircle2 size={16} color={theme.colors.white} /> : (isActive ? <Timer size={16} color={theme.colors.white} /> : <Coffee size={16} color={currentTheme.primary} />)}
                         </View>
                         <View>
-                          <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: isActive || isCompleted ? theme.colors.white : theme.colors.text.primary, fontWeight: '900', fontSize: 12 }}>
-                            {isActive ? breakTimer : (isCompleted ? 'Завершён' : 'Доступен')}
+                          <Text numberOfLines={1} adjustsFontSizeToFit style={{ ...theme.typography.presets.label, color: isActive || isCompleted ? theme.colors.white : theme.colors.text.primary }}>
+                            {isActive ? breakTimer : (isCompleted ? 'Отработан' : 'Доступен')}
                           </Text>
-                          <Text style={{ color: isActive || isCompleted ? 'rgba(255,255,255,0.7)' : theme.colors.text.disabled, fontSize: 8, fontWeight: '700' }}>
-                            {isCompleted ? 'Отдых' : (isActive ? 'Идёт' : `${index + 1}-й слот`)}
+                          <Text style={{ ...theme.typography.presets.caption, color: isActive || isCompleted ? 'rgba(255,255,255,0.8)' : theme.colors.text.secondary }}>
+                            {isCompleted ? 'Отдых' : (isActive ? 'Идет' : `${index + 1}-й слот`)}
                           </Text>
                         </View>
                       </TouchableOpacity>
@@ -367,23 +496,18 @@ export const ShiftScreen = () => {
             /* LOCKED STATE */
             <Animated.View 
               entering={FadeInDown.delay(200)}
-              style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 40 }}
+              style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}
             >
-              <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                <Lock size={theme.layout.icon['3xl']} color={currentTheme.primary} strokeWidth={2.5} />
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Lock size={28} color={currentTheme.primary} strokeWidth={2.5} />
               </View>
-              <Text style={{ fontSize: 20, fontWeight: '900', color: theme.colors.text.primary, marginBottom: 8 }}>Доступ закрыт</Text>
-              <Text style={{ textAlign: 'center', color: theme.colors.text.disabled, fontSize: 14, lineHeight: 20, paddingHorizontal: 40 }}>
+              <Text style={{ ...theme.typography.presets.h3, color: theme.colors.text.primary, marginBottom: 8 }}>Доступ закрыт</Text>
+              <Text style={{ ...theme.typography.presets.bodySmall, textAlign: 'center', color: theme.colors.text.secondary, paddingHorizontal: 40, lineHeight: 18 }}>
                 Чтобы увидеть задачи и управлять перерывами, необходимо сначала открыть рабочую смену
               </Text>
-              
-              <View style={{ position: 'absolute', bottom: -50, opacity: 0.02, zIndex: -1 }}>
-                <Zap size={280} color={currentTheme.primary} />
-              </View>
             </Animated.View>
           )}
-
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </GestureHandlerRootView>
   );

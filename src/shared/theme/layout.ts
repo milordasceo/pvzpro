@@ -1,3 +1,5 @@
+import { typography } from './tokens';
+
 export const layout = {
   // Spacing
   spacing: {
@@ -30,8 +32,8 @@ export const layout = {
   
   // Components
   header: {
-    height: 60,
-    titleFontSize: 20,
+    height: 64,
+    titleFontSize: typography.presets.h3.fontSize,
   },
   
   tabBar: {

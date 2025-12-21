@@ -18,6 +18,8 @@
     "babel-preset-expo": "~54.0.9",
     "clsx": "^2.1.1",
     "expo": "~54.0.29",
+    "expo-haptics": "~15.0.8",
+    "expo-image-picker": "~17.0.10",
     "expo-status-bar": "~3.0.9",
     "heroui-native": "^1.0.0-beta.9",
     "lucide-react-native": "^0.562.0",

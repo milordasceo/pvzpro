@@ -8,11 +8,21 @@ import { FinanceScreen } from '../../features/employee/screens/FinanceScreen';
 import { ChatScreen } from '../../features/employee/screens/ChatScreen';
 import { TasksScreen } from '../../features/employee/screens/TasksScreen';
 import { theme } from '../../shared/theme';
+import { marketplaceThemes } from '../../shared/theme/colors';
+import { useTasksStore } from '../../features/employee/model/tasks.store';
+import { useShiftStore } from '../../features/employee/model/shift.store';
 
 const Tab = createBottomTabNavigator();
 
 export const EmployeeTabNavigator = () => {
   const insets = useSafeAreaInsets();
+  const { isShiftOpen, pvz } = useShiftStore();
+  const pendingTasksCount = useTasksStore(state => 
+    state.tasks.filter(t => t.status === 'pending').length
+  );
+
+  const currentTheme = marketplaceThemes[pvz.marketplace] || marketplaceThemes.wb;
+  const badgeCount = isShiftOpen ? pendingTasksCount : 0;
 
   return (
     <Tab.Navigator
@@ -30,7 +40,7 @@ export const EmployeeTabNavigator = () => {
           borderBottomWidth: 1,
           borderBottomColor: theme.colors.header.border,
         },
-        tabBarActiveTintColor: theme.colors.tabBar.active,
+        tabBarActiveTintColor: currentTheme.primary,
         tabBarInactiveTintColor: theme.colors.tabBar.inactive,
         tabBarStyle: {
           borderTopWidth: 1,
@@ -38,6 +48,7 @@ export const EmployeeTabNavigator = () => {
           paddingTop: theme.layout.tabBar.paddingTop,
           height: theme.layout.tabBar.height + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : theme.layout.tabBar.paddingBottom,
+          backgroundColor: theme.colors.white,
         },
       }}
     >
@@ -49,6 +60,13 @@ export const EmployeeTabNavigator = () => {
           title: 'Моя смена',
           tabBarLabel: 'Смена',
           tabBarIcon: ({ color, size }) => <Briefcase color={color} size={size} />,
+          tabBarBadge: badgeCount > 0 ? badgeCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: currentTheme.primary,
+            color: pvz.marketplace === 'yandex' ? '#000000' : '#FFFFFF',
+            fontSize: 10,
+            fontWeight: 'bold',
+          }
         }}
       />
       <Tab.Screen

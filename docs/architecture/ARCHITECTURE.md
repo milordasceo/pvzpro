@@ -33,9 +33,9 @@
 - JWT + HTTPS; AsyncStorage; централизованные API‑ошибки.
 
 ## Связанные документы
-- `design-system/DESIGN_SYSTEM.md` — цвета/типографика/компоненты.
-- `modules/employees/architecture.md` — детали модуля.
-- `testing/testing.md` — подход к тестам.
+- `docs/architecture/DESIGN_SYSTEM.md` — цвета/типографика/компоненты (Дизайн-система).
+- `docs/EMPLOYEES_MODULE_ARCHITECTURE_RU.md` — детали модуля сотрудников.
+- `docs/testing/testing.md` — подход к тестам.
 
 ### 1. Модуль Аутентификации
 
