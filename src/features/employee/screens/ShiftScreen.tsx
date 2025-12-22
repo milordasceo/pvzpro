@@ -51,7 +51,6 @@ export const ShiftScreen = () => {
   const [timer, setTimer] = useState('00:00:00');
   const [breakTimer, setBreakBreakTimer] = useState('00:00');
   const [remainingTime, setRemainingTime] = useState('--:--');
-  const [isHolding, setIsHolding] = useState(false);
 
   const currentTheme = marketplaceThemes[pvz.marketplace] || marketplaceThemes.wb;
 
@@ -59,7 +58,6 @@ export const ShiftScreen = () => {
   const translateX = useSharedValue(0);
   const startX = useSharedValue(0);
   const shimmerValue = useSharedValue(0);
-  const holdProgress = useSharedValue(0);
   const pulseScale = useSharedValue(1);
 
   useEffect(() => {
@@ -69,12 +67,11 @@ export const ShiftScreen = () => {
         -1,
         false
       );
-      holdProgress.value = 0;
       cancelAnimation(pulseScale);
       pulseScale.value = 1;
     } else {
       shimmerValue.value = 0;
-      // Start a subtle pulse on the end button to attract attention
+      // Start a subtle pulse on the knob to attract attention
       pulseScale.value = withRepeat(
         withTiming(1.05, { duration: 1500 }),
         -1,
@@ -84,19 +81,14 @@ export const ShiftScreen = () => {
   }, [isShiftOpen]);
 
   const handleAction = useCallback(() => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (!isShiftOpen) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       startShift();
+    } else {
+      endShift();
     }
     translateX.value = withSpring(0);
-  }, [isShiftOpen, startShift]);
-
-  const handleEndShift = useCallback(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    endShift();
-    holdProgress.value = 0;
-    setIsHolding(false);
-  }, [endShift]);
+  }, [isShiftOpen, startShift, endShift]);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -117,30 +109,11 @@ export const ShiftScreen = () => {
       }
     });
 
-  const holdGesture = Gesture.Pan()
-    .minDistance(0)
-    .onStart(() => {
-      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-      runOnJS(setIsHolding)(true);
-      holdProgress.value = withTiming(1, { duration: 3000 }, (finished) => {
-        if (finished) {
-          runOnJS(handleEndShift)();
-        }
-      });
-    })
-    .onUpdate(() => {
-      // Optional: dynamic haptics as progress increases? 
-      // RN Reanimated can't easily trigger JS functions based on shared value changes without worklets/listeners
-    })
-    .onEnd(() => {
-      runOnJS(setIsHolding)(false);
-      if (holdProgress.value < 1) {
-        holdProgress.value = withSpring(0);
-      }
-    });
-
   const knobStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [
+      { translateX: translateX.value },
+      { scale: pulseScale.value }
+    ],
   }));
 
   const sliderTextStyle = useAnimatedStyle(() => ({
@@ -148,23 +121,11 @@ export const ShiftScreen = () => {
     transform: [{ translateX: interpolate(translateX.value, [0, TRAVEL_DISTANCE], [0, 40], Extrapolate.CLAMP) }]
   }));
 
-  const holdFillStyle = useAnimatedStyle(() => ({
-    width: `${holdProgress.value * 100}%`,
-    backgroundColor: theme.colors.danger,
-    opacity: interpolate(holdProgress.value, [0, 0.1], [0.3, 1]),
-  }));
-
-  const holdKnobStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: isHolding ? interpolate(holdProgress.value, [0, 1], [1, 0.85]) : pulseScale.value },
-    ],
-  }));
-
   const shimmerStyle = useAnimatedStyle(() => {
-    if (isShiftOpen) return {};
+    if (isShiftOpen) return { opacity: 1, transform: [{ translateX: 0 }] };
     return {
       opacity: interpolate(shimmerValue.value, [0, 0.5, 1], [0.3, 1, 0.3]),
-      transform: [{ translateX: interpolate(shimmerValue.value, [0, 1], [-20, 20]) }]
+      transform: [{ translateX: interpolate(shimmerValue.value, [0, 1], [-10, 10]) }]
     };
   });
 
@@ -347,66 +308,39 @@ export const ShiftScreen = () => {
               </View>
             </View>
 
-            {/* ACTION AREA (SLIDER OR HOLD BUTTON) */}
-            {!isShiftOpen ? (
-              /* START SHIFT SLIDER */
-              <View style={{ 
-                height: 64, backgroundColor: '#F5F3FF', 
-                borderRadius: 18, padding: 4, justifyContent: 'center',
-                borderWidth: 1, borderColor: '#EDE9FE'
-              }}>
-                <View style={{ position: 'absolute', width: '100%', paddingLeft: KNOB_SIZE + 20, zIndex: 0 }}>
-                  <Animated.View style={sliderTextStyle}>
-                    <Animated.View style={shimmerStyle}>
-                      <Text style={{ ...theme.typography.presets.label, color: currentTheme.primary }}>НАЧАТЬ РАБОТУ</Text>
-                    </Animated.View>
+            {/* ACTION AREA (SLIDER) */}
+            <View style={{ 
+              height: 64, backgroundColor: isShiftOpen ? '#FFF1F2' : '#F5F3FF', 
+              borderRadius: 18, padding: 4, justifyContent: 'center',
+              borderWidth: 1, borderColor: isShiftOpen ? '#FFE4E6' : '#EDE9FE'
+            }}>
+              <View style={{ position: 'absolute', width: '100%', paddingLeft: KNOB_SIZE + 20, zIndex: 0 }}>
+                <Animated.View style={sliderTextStyle}>
+                  <Animated.View style={shimmerStyle}>
+                    <Text style={{ ...theme.typography.presets.label, color: isShiftOpen ? theme.colors.danger : currentTheme.primary }}>
+                      {isShiftOpen ? 'ЗАВЕРШИТЬ РАБОТУ' : 'НАЧАТЬ РАБОТУ'}
+                    </Text>
                   </Animated.View>
-                </View>
-                
-                <GestureDetector gesture={panGesture}>
-                  <Animated.View style={[knobStyle, { 
-                    width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: 14, 
-                    backgroundColor: currentTheme.primary,
-                    alignItems: 'center', justifyContent: 'center',
-                    shadowColor: currentTheme.primary,
-                    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
-                    zIndex: 1
-                  }]}>
+                </Animated.View>
+              </View>
+              
+              <GestureDetector gesture={panGesture}>
+                <Animated.View style={[knobStyle, { 
+                  width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: 14, 
+                  backgroundColor: isShiftOpen ? theme.colors.danger : currentTheme.primary,
+                  alignItems: 'center', justifyContent: 'center',
+                  shadowColor: isShiftOpen ? theme.colors.danger : currentTheme.primary,
+                  shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+                  zIndex: 1
+                }]}>
+                  {isShiftOpen ? (
+                    <Power size={22} color={theme.colors.white} strokeWidth={2.5} />
+                  ) : (
                     <ChevronRight size={28} color={theme.colors.white} strokeWidth={3} />
-                  </Animated.View>
-                </GestureDetector>
-              </View>
-            ) : (
-              /* END SHIFT HOLD BUTTON */
-              <View style={{ 
-                height: 64, backgroundColor: '#FFF1F2', 
-                borderRadius: 18, padding: 4, justifyContent: 'center',
-                borderWidth: 1, borderColor: '#FFE4E6',
-                overflow: 'hidden'
-              }}>
-                {/* Filling Background */}
-                <Animated.View style={[{ position: 'absolute', left: 0, top: 0, bottom: 0 }, holdFillStyle]} />
-                
-                <View style={{ position: 'absolute', width: '100%', alignItems: 'center', zIndex: 1 }}>
-                  <Text style={{ ...theme.typography.presets.label, color: theme.colors.danger }}>
-                    {isHolding ? 'УДЕРЖИВАЙТЕ...' : 'ЗАВЕРШИТЬ РАБОТУ'}
-                  </Text>
-                </View>
-
-                <GestureDetector gesture={holdGesture}>
-                  <Animated.View style={[holdKnobStyle, { 
-                    width: KNOB_SIZE, height: KNOB_SIZE, borderRadius: 14, 
-                    backgroundColor: theme.colors.danger,
-                    alignItems: 'center', justifyContent: 'center',
-                    shadowColor: theme.colors.danger,
-                    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
-                    zIndex: 2
-                  }]}>
-                    <Power size={20} color={theme.colors.white} strokeWidth={2.5} />
-                  </Animated.View>
-                </GestureDetector>
-              </View>
-            )}
+                  )}
+                </Animated.View>
+              </GestureDetector>
+            </View>
           </View>
 
           {/* ACTIVE CONTENT AREA */}
