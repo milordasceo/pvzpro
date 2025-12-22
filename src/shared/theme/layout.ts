@@ -1,6 +1,15 @@
+import { Dimensions } from 'react-native';
 import { typography } from './tokens';
 
+const { width, height } = Dimensions.get('window');
+
 export const layout = {
+  // Screen
+  screen: {
+    width,
+    height,
+  },
+  
   // Spacing
   spacing: {
     xs: 4,
@@ -52,5 +61,13 @@ export const layout = {
     '2xl': 24,
     '3xl': 28,
     '4xl': 32,
+  },
+
+  // Calendar
+  calendar: {
+    daySize: 40,
+    gridGap: 8,
+    cardPadding: 20,
+    cardRadius: 24,
   }
 };
