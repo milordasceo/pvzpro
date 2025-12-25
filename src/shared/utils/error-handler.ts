@@ -101,8 +101,6 @@ class ErrorHandler {
         severity: ErrorSeverity.MEDIUM,
         context,
         timestamp,
-        userAgent: navigator?.userAgent,
-        url: window?.location?.href,
       };
     }
 
@@ -120,8 +118,6 @@ class ErrorHandler {
         },
         stack: error.stack,
         timestamp,
-        userAgent: navigator?.userAgent,
-        url: window?.location?.href,
       };
     }
 
@@ -133,8 +129,6 @@ class ErrorHandler {
       context,
       stack: error.stack,
       timestamp,
-      userAgent: navigator?.userAgent,
-      url: window?.location?.href,
     };
   }
 

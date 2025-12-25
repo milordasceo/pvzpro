@@ -35,7 +35,7 @@ export const TasksScreen = () => {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <StatusBar barStyle="light-content" backgroundColor={currentTheme.primary} translucent />
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 200, backgroundColor: currentTheme.bg, borderBottomLeftRadius: theme.layout.radius['5xl'], borderBottomRightRadius: theme.layout.radius['5xl'] }} />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 200, backgroundColor: currentTheme.bg }} />
         <SafeAreaView style={{ flex: 1 }} edges={['top']}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
             <View style={{ width: 80, height: 80, backgroundColor: 'rgba(255,255,255,0.8)', borderRadius: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 24, shadowColor: currentTheme.primary, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20 }}>
@@ -178,45 +178,49 @@ export const TasksScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StatusBar barStyle="light-content" backgroundColor={currentTheme.primary} translucent />
-      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 180, backgroundColor: currentTheme.bg, borderBottomLeftRadius: theme.layout.radius['5xl'], borderBottomRightRadius: theme.layout.radius['5xl'] }} />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} translucent />
       
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white }} edges={['top']}>
         {/* Header */}
-        <View style={{ marginTop: theme.spacing.xs, marginBottom: theme.spacing.md, paddingHorizontal: theme.spacing.md }}>
+        <View style={{ 
+          paddingHorizontal: theme.spacing.md, 
+          paddingBottom: 12,
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.border.light
+        }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <View>
-              <Text style={{ ...theme.typography.presets.h3, color: theme.colors.white }}>Задачи</Text>
-              <Text style={{ ...theme.typography.presets.caption, color: 'rgba(255,255,255,0.7)' }}>ПЛАН НА ТЕКУЩУЮ СМЕНУ</Text>
+              <Text style={{ ...theme.typography.presets.h4, color: theme.colors.text.primary }}>Задачи</Text>
+              <Text style={{ ...theme.typography.presets.caption, color: theme.colors.text.muted, fontSize: 10 }}>ПЛАН НА ТЕКУЩУЮ СМЕНУ</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <TouchableOpacity onPress={handleReset} style={{ width: 36, height: 36, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }}>
-                <RefreshCcw size={16} color={theme.colors.white} />
+              <TouchableOpacity onPress={handleReset} style={{ width: 36, height: 36, backgroundColor: theme.colors.background, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <RefreshCcw size={16} color={currentTheme.primary} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: 36, height: 36, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }}>
-                <Info size={18} color={theme.colors.white} />
+              <TouchableOpacity style={{ width: 36, height: 36, backgroundColor: theme.colors.background, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <Info size={18} color={currentTheme.primary} />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Tab Switcher */}
-          <View style={{ flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.1)', padding: 4, borderRadius: 16 }}>
-            <TouchableOpacity onPress={() => setActiveTab('checklists')} style={{ flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 12, backgroundColor: activeTab === 'checklists' ? theme.colors.white : 'transparent' }}>
+          <View style={{ flexDirection: 'row', backgroundColor: theme.colors.background, padding: 4, borderRadius: 16 }}>
+            <TouchableOpacity onPress={() => setActiveTab('checklists')} style={{ flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 12, backgroundColor: activeTab === 'checklists' ? theme.colors.white : 'transparent', ... (activeTab === 'checklists' ? theme.shadows.sm : {}) }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <LayoutList size={14} color={activeTab === 'checklists' ? currentTheme.primary : theme.colors.white} />
-                <Text style={{ ...theme.typography.presets.caption, color: activeTab === 'checklists' ? currentTheme.primary : theme.colors.white }}>ЧЕК-ЛИСТЫ</Text>
+                <LayoutList size={14} color={activeTab === 'checklists' ? currentTheme.primary : theme.colors.text.muted} />
+                <Text style={{ ...theme.typography.presets.caption, color: activeTab === 'checklists' ? currentTheme.primary : theme.colors.text.muted }}>ЧЕК-ЛИСТЫ</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setActiveTab('tasks')} style={{ flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 12, backgroundColor: activeTab === 'tasks' ? theme.colors.white : 'transparent' }}>
+            <TouchableOpacity onPress={() => setActiveTab('tasks')} style={{ flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 12, backgroundColor: activeTab === 'tasks' ? theme.colors.white : 'transparent', ... (activeTab === 'tasks' ? theme.shadows.sm : {}) }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <ClipboardCheck size={14} color={activeTab === 'tasks' ? theme.colors.warning : theme.colors.white} />
-                <Text style={{ ...theme.typography.presets.caption, color: activeTab === 'tasks' ? theme.colors.warning : theme.colors.white }}>ЗАДАЧИ</Text>
+                <ClipboardCheck size={14} color={activeTab === 'tasks' ? theme.colors.warning : theme.colors.text.muted} />
+                <Text style={{ ...theme.typography.presets.caption, color: activeTab === 'tasks' ? theme.colors.warning : theme.colors.text.muted }}>ЗАДАЧИ</Text>
               </View>
             </TouchableOpacity>
           </View>
         </View>
 
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40, backgroundColor: theme.colors.background }} showsVerticalScrollIndicator={false}>
           {activeTab === 'checklists' ? (
             activeChecklists.length > 0 ? (
               <Animated.View entering={FadeInDown.duration(400)}>

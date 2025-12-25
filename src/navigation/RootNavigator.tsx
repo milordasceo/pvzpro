@@ -5,27 +5,33 @@ import { LoginScreen } from '../screens/auth/LoginScreen';
 import { EmployeeNavigator } from './stacks/EmployeeNavigator';
 import { ManagerNavigator } from './stacks/ManagerNavigator';
 import { OwnerNavigator } from './stacks/OwnerNavigator';
+import { UserRole } from '../shared/types';
 
 const Stack = createNativeStackNavigator();
+
+// Маппинг ролей на навигаторы
+const roleNavigators: Record<NonNullable<UserRole>, React.ComponentType> = {
+  employee: EmployeeNavigator,
+  manager: ManagerNavigator,
+  owner: OwnerNavigator,
+};
 
 export const RootNavigator = () => {
   const role = useAuthStore((state) => state.role);
 
+  const Navigator = role ? roleNavigators[role] : null;
+
   return (
-    <Stack.Navigator 
-      screenOptions={{ 
+    <Stack.Navigator
+      screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: 'white' } 
+        contentStyle: { backgroundColor: 'white' }
       }}
     >
       {!role ? (
         <Stack.Screen name="Auth" component={LoginScreen} />
-      ) : role === 'employee' ? (
-        <Stack.Screen name="EmployeeApp" component={EmployeeNavigator} />
-      ) : role === 'manager' ? (
-        <Stack.Screen name="ManagerApp" component={ManagerNavigator} />
       ) : (
-        <Stack.Screen name="OwnerApp" component={OwnerNavigator} />
+        <Stack.Screen name="App" component={Navigator!} />
       )}
     </Stack.Navigator>
   );

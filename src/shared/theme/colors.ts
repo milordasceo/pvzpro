@@ -32,17 +32,17 @@ export const colors = {
   // Динамические цвета (зависят от выбранного маркетплейса)
   primary: marketplaceThemes.wb.primary,
   secondary: marketplaceThemes.wb.secondary,
-  
+
   // Функциональные цвета (остаются стабильными)
   success: '#17C964',
   warning: '#F5A524',
   danger: '#F31260',
-  
+
   // Нейтральные цвета
   white: '#FFFFFF',
   black: '#000000',
   background: '#F8F9FB',
-  
+
   // Тема текста
   text: {
     DEFAULT: '#111827',
@@ -56,6 +56,18 @@ export const colors = {
   border: {
     DEFAULT: '#F1F5F9',
     light: '#F8FAFC',
+  },
+
+  // Поверхности слайдеров
+  slider: {
+    primary: {
+      bg: '#F5F3FF',
+      border: '#EDE9FE',
+    },
+    danger: {
+      bg: '#FFF1F2',
+      border: '#FFE4E6',
+    },
   },
 
   // Специфичные компоненты

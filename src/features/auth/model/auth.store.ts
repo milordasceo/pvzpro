@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { UserRole } from '../../../shared/types';
 
-export type UserRole = 'employee' | 'manager' | 'owner' | null;
+// Re-export for backward compatibility
+export { UserRole };
 
 interface AuthState {
   role: UserRole;

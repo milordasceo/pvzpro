@@ -9,7 +9,7 @@ export const layout = {
     width,
     height,
   },
-  
+
   // Spacing
   spacing: {
     xs: 4,
@@ -23,7 +23,7 @@ export const layout = {
     '5xl': 48,
     '6xl': 50,
   },
-  
+
   // Radius
   radius: {
     xs: 8,
@@ -38,20 +38,20 @@ export const layout = {
     '6xl': 50,
     full: 9999,
   },
-  
+
   // Components
   header: {
     height: 64,
     titleFontSize: typography.presets.h3.fontSize,
   },
-  
+
   tabBar: {
     height: 60,
     paddingTop: 5,
     paddingBottom: 10,
     iconSize: 24,
   },
-  
+
   icon: {
     xs: 12,
     sm: 16,
@@ -69,5 +69,21 @@ export const layout = {
     gridGap: 8,
     cardPadding: 20,
     cardRadius: 24,
-  }
+  },
+
+  // Slider
+  slider: {
+    height: 64,
+    knobSize: 52,
+    padding: 4,
+    borderRadius: 18,
+    knobRadius: 14,
+  },
+
+  // Cards
+  card: {
+    padding: 16,
+    radius: 20,
+    radiusLg: 24,
+  },
 };

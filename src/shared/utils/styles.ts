@@ -1,4 +1,19 @@
-import { tokens } from '../ui';
+import { typography, spacing, borderRadius } from '../theme/tokens';
+import { colors } from '../theme/colors';
+
+// Create a tokens object for backward compatibility
+const tokens = {
+  colors: {
+    surface: colors.white,
+    text: { primary: colors.text.primary },
+  },
+  radius: borderRadius,
+  spacing: {
+    cardGap: spacing.md,
+    controlHeight: 48,
+  },
+  fontSize: typography.size,
+};
 
 /**
  * Утилиты для создания унифицированных стилей
@@ -37,7 +52,7 @@ export const createTextStyle = (size: 'small' | 'medium' | 'large' = 'medium', o
   const sizes = {
     small: { fontSize: tokens.fontSize.xs },
     medium: { fontSize: tokens.fontSize.sm },
-    large: { fontSize: tokens.fontSize.md },
+    large: { fontSize: tokens.fontSize.base },
   };
 
   return {

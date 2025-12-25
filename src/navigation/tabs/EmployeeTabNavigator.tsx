@@ -17,7 +17,7 @@ const Tab = createBottomTabNavigator();
 export const EmployeeTabNavigator = () => {
   const insets = useSafeAreaInsets();
   const { isShiftOpen, pvz } = useShiftStore();
-  const pendingTasksCount = useTasksStore(state => 
+  const pendingTasksCount = useTasksStore(state =>
     state.tasks.filter(t => t.status === 'pending').length
   );
 
@@ -27,19 +27,7 @@ export const EmployeeTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: true,
-        headerTitleStyle: {
-          fontSize: theme.layout.header.titleFontSize,
-          fontWeight: 'bold',
-          color: theme.colors.header.text,
-        },
-        headerStyle: {
-          backgroundColor: theme.colors.header.background,
-          shadowColor: 'transparent',
-          elevation: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: theme.colors.header.border,
-        },
+        headerShown: false,
         tabBarActiveTintColor: currentTheme.primary,
         tabBarInactiveTintColor: theme.colors.tabBar.inactive,
         tabBarStyle: {
@@ -60,13 +48,6 @@ export const EmployeeTabNavigator = () => {
           title: 'Моя смена',
           tabBarLabel: 'Смена',
           tabBarIcon: ({ color, size }) => <Briefcase color={color} size={size} />,
-          tabBarBadge: badgeCount > 0 ? badgeCount : undefined,
-          tabBarBadgeStyle: {
-            backgroundColor: currentTheme.primary,
-            color: pvz.marketplace === 'yandex' ? '#000000' : '#FFFFFF',
-            fontSize: 10,
-            fontWeight: 'bold',
-          }
         }}
       />
       <Tab.Screen
@@ -77,6 +58,13 @@ export const EmployeeTabNavigator = () => {
           title: 'Задачи',
           tabBarLabel: 'Задачи',
           tabBarIcon: ({ color, size }) => <CheckSquare color={color} size={size} />,
+          tabBarBadge: badgeCount > 0 ? badgeCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: currentTheme.primary,
+            color: pvz.marketplace === 'yandex' ? '#000000' : '#FFFFFF',
+            fontSize: 10,
+            fontWeight: 'bold',
+          }
         }}
       />
       <Tab.Screen

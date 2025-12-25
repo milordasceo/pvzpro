@@ -25,61 +25,99 @@ class ApiClient {
       },
     };
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    let lastError: ApiResponse<T> | null = null;
+    const maxRetries = APP_CONFIG.API.RETRY_ATTEMPTS;
 
-      const response = await fetch(url, {
-        ...config,
-        signal: controller.signal,
-      });
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
-      clearTimeout(timeoutId);
+        const response = await fetch(url, {
+          ...config,
+          signal: controller.signal,
+        });
 
-      if (!response.ok) {
-        throw new ApiError(
-          `HTTP_${response.status}`,
-          `HTTP Error: ${response.status} ${response.statusText}`,
-          response.status,
-        );
-      }
+        clearTimeout(timeoutId);
 
-      const data = await response.json();
+        if (!response.ok) {
+          // Retry only on 5xx errors
+          if (response.status >= 500 && attempt < maxRetries) {
+            await this.delay(this.getRetryDelay(attempt));
+            continue;
+          }
+          throw new ApiError(
+            `HTTP_${response.status}`,
+            `HTTP Error: ${response.status} ${response.statusText}`,
+            response.status,
+          );
+        }
 
-      return {
-        success: true,
-        data,
-      };
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
+        const data = await response.json();
+
         return {
+          success: true,
+          data,
+        };
+      } catch (error: unknown) {
+        if (error instanceof ApiError) {
+          return {
+            success: false,
+            error: {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+            },
+          };
+        }
+
+        if ((error as any)?.name === 'AbortError') {
+          lastError = {
+            success: false,
+            error: {
+              code: 'TIMEOUT',
+              message: 'Request timeout',
+            },
+          };
+          // Retry on timeout
+          if (attempt < maxRetries) {
+            await this.delay(this.getRetryDelay(attempt));
+            continue;
+          }
+          return lastError;
+        }
+
+        lastError = {
           success: false,
           error: {
-            code: error.code,
-            message: error.message,
-            details: error.details,
+            code: 'NETWORK_ERROR',
+            message: (error as any)?.message || 'Network error',
           },
         };
+        // Retry on network error
+        if (attempt < maxRetries) {
+          await this.delay(this.getRetryDelay(attempt));
+          continue;
+        }
       }
-
-      if ((error as any)?.name === 'AbortError') {
-        return {
-          success: false,
-          error: {
-            code: 'TIMEOUT',
-            message: 'Request timeout',
-          },
-        };
-      }
-
-      return {
-        success: false,
-        error: {
-          code: 'NETWORK_ERROR',
-          message: (error as any)?.message || 'Network error',
-        },
-      };
     }
+
+    return lastError ?? {
+      success: false,
+      error: {
+        code: 'UNKNOWN_ERROR',
+        message: 'Unknown error occurred',
+      },
+    };
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private getRetryDelay(attempt: number): number {
+    // Exponential backoff: 1s, 2s, 4s...
+    return Math.min(1000 * Math.pow(2, attempt), 10000);
   }
 
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {

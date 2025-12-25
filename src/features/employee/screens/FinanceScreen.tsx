@@ -18,34 +18,31 @@ export const FinanceScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StatusBar barStyle="light-content" backgroundColor={currentTheme.primary} translucent />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} translucent />
       
-      <View style={{ 
-        position: 'absolute', 
-        top: 0, left: 0, right: 0, 
-        height: 200, 
-        backgroundColor: currentTheme.bg, 
-        borderBottomLeftRadius: theme.layout.radius['5xl'], 
-        borderBottomRightRadius: theme.layout.radius['5xl'] 
-      }} />
-
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-        <View style={{ marginTop: theme.spacing.xs, marginBottom: theme.spacing.md, paddingHorizontal: theme.spacing.md }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <View>
-              <Text style={{ ...theme.typography.presets.h3, color: theme.colors.white }}>Финансы</Text>
-              <Text style={{ ...theme.typography.presets.caption, color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>ВАШ ЗАРАБОТОК</Text>
-            </View>
-            <TouchableOpacity 
-              onPress={handleAction}
-              style={{ width: 40, height: 40, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' }}
-            >
-              <Info size={20} color={theme.colors.white} />
-            </TouchableOpacity>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white }} edges={['top']}>
+        <View style={{ 
+          height: 56, 
+          paddingHorizontal: theme.spacing.md, 
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.border.light
+        }}>
+          <View>
+            <Text style={{ ...theme.typography.presets.h4, color: theme.colors.text.primary }}>Финансы</Text>
+            <Text style={{ ...theme.typography.presets.caption, color: theme.colors.text.muted, fontSize: 10 }}>ВАШ ЗАРАБОТОК</Text>
           </View>
+          <TouchableOpacity 
+            onPress={handleAction}
+            style={{ width: 40, height: 40, backgroundColor: theme.colors.background, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Info size={20} color={currentTheme.primary} />
+          </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40, backgroundColor: theme.colors.background }} showsVerticalScrollIndicator={false}>
           <Animated.View entering={FadeInDown.duration(400)}>
             {/* Total Earnings Card */}
             <View style={{ backgroundColor: theme.colors.white, borderRadius: 28, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: theme.colors.border.DEFAULT, ...theme.shadows.md }}>

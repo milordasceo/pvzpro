@@ -4,7 +4,7 @@ export * from './finance';
 export * from './admin';
 
 // Роли пользователей
-export type UserRole = 'owner' | 'admin' | 'employee';
+export type UserRole = 'employee' | 'manager' | 'owner' | null;
 
 // Статусы смены
 export type ShiftStatus = 'planned' | 'active' | 'break' | 'finished';

@@ -168,35 +168,26 @@ export const ScheduleScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StatusBar barStyle="light-content" backgroundColor={currentTheme.primary} translucent />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} translucent />
       
-      <View style={{ 
-        position: 'absolute', 
-        top: 0, left: 0, right: 0, 
-        height: 180, 
-        backgroundColor: currentTheme.bg, 
-        borderBottomLeftRadius: theme.borderRadius['3xl'], 
-        borderBottomRightRadius: theme.borderRadius['3xl'] 
-      }} />
-
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white }} edges={['top']}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomWidth: 1, borderBottomColor: theme.colors.border.light, paddingBottom: 12 }]}>
           <View>
-            <Text style={styles.headerTitle}>График работы</Text>
-            <Text style={styles.headerSubtitle}>{MONTHS[month].toUpperCase()} {year}</Text>
+            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>График работы</Text>
+            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>{MONTHS[month].toUpperCase()} {year}</Text>
           </View>
           <TouchableOpacity 
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
-            style={styles.iconButton}
+            style={[styles.iconButton, { backgroundColor: theme.colors.background, borderColor: theme.colors.border.light }]}
           >
-            <Info size={theme.layout.icon.lg} color={theme.colors.white} />
+            <Info size={theme.layout.icon.lg} color={currentTheme.primary} />
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={[styles.scrollContent, { backgroundColor: theme.colors.background, paddingTop: 20 }]} showsVerticalScrollIndicator={false}>
           <Animated.View entering={FadeInDown.duration(400)}>
             {/* Calendar Card */}
             <View style={styles.card}>

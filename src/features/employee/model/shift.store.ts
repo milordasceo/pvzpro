@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStateStorage } from '../../../shared/utils/storage';
+import { MOCK_EMPLOYEE, MOCK_PVZ, MOCK_SHIFT } from './mocks';
 
 export type MarketplaceType = 'wb' | 'ozon' | 'yandex';
 
@@ -14,12 +15,16 @@ interface PVZInfo {
   address: string;
   rating: number;
   marketplace: MarketplaceType;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 interface ShiftInfo {
-  startTime: string; 
-  endTime: string;   
-  salary: number;    
+  startTime: string;
+  endTime: string;
+  salary: number;
 }
 
 export interface BreakSession {
@@ -27,16 +32,16 @@ export interface BreakSession {
   status: 'available' | 'active' | 'completed';
   startTime: number | null;
   endTime: number | null;
-  durationLimit: number; 
+  durationLimit: number;
 }
 
 interface ShiftState {
   isShiftOpen: boolean;
-  shiftStartTime: number | null; 
-  
+  shiftStartTime: number | null;
+
   // Break Management
   breaks: BreakSession[];
-  
+
   // Mock Data
   employee: EmployeeInfo;
   pvz: PVZInfo;
@@ -44,7 +49,7 @@ interface ShiftState {
 
   startShift: () => void;
   endShift: () => void;
-  
+
   startBreak: () => void;
   endBreak: () => void;
   setMarketplace: (type: MarketplaceType) => void;
@@ -62,42 +67,31 @@ export const useShiftStore = create<ShiftState>()(
       isShiftOpen: false,
       shiftStartTime: null,
       breaks: INITIAL_BREAKS,
-      
-      // Имитация данных
-      employee: {
-        name: 'Александр Иванов',
-        role: 'Старший смены',
-      },
-      pvz: {
-        address: 'г. Москва, ул. Ленина, д. 1',
-        rating: 4.98,
-        marketplace: 'wb',
-      },
-      shift: {
-        startTime: '09:00',
-        endTime: '21:00',
-        salary: 3500,
-      },
 
-      setMarketplace: (type) => set((state) => ({ 
-        pvz: { ...state.pvz, marketplace: type } 
+      // Используем mock-данные из отдельного файла
+      employee: MOCK_EMPLOYEE,
+      pvz: MOCK_PVZ,
+      shift: MOCK_SHIFT,
+
+      setMarketplace: (type) => set((state) => ({
+        pvz: { ...state.pvz, marketplace: type }
       })),
 
-      startShift: () => set({ 
-        isShiftOpen: true, 
+      startShift: () => set({
+        isShiftOpen: true,
         shiftStartTime: Date.now(),
         breaks: INITIAL_BREAKS.map(b => ({ ...b, status: 'available', startTime: null, endTime: null }))
       }),
-      
-      endShift: () => set({ 
-        isShiftOpen: false, 
-        shiftStartTime: null 
+
+      endShift: () => set({
+        isShiftOpen: false,
+        shiftStartTime: null
       }),
 
       startBreak: () => {
         const { breaks } = get();
         const nextBreakIndex = breaks.findIndex(b => b.status === 'available');
-        if (nextBreakIndex === -1) return; 
+        if (nextBreakIndex === -1) return;
 
         const updatedBreaks = [...breaks];
         updatedBreaks[nextBreakIndex] = {
@@ -125,7 +119,7 @@ export const useShiftStore = create<ShiftState>()(
       }
     }),
     {
-      name: 'shift-storage-v3', 
+      name: 'shift-storage-v3',
       storage: createJSONStorage(() => createStateStorage()),
       version: 1,
     }
