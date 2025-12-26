@@ -1,102 +1,116 @@
-// Финансовые типы данных для сотрудника ПВЗ
+// Финансовые типы данных для учёта заработка сотрудника ПВЗ
+// Деньги НЕ проходят через приложение — только учёт и отображение
 
+/**
+ * Тип финансовой операции
+ */
+export type FinanceOperationType =
+  | 'shift'        // Оплата за смену
+  | 'overtime'     // Переработка
+  | 'bonus'        // Премия/бонус
+  | 'penalty';     // Штраф
+
+/**
+ * Категория штрафа
+ */
 export type PenaltyCategory =
-  | 'speed' // Скорость приёмки
-  | 'defect_50' // Брак – 50% стоимости
-  | 'substitution_100' // Подмена – 100% стоимости
-  | 'bad_rating' // Плохая оценка клиента (300–600 ₽)
-  | 'stuck_100'; // Зависший товар – 100% стоимости
+  | 'late'              // Опоздание
+  | 'early_leave'       // Ранний уход
+  | 'defect'            // Брак товара
+  | 'substitution'      // Подмена товара
+  | 'bad_rating'        // Плохая оценка клиента
+  | 'inventory_error'   // Ошибка инвентаризации
+  | 'other';            // Прочее
 
-export interface Payment {
+/**
+ * Категория бонуса
+ */
+export type BonusCategory =
+  | 'plan_completion'   // Выполнение плана
+  | 'efficiency'        // Эффективность
+  | 'no_penalties'      // Без штрафов за период
+  | 'extra_shift'       // Дополнительная смена
+  | 'holiday'           // Праздничные
+  | 'other';            // Прочее
+
+/**
+ * Финансовая операция (начисление или списание)
+ */
+export interface FinanceOperation {
   id: string;
-  type: 'salary' | 'bonus' | 'penalty' | 'overtime' | 'advance';
-  amount: number; // Отрицательная сумма для штрафов
+  type: FinanceOperationType;
+  amount: number;           // Положительная для начислений, отрицательная для штрафов
   description: string;
-  date: Date;
-  period: string; // YYYY-MM
+  date: string;             // YYYY-MM-DD
+  createdAt: string;        // ISO timestamp
+
+  // Связь со сменой (для type === 'shift' | 'overtime')
   shiftId?: string;
-  pvzId: string;
-  status: 'pending' | 'paid' | 'cancelled';
-  // Детализация штрафов (только для type === 'penalty')
+  hoursWorked?: number;
+  hourlyRate?: number;
+
+  // Детали бонуса
+  bonusCategory?: BonusCategory;
+
+  // Детали штрафа
   penaltyCategory?: PenaltyCategory;
-  // Исходная стоимость товара, если штраф процентный
-  relatedItemPrice?: number;
+  penaltyComment?: string;  // Комментарий менеджера
 }
 
-export interface ShiftPayment {
-  shiftId: string;
-  shiftDate: Date;
-  hoursWorked: number;
-  baseRate: number;
-  overtimeHours: number;
-  overtimeRate: number;
-  bonuses: number;
-  penalties: number;
-  totalAmount: number;
-  pvzName: string;
-  pvzAddress?: string;
-  penaltyDetails?: Array<{
-    category: PenaltyCategory;
-    amount: number; // отрицательное
-    relatedItemPrice?: number;
-    description?: string;
-    itemName?: string; // Название товара
-    adminComment?: string; // Комментарий администратора
-  }>;
-}
-
-export interface FinancialSummary {
-  currentMonth: {
-    totalEarned: number;
-    totalPaid: number;
-    pendingPayments: number;
-    bonuses: number;
-    penalties: number;
-    overtimeHours: number;
-    shiftsCount: number; // Количество смен за период
-  };
-  // Текущий расчетный период (с последней выплаты до сегодня)
-  currentPayoutPeriod: {
-    startDate: Date; // включительно
-    endDate: Date; // сегодня
-    toPay: number; // К выплате: сумма всех начислений минус штрафы за период
-    bonuses: number; // Сумма премий
-    penalties: number; // Сумма штрафов (отрицательная)
-    shiftsCount: number; // Кол-во смен в периоде
-  };
-  yearToDate: {
-    totalEarned: number;
-    totalPaid: number;
-    totalBonuses: number;
-    totalPenalties: number;
-  };
-  averageMonthly: number;
-  nextPaymentDate?: Date;
-  payoutPolicy?: 'biweekly'; // 1 и 15 числа месяца
-}
-
-export interface Period {
+/**
+ * Расчётный период (1-15 или 16-конец месяца)
+ */
+export interface PayoutPeriod {
   id: string;
-  label: string;
-  startDate: Date;
-  endDate: Date;
-  totalAmount: number;
-  paymentCount: number;
+  startDate: string;        // YYYY-MM-DD
+  endDate: string;          // YYYY-MM-DD
+  label: string;            // "1–15 декабря"
+
+  // Суммы
+  shiftsTotal: number;      // Сумма за смены
+  overtimeTotal: number;    // Сумма за переработки
+  bonusesTotal: number;     // Сумма бонусов
+  penaltiesTotal: number;   // Сумма штрафов (отрицательная)
+  grandTotal: number;       // Итого к выплате
+
+  // Статистика
+  shiftsCount: number;      // Кол-во смен
+  hoursWorked: number;      // Часов отработано
+
+  // Статус
+  status: 'current' | 'pending_payout' | 'paid';
+  paidAt?: string;          // Дата выплаты (ISO)
+  expectedPayoutDate?: string; // Ожидаемая дата выплаты
 }
 
-export interface PaymentFilter {
-  period?: 'current_month' | 'last_month' | 'last_3_months' | 'year_to_date' | 'custom';
-  type?: Payment['type'][];
-  status?: Payment['status'][];
+/**
+ * Сводка по финансам сотрудника
+ */
+export interface FinanceSummary {
+  // Текущий период (ещё не выплачен)
+  currentPeriod: PayoutPeriod;
+
+  // Статистика
+  totalEarnedAllTime: number;   // Всего заработано за всё время
+  totalEarnedThisMonth: number; // Заработано в этом месяце
+  averageMonthly: number;       // Средний заработок в месяц
+  currentHourlyRate: number;    // Текущая почасовая ставка
+
+  // История операций текущего периода
+  currentOperations: FinanceOperation[];
+
+  // История выплат (прошлые периоды)
+  payoutHistory: PayoutPeriod[];
+}
+
+/**
+ * Фильтр для просмотра операций
+ */
+export interface FinanceFilter {
+  period?: 'current' | 'last_period' | 'this_month' | 'last_month' | 'custom';
+  type?: FinanceOperationType[];
   dateRange?: {
-    start: Date;
-    end: Date;
+    start: string;
+    end: string;
   };
-}
-
-export interface ExportOptions {
-  format: 'pdf' | 'excel' | 'csv';
-  period: Period;
-  includeDetails: boolean;
-  includeShifts: boolean;
 }
