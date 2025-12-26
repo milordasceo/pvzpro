@@ -83,10 +83,16 @@ export const useShiftStore = create<ShiftState>()(
         breaks: INITIAL_BREAKS.map(b => ({ ...b, status: 'available', startTime: null, endTime: null }))
       }),
 
-      endShift: () => set({
-        isShiftOpen: false,
-        shiftStartTime: null
-      }),
+      endShift: () => {
+        // Reset tasks when ending shift (for testing)
+        import('../model/tasks.store').then(({ useTasksStore }) => {
+          useTasksStore.getState().resetTasks();
+        });
+        set({
+          isShiftOpen: false,
+          shiftStartTime: null
+        });
+      },
 
       startBreak: () => {
         const { breaks } = get();

@@ -17,6 +17,7 @@ export interface Task {
   type: TaskType;
   title: string;
   description?: string;
+  deadline?: string;
   status: TaskStatus;
   items?: ChecklistItem[]; // Только для чек-листов
   photoUrl?: string; // Для кастомных задач
@@ -35,7 +36,8 @@ const MOCK_TASKS: Task[] = [
     id: 'ch-1',
     type: 'checklist',
     title: 'Ежедневная уборка (Утро)',
-    description: 'Выполняется ежедневно до 10:00. Необходимо сделать фото каждого этапа для подтверждения чистоты.',
+    description: 'Необходимо сделать фото каждого этапа для подтверждения.',
+    deadline: '10:00',
     status: 'pending',
     items: [
       { id: 'i1', title: 'Протереть пол в клиентской зоне', completed: false },
@@ -49,7 +51,8 @@ const MOCK_TASKS: Task[] = [
     id: 'ch-2',
     type: 'checklist',
     title: 'Санитарный час',
-    description: 'Плановая дезинфекция поверхностей и проветривание помещения.',
+    description: 'Дезинфекция поверхностей и проветривание.',
+    deadline: '14:00',
     status: 'pending',
     items: [
       { id: 's1', title: 'Дезинфекция дверных ручек', completed: false },
@@ -60,7 +63,8 @@ const MOCK_TASKS: Task[] = [
     id: 't-1',
     type: 'custom',
     title: 'Инвентаризация пакетов',
-    description: 'Посчитайте количество больших фирменных пакетов на основном складе и введите число ниже. Обязательно прикрепите фото полки с пакетами.',
+    description: 'Посчитайте количество больших фирменных пакетов на складе. Прикрепите фото полки.',
+    deadline: '18:00',
     status: 'pending',
   },
 ];
@@ -74,7 +78,7 @@ export const useTasksStore = create<TasksState>()(
         const newTasks = state.tasks.map(task => {
           if (task.id === taskId) {
             if (task.type === 'checklist' && itemId) {
-              const newItems = task.items?.map(item => 
+              const newItems = task.items?.map(item =>
                 item.id === itemId ? { ...item, photoUrl, completed: true } : item
               );
               return { ...task, items: newItems };
