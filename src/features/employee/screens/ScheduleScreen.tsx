@@ -1,25 +1,34 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StatusBar, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StatusBar, StyleSheet, Dimensions, Modal, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  ChevronLeft, 
-  ChevronRight, 
-  Info, 
+import {
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  X,
   AlertCircle,
   Plus,
-  Minus,
-  X,
-  Check
+  Send,
 } from 'lucide-react-native';
 import { theme } from '../../../shared/theme';
 import { marketplaceThemes } from '../../../shared/theme/colors';
 import { useShiftStore } from '../model/shift.store';
-import { useScheduleStore, ScheduleShift } from '../model/schedule.store';
-import Animated, { FadeInDown, FadeIn, FadeOut } from 'react-native-reanimated';
+import { useScheduleStore } from '../model/schedule.store';
+import Animated, { FadeInDown, FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { HoldToConfirm } from '../../../shared/ui/HoldToConfirm';
+
+const CANCEL_REASONS = [
+  { id: 'sick', label: 'Болезнь' },
+  { id: 'family', label: 'Семейные обстоятельства' },
+  { id: 'personal', label: 'Личные причины' },
+  { id: 'other', label: 'Другое' },
+];
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const DAY_SIZE = (SCREEN_WIDTH - 48 - 24) / 7; // padding + gaps
 
 const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const MONTHS = [
@@ -29,29 +38,63 @@ const MONTHS = [
 
 export const ScheduleScreen = () => {
   const { pvz } = useShiftStore();
-  const { 
-    shifts, 
-    pendingChanges, 
-    isEditing, 
-    setEditing, 
-    toggleShift, 
-    submitRequest 
-  } = useScheduleStore();
-  
+  const { shifts } = useScheduleStore();
   const currentTheme = marketplaceThemes[pvz.marketplace] || marketplaceThemes.wb;
 
-  // Calendar State
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<string | null>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Request modal state
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [pendingCancellations, setPendingCancellations] = useState<string[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<string[]>([]);
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Get current week days
+  const currentWeekDays = useMemo(() => {
+    const todayDate = new Date();
+    const dayOfWeek = todayDate.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(todayDate);
+    monday.setDate(todayDate.getDate() + mondayOffset);
+
+    const weekDays: { date: Date; dateStr: string }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      weekDays.push({
+        date: d,
+        dateStr: d.toISOString().split('T')[0]
+      });
+    }
+    return weekDays;
+  }, []);
 
   const daysInMonth = useMemo(() => new Date(year, month + 1, 0).getDate(), [month, year]);
   const firstDayOfMonth = useMemo(() => {
-    let day = new Date(year, month, 1).getDay();
-    return day === 0 ? 6 : day - 1; // Adjust to start from Monday
+    const day = new Date(year, month, 1).getDay();
+    return day === 0 ? 6 : day - 1;
   }, [month, year]);
+
+  // Stats
+  const monthStats = useMemo(() => {
+    const monthShifts = shifts.filter(s => {
+      const [y, m] = s.date.split('-').map(Number);
+      return y === year && m === month + 1;
+    });
+    const totalHours = monthShifts.reduce((acc, s) => {
+      const start = parseInt(s.startTime.split(':')[0]);
+      const end = parseInt(s.endTime.split(':')[0]);
+      return acc + (end - start);
+    }, 0);
+    const futureShifts = monthShifts.filter(s => s.date >= today).length;
+    return { totalHours, futureShifts, totalShifts: monthShifts.length };
+  }, [shifts, month, year, today]);
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -65,99 +108,122 @@ export const ScheduleScreen = () => {
 
   const handleDayPress = (day: number) => {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const today = new Date().toISOString().split('T')[0];
-    
-    if (isEditing) {
-      if (dateStr <= today) {
-        // Cannot edit past or today
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        return;
-      }
-      toggleShift(dateStr);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    } else {
-      setSelectedDate(dateStr);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    setSelectedDate(dateStr);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const selectedShift = useMemo(() => 
-    shifts.find(s => s.date === selectedDate), 
+  const handleCancelShift = () => {
+    // Check if shift is within 24 hours
+    const shiftDate = new Date(selectedDate);
+    const now = new Date();
+    const hoursUntilShift = (shiftDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursUntilShift < 24) {
+      Alert.alert(
+        '⚠️ Внимание',
+        `До начала смены осталось менее 24 часов.\n\nОтмена в последний момент может повлечь штрафные санкции. Рекомендуем связаться с менеджером напрямую.`,
+        [
+          { text: 'Отмена', style: 'cancel' },
+          {
+            text: 'Всё равно отменить',
+            style: 'destructive',
+            onPress: () => {
+              setShowCancelModal(true);
+              setSelectedReason(null);
+            }
+          },
+        ]
+      );
+    } else {
+      setShowCancelModal(true);
+      setSelectedReason(null);
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const submitCancelRequest = () => {
+    if (!selectedReason) return;
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setPendingCancellations(prev => [...prev, selectedDate]);
+    setShowCancelModal(false);
+    setSelectedReason(null);
+
+    Alert.alert(
+      'Запрос отправлен',
+      'Менеджер рассмотрит вашу заявку и уведомит о решении.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const handleRequestShift = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Alert.alert(
+      'Запрос на смену',
+      `Вы хотите запросить смену на ${formatShiftDate(selectedDate)}?`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Запросить',
+          onPress: () => {
+            setPendingRequests(prev => [...prev, selectedDate]);
+            Alert.alert('Отправлено', 'Запрос на дополнительную смену отправлен менеджеру.');
+          }
+        },
+      ]
+    );
+  };
+
+  const isPendingCancellation = (dateStr: string) => pendingCancellations.includes(dateStr);
+  const isPendingRequest = (dateStr: string) => pendingRequests.includes(dateStr);
+
+  const revokeCancellation = (dateStr: string) => {
+    Alert.alert(
+      'Отозвать заявку',
+      'Вы хотите отменить запрос на отмену смены?',
+      [
+        { text: 'Нет', style: 'cancel' },
+        {
+          text: 'Да, отозвать',
+          onPress: () => {
+            setPendingCancellations(prev => prev.filter(d => d !== dateStr));
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          }
+        },
+      ]
+    );
+  };
+
+  const revokeRequest = (dateStr: string) => {
+    Alert.alert(
+      'Отозвать заявку',
+      'Вы хотите отменить запрос на смену?',
+      [
+        { text: 'Нет', style: 'cancel' },
+        {
+          text: 'Да, отозвать',
+          onPress: () => {
+            setPendingRequests(prev => prev.filter(d => d !== dateStr));
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          }
+        },
+      ]
+    );
+  };
+
+  const selectedShift = useMemo(() =>
+    shifts.find(s => s.date === selectedDate),
     [shifts, selectedDate]
   );
 
-  const dayWidth = useMemo(() => (Dimensions.get('window').width - theme.spacing['3xl'] - theme.layout.calendar.gridGap * 6) / 7, []);
-
-  const renderDay = (day: number | null, index: number) => {
-    if (day === null) return <View key={`empty-${index}`} style={[styles.dayContainer, { width: dayWidth }]} />;
-
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const today = new Date().toISOString().split('T')[0];
-    const isToday = dateStr === today;
-    const isPast = dateStr < today;
-    const isSelected = selectedDate === dateStr && !isEditing;
-    
-    const hasShift = shifts.some(s => s.date === dateStr);
-    const pendingAdded = pendingChanges.added.includes(dateStr);
-    const pendingRemoved = pendingChanges.removed.includes(dateStr);
-
-    let backgroundColor = theme.colors.background;
-    let textColor = theme.colors.text.primary;
-    let borderWidth = 0;
-    let borderColor = 'transparent';
-
-    if (isEditing) {
-      if (isPast || isToday) {
-        textColor = theme.colors.text.muted;
-      } else if (pendingAdded) {
-        backgroundColor = `${currentTheme.primary}40`; // Light primary for pending add
-        borderWidth = 2;
-        borderColor = currentTheme.primary;
-      } else if (pendingRemoved) {
-        backgroundColor = `${theme.colors.danger}20`;
-        borderWidth = 2;
-        borderColor = theme.colors.danger;
-      } else if (hasShift) {
-        backgroundColor = currentTheme.primary;
-        textColor = pvz.marketplace === 'yandex' ? theme.colors.black : theme.colors.white;
-      }
-    } else {
-      if (hasShift) {
-        backgroundColor = currentTheme.primary;
-        textColor = pvz.marketplace === 'yandex' ? theme.colors.black : theme.colors.white;
-      }
-      if (isSelected) {
-        borderWidth = 2;
-        borderColor = currentTheme.secondary;
-      }
-      if (isToday && !hasShift) {
-        borderWidth = 1;
-        borderColor = currentTheme.primary;
-        textColor = currentTheme.primary;
-      }
-    }
-
-    return (
-      <TouchableOpacity 
-        key={dateStr}
-        onPress={() => handleDayPress(day)}
-        disabled={isEditing && (isPast || isToday)}
-        style={[
-          styles.dayContainer, 
-          { 
-            width: dayWidth,
-            backgroundColor, 
-            borderWidth, 
-            borderColor,
-            opacity: isEditing && (isPast || isToday) ? 0.4 : 1
-          }
-        ]}
-      >
-        <Text style={[styles.dayText, { color: textColor }]}>{day}</Text>
-        {isToday && <View style={[styles.todayDot, { backgroundColor: hasShift ? theme.colors.white : currentTheme.primary }]} />}
-      </TouchableOpacity>
-    );
-  };
+  // Upcoming shifts (next 3)
+  const upcomingShifts = useMemo(() =>
+    shifts
+      .filter(s => s.date >= today)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 3),
+    [shifts, today]
+  );
 
   const calendarDays = useMemo(() => {
     const days: (number | null)[] = [];
@@ -166,407 +232,880 @@ export const ScheduleScreen = () => {
     return days;
   }, [firstDayOfMonth, daysInMonth]);
 
+  const renderDay = (day: number | null, index: number) => {
+    if (day === null) return <View key={`empty-${index}`} style={styles.dayEmpty} />;
+
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = dateStr === today;
+    const isPast = dateStr < today;
+    const isSelected = selectedDate === dateStr;
+    const hasShift = shifts.some(s => s.date === dateStr);
+    const isPastShift = hasShift && isPast;
+
+    return (
+      <TouchableOpacity
+        key={dateStr}
+        onPress={() => handleDayPress(day)}
+        activeOpacity={0.7}
+        style={[
+          styles.dayContainer,
+          hasShift && !isPast && { backgroundColor: `${currentTheme.primary}20` },
+          isPastShift && { backgroundColor: `${theme.colors.success}20` },
+          isSelected && { borderWidth: 2, borderColor: isToday ? currentTheme.primary : theme.colors.text.secondary },
+        ]}
+      >
+        <Text style={[
+          styles.dayText,
+          isPast && !hasShift && { color: theme.colors.text.muted },
+          (hasShift && !isPast) && { color: currentTheme.primary, fontWeight: '600' },
+          isPastShift && { color: theme.colors.success, fontWeight: '600' },
+          isToday && !hasShift && { color: currentTheme.primary, fontWeight: '700' },
+        ]}>
+          {day}
+        </Text>
+        {isToday && (
+          <View style={[
+            styles.todayDot,
+            { backgroundColor: currentTheme.primary }
+          ]} />
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const formatShiftDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const dayOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][date.getDay()];
+    const day = date.getDate();
+    const monthName = MONTHS[date.getMonth()].slice(0, 3).toLowerCase();
+    return `${dayOfWeek}, ${day} ${monthName}`;
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} translucent />
-      
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.white }} edges={['top']}>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomWidth: 1, borderBottomColor: theme.colors.border.light, paddingBottom: 12 }]}>
-          <View>
-            <Text style={[styles.headerTitle, { color: theme.colors.text.primary }]}>График работы</Text>
-            <Text style={[styles.headerSubtitle, { color: theme.colors.text.muted }]}>{MONTHS[month].toUpperCase()} {year}</Text>
-          </View>
-          <TouchableOpacity 
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            }}
-            style={[styles.iconButton, { backgroundColor: theme.colors.background, borderColor: theme.colors.border.light }]}
-          >
-            <Info size={theme.layout.icon.lg} color={currentTheme.primary} />
-          </TouchableOpacity>
-        </View>
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.background} />
 
-        <ScrollView contentContainerStyle={[styles.scrollContent, { backgroundColor: theme.colors.background, paddingTop: 20 }]} showsVerticalScrollIndicator={false}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>График</Text>
+            <View style={styles.statsRow}>
+              <View style={[styles.statBadge, { backgroundColor: `${theme.colors.success}15` }]}>
+                <Text style={[styles.statText, { color: theme.colors.success }]}>
+                  {monthStats.totalHours}ч отработано
+                </Text>
+              </View>
+              <View style={[styles.statBadge, { backgroundColor: `${currentTheme.primary}15` }]}>
+                <Text style={[styles.statText, { color: currentTheme.primary }]}>
+                  {monthStats.futureShifts} впереди
+                </Text>
+              </View>
+            </View>
+          </View>
+
           <Animated.View entering={FadeInDown.duration(400)}>
             {/* Calendar Card */}
-            <View style={styles.card}>
-              <View style={styles.monthNavigator}>
-                <TouchableOpacity onPress={handlePrevMonth} style={styles.navButton}>
-                  <ChevronLeft size={theme.layout.icon['2xl']} color={theme.colors.text.primary} />
-                </TouchableOpacity>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={styles.monthTitle}>{MONTHS[month]} {year}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setCurrentDate(new Date());
-                    setSelectedDate(new Date().toISOString().split('T')[0]);
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  }}>
-                    <Text style={{ ...theme.typography.presets.caption, color: currentTheme.primary, fontWeight: '700', marginTop: theme.spacing.xs }}>СЕГОДНЯ</Text>
+            <Animated.View layout={Layout.springify()} style={styles.calendarCard}>
+              {/* Week or Month Navigation */}
+              {isExpanded ? (
+                <View style={styles.monthNav}>
+                  <TouchableOpacity onPress={handlePrevMonth} style={styles.navButton}>
+                    <ChevronLeft size={20} color={theme.colors.text.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setCurrentDate(new Date());
+                      setSelectedDate(today);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    }}
+                  >
+                    <Text style={styles.monthTitle}>{MONTHS[month]} {year}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
+                    <ChevronRight size={20} color={theme.colors.text.primary} />
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
-                  <ChevronRight size={theme.layout.icon['2xl']} color={theme.colors.text.primary} />
-                </TouchableOpacity>
-              </View>
+              ) : (
+                <View style={styles.weekHeader}>
+                  <Text style={styles.weekHeaderText}>Эта неделя</Text>
+                </View>
+              )}
 
+              {/* Weekday Headers */}
               <View style={styles.weekDays}>
-                {DAYS.map(day => (
-                  <Text key={day} style={styles.weekDayText}>{day}</Text>
+                {DAYS.map((day, i) => (
+                  <Text
+                    key={day}
+                    style={[
+                      styles.weekDayText,
+                      (i === 5 || i === 6) && { color: theme.colors.text.muted }
+                    ]}
+                  >
+                    {day}
+                  </Text>
                 ))}
               </View>
 
-              <View style={styles.calendarGrid}>
-                {calendarDays.map((day, i) => renderDay(day, i))}
-              </View>
+              {/* Calendar Grid - Week or Month */}
+              {isExpanded ? (
+                <View style={styles.calendarGrid}>
+                  {calendarDays.map((day, i) => renderDay(day, i))}
+                </View>
+              ) : (
+                <View style={styles.weekGrid}>
+                  {currentWeekDays.map((weekDay) => {
+                    const day = weekDay.date.getDate();
+                    const dateStr = weekDay.dateStr;
+                    const isToday = dateStr === today;
+                    const hasShift = shifts.some(s => s.date === dateStr);
+                    const isPast = dateStr < today;
+                    const isPastShift = hasShift && isPast;
+                    const isSelected = selectedDate === dateStr;
 
-              {isEditing && (
-                <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.editLegend}>
-                  <View style={styles.legendItem}>
-                    <View style={[styles.legendDot, { backgroundColor: `${currentTheme.primary}40`, borderColor: currentTheme.primary, borderWidth: 1 }]} />
-                    <Text style={styles.legendText}>Добавить</Text>
-                  </View>
-                  <View style={styles.legendItem}>
-                    <View style={[styles.legendDot, { backgroundColor: `${theme.colors.danger}20`, borderColor: theme.colors.danger, borderWidth: 1 }]} />
-                    <Text style={styles.legendText}>Удалить</Text>
-                  </View>
-                  <View style={styles.legendItem}>
-                    <View style={[styles.legendDot, { backgroundColor: theme.colors.background, opacity: 0.4 }]} />
-                    <Text style={styles.legendText}>Недоступно</Text>
-                  </View>
-                </Animated.View>
+                    return (
+                      <TouchableOpacity
+                        key={dateStr}
+                        onPress={() => {
+                          setSelectedDate(dateStr);
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }}
+                        activeOpacity={0.7}
+                        style={[
+                          styles.dayContainer,
+                          hasShift && !isPast && { backgroundColor: `${currentTheme.primary}20` },
+                          isPastShift && { backgroundColor: `${theme.colors.success}20` },
+                          isSelected && { borderWidth: 2, borderColor: isToday ? currentTheme.primary : theme.colors.text.secondary },
+                        ]}
+                      >
+                        <Text style={[
+                          styles.dayText,
+                          isPast && !hasShift && { color: theme.colors.text.muted },
+                          hasShift && !isPast && { color: currentTheme.primary, fontWeight: '600' },
+                          isPastShift && { color: theme.colors.success, fontWeight: '600' },
+                          isToday && !hasShift && { color: currentTheme.primary, fontWeight: '700' },
+                        ]}>
+                          {day}
+                        </Text>
+                        {isToday && (
+                          <View style={[
+                            styles.todayDot,
+                            { backgroundColor: currentTheme.primary }
+                          ]} />
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               )}
-            </View>
 
-            {/* Shift Details or Edit Controls */}
-            {isEditing ? (
-              <Animated.View entering={FadeInDown} style={styles.editControls}>
-                <View style={styles.editHeader}>
-                  <Text style={styles.editTitle}>Редактирование графика</Text>
-                  <TouchableOpacity onPress={() => setEditing(false)} style={styles.closeButton}>
-                    <X size={theme.layout.icon.lg} color={theme.colors.text.secondary} />
+              {/* Expand/Collapse Button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setIsExpanded(!isExpanded);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                style={styles.expandButton}
+              >
+                {isExpanded ? (
+                  <ChevronUp size={20} color={theme.colors.text.muted} />
+                ) : (
+                  <ChevronDown size={20} color={theme.colors.text.muted} />
+                )}
+                <Text style={styles.expandText}>
+                  {isExpanded ? 'Свернуть' : 'Весь месяц'}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/* Selected Day Details */}
+            {selectedShift && selectedDate >= today ? (
+              isPendingCancellation(selectedDate) ? (
+                // Pending cancellation request card
+                <View style={[styles.detailsCard, styles.pendingCard, { borderColor: theme.colors.warning }]}>
+                  <View style={styles.requestHeader}>
+                    <View style={[styles.requestIconBox, { backgroundColor: `${theme.colors.warning}15` }]}>
+                      <AlertCircle size={24} color={theme.colors.warning} />
+                    </View>
+                    <View style={styles.requestInfo}>
+                      <Text style={styles.requestTitle}>Заявка на отмену смены</Text>
+                      <Text style={styles.requestStatus}>Ожидает решения менеджера</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.requestDetails}>
+                    <View style={styles.requestRow}>
+                      <Text style={styles.requestLabel}>Дата:</Text>
+                      <Text style={styles.requestValue}>{formatShiftDate(selectedDate)}</Text>
+                    </View>
+                    <View style={styles.requestRow}>
+                      <Text style={styles.requestLabel}>Время:</Text>
+                      <Text style={[styles.requestValue, { textDecorationLine: 'line-through', color: theme.colors.text.muted }]}>
+                        {selectedShift.startTime} — {selectedShift.endTime}
+                      </Text>
+                    </View>
+                    <View style={styles.requestRow}>
+                      <Text style={styles.requestLabel}>Адрес:</Text>
+                      <Text style={styles.requestValue} numberOfLines={1}>{selectedShift.pvzAddress}</Text>
+                    </View>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={() => revokeCancellation(selectedDate)}
+                    style={styles.revokeButton}
+                    activeOpacity={0.7}
+                  >
+                    <X size={16} color={theme.colors.danger} />
+                    <Text style={styles.revokeButtonText}>Отозвать заявку</Text>
                   </TouchableOpacity>
                 </View>
-                
-                <Text style={styles.editHint}>
-                  Нажмите на пустой день для добавления смены, или на рабочий для удаления.
-                </Text>
-
-                <View style={styles.statsRow}>
-                  <View style={styles.statBox}>
-                    <Text style={styles.statLabel}>Добавлено</Text>
-                    <Text style={[styles.statValue, { color: currentTheme.primary }]}>+{pendingChanges.added.length}</Text>
+              ) : (
+                // Normal shift card
+                <View style={styles.detailsCard}>
+                  <View style={styles.detailsHeader}>
+                    <View style={[styles.detailsIcon, { backgroundColor: `${currentTheme.primary}15` }]}>
+                      <Clock size={20} color={currentTheme.primary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.detailsLabel}>
+                        {selectedDate === today ? 'Сегодня' : formatShiftDate(selectedDate)}
+                      </Text>
+                      <Text style={styles.detailsTime}>
+                        {selectedShift.startTime} — {selectedShift.endTime}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.statBox}>
-                    <Text style={styles.statLabel}>Удалено</Text>
-                    <Text style={[styles.statValue, { color: theme.colors.danger }]}>-{pendingChanges.removed.length}</Text>
+                  <View style={styles.detailsAddress}>
+                    <MapPin size={14} color={theme.colors.text.muted} />
+                    <Text style={styles.detailsAddressText}>{selectedShift.pvzAddress}</Text>
+                  </View>
+
+                  {selectedDate > today && (
+                    <TouchableOpacity
+                      onPress={handleCancelShift}
+                      style={styles.cancelButton}
+                      activeOpacity={0.7}
+                    >
+                      <X size={16} color={theme.colors.danger} />
+                      <Text style={styles.cancelButtonText}>Отменить смену</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )
+            ) : !selectedShift && selectedDate > today ? (
+              isPendingRequest(selectedDate) ? (
+                // Pending shift request card
+                <View style={[styles.detailsCard, styles.pendingCard, { borderColor: currentTheme.primary }]}>
+                  <View style={styles.requestHeader}>
+                    <View style={[styles.requestIconBox, { backgroundColor: `${currentTheme.primary}15` }]}>
+                      <Plus size={24} color={currentTheme.primary} />
+                    </View>
+                    <View style={styles.requestInfo}>
+                      <Text style={styles.requestTitle}>Заявка на смену</Text>
+                      <Text style={[styles.requestStatus, { color: currentTheme.primary }]}>
+                        Ожидает решения менеджера
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.requestDetails}>
+                    <View style={styles.requestRow}>
+                      <Text style={styles.requestLabel}>Дата:</Text>
+                      <Text style={styles.requestValue}>{formatShiftDate(selectedDate)}</Text>
+                    </View>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={() => revokeRequest(selectedDate)}
+                    style={styles.revokeButton}
+                    activeOpacity={0.7}
+                  >
+                    <X size={16} color={theme.colors.danger} />
+                    <Text style={styles.revokeButtonText}>Отозвать заявку</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                // Empty day - offer to request shift
+                <View style={styles.detailsCard}>
+                  <View style={styles.emptyDay}>
+                    <Text style={styles.emptyDayText}>Нет смены на {formatShiftDate(selectedDate)}</Text>
+                    <TouchableOpacity
+                      onPress={handleRequestShift}
+                      style={[styles.requestButton, { backgroundColor: `${currentTheme.primary}15` }]}
+                      activeOpacity={0.7}
+                    >
+                      <Plus size={16} color={currentTheme.primary} />
+                      <Text style={[styles.requestButtonText, { color: currentTheme.primary }]}>
+                        Запросить смену
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
+              )
+            ) : null}
 
-                {(pendingChanges.added.length > 0 || pendingChanges.removed.length > 0) && (
-                  <HoldToConfirm 
-                    onConfirm={submitRequest}
-                    label="Отправить запрос"
-                    holdingLabel="Отправка..."
-                    color={currentTheme.primary}
-                    style={{ marginTop: theme.spacing.xl }}
-                  />
-                )}
-              </Animated.View>
-            ) : (
-              <Animated.View entering={FadeInDown} style={styles.card}>
-                {selectedShift ? (
-                  <>
-                    <View style={styles.shiftHeader}>
-                      <View style={[styles.iconBox, { backgroundColor: `${currentTheme.primary}10` }]}>
-                        <Clock size={theme.layout.icon.lg} color={currentTheme.primary} />
-                      </View>
-                      <View>
-                        <Text style={styles.shiftLabel}>Смена {selectedDate === new Date().toISOString().split('T')[0] ? 'сегодня' : (selectedDate === new Date(Date.now() + 86400000).toISOString().split('T')[0] ? 'завтра' : '')}</Text>
-                        <Text style={styles.shiftTime}>{selectedShift.startTime} — {selectedShift.endTime}</Text>
-                      </View>
+            {/* Upcoming Shifts */}
+            {upcomingShifts.length > 0 && (
+              <View style={styles.upcomingSection}>
+                <Text style={styles.sectionTitle}>Ближайшие смены</Text>
+                {upcomingShifts.map((shift) => (
+                  <TouchableOpacity
+                    key={shift.date}
+                    style={styles.upcomingCard}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      setSelectedDate(shift.date);
+                      const [y, m] = shift.date.split('-').map(Number);
+                      if (m !== month + 1 || y !== year) {
+                        setCurrentDate(new Date(y, m - 1, 1));
+                      }
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                  >
+                    <View style={styles.upcomingDate}>
+                      <Text style={styles.upcomingDay}>
+                        {new Date(shift.date).getDate()}
+                      </Text>
+                      <Text style={styles.upcomingMonth}>
+                        {MONTHS[new Date(shift.date).getMonth()].slice(0, 3)}
+                      </Text>
                     </View>
-                    
-                    <View style={styles.infoRow}>
-                      <Text style={styles.infoLabel}>Адрес:</Text>
-                      <Text style={styles.infoValue}>{selectedShift.pvzAddress}</Text>
+                    <View style={styles.upcomingInfo}>
+                      <Text style={styles.upcomingTime}>
+                        {shift.startTime} — {shift.endTime}
+                      </Text>
+                      <Text style={styles.upcomingAddress} numberOfLines={1}>
+                        {shift.pvzAddress}
+                      </Text>
                     </View>
-                    <View style={styles.infoRow}>
-                      <Text style={styles.infoLabel}>Оплата:</Text>
-                      <Text style={styles.infoValue}>{selectedShift.salary} ₽</Text>
-                    </View>
-
-                    <TouchableOpacity 
-                      onPress={() => setEditing(true)}
-                      style={[styles.actionButton, { backgroundColor: `${currentTheme.primary}10` }]}
-                    >
-                      <Text style={[styles.actionButtonText, { color: currentTheme.primary }]}>Запросить изменение</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <View style={styles.emptyShift}>
-                    <AlertCircle size={theme.layout.icon['3xl']} color={theme.colors.text.muted} />
-                    <Text style={styles.emptyText}>На этот день нет смен</Text>
-                    <TouchableOpacity 
-                      onPress={() => setEditing(true)}
-                      style={[styles.actionButton, { backgroundColor: `${currentTheme.primary}10`, width: '100%', marginTop: theme.spacing.lg }]}
-                    >
-                      <Text style={[styles.actionButtonText, { color: currentTheme.primary }]}>Добавить смену</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </Animated.View>
-            )}
-
-            {!isEditing && (
-              <View style={styles.warningBox}>
-                <AlertCircle size={theme.layout.icon.md} color={theme.colors.warning} />
-                <Text style={styles.warningText}>
-                  Если не сможете выйти, сообщите менеджеру минимум за 24 часа.
-                </Text>
+                    <View style={[styles.upcomingIndicator, { backgroundColor: currentTheme.primary }]} />
+                  </TouchableOpacity>
+                ))}
               </View>
             )}
           </Animated.View>
         </ScrollView>
       </SafeAreaView>
+
+      {/* Cancel Shift Modal */}
+      <Modal
+        visible={showCancelModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowCancelModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Отмена смены</Text>
+              <TouchableOpacity
+                onPress={() => setShowCancelModal(false)}
+                style={styles.modalClose}
+              >
+                <X size={20} color={theme.colors.text.muted} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.modalSubtitle}>
+              Вы отменяете смену на {formatShiftDate(selectedDate)}
+            </Text>
+
+            <Text style={styles.modalLabel}>Причина отмены:</Text>
+            <View style={styles.reasonsContainer}>
+              {CANCEL_REASONS.map((reason) => (
+                <TouchableOpacity
+                  key={reason.id}
+                  style={[
+                    styles.reasonButton,
+                    selectedReason === reason.id && styles.reasonButtonActive,
+                    selectedReason === reason.id && { borderColor: currentTheme.primary }
+                  ]}
+                  onPress={() => {
+                    setSelectedReason(reason.id);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                >
+                  <Text style={[
+                    styles.reasonText,
+                    selectedReason === reason.id && { color: currentTheme.primary, fontWeight: '600' }
+                  ]}>
+                    {reason.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              onPress={submitCancelRequest}
+              disabled={!selectedReason}
+              style={[
+                styles.submitButton,
+                { backgroundColor: selectedReason ? currentTheme.primary : theme.colors.text.muted }
+              ]}
+            >
+              <Send size={18} color={theme.colors.white} />
+              <Text style={styles.submitButtonText}>Отправить запрос</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.modalNote}>
+              Запрос будет отправлен менеджеру. Вы получите уведомление о решении.
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+
+  // Header
   header: {
-    marginTop: theme.spacing.xs,
-    marginBottom: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.lg,
   },
   headerTitle: {
-    ...theme.typography.presets.h3,
-    color: theme.colors.white,
+    ...theme.typography.presets.h1,
+    marginBottom: theme.spacing.sm,
   },
-  headerSubtitle: {
+  statsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  statBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  statText: {
     ...theme.typography.presets.caption,
-    color: `${theme.colors.white}B3`,
+    fontWeight: '500',
   },
-  iconButton: {
-    width: theme.layout.calendar.daySize,
-    height: theme.layout.calendar.daySize,
-    backgroundColor: `${theme.colors.white}33`,
-    borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: `${theme.colors.white}4D`,
-  },
-  scrollContent: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.layout.calendar.cardPadding * 2,
-  },
-  card: {
+
+  // Calendar
+  calendarCard: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.layout.calendar.cardRadius,
-    padding: theme.layout.calendar.cardPadding,
-    marginBottom: theme.layout.calendar.cardPadding,
-    borderWidth: 1,
-    borderColor: theme.colors.border.DEFAULT,
-    ...theme.shadows.sm,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
   },
-  monthNavigator: {
+  monthNav: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.layout.calendar.cardPadding,
-  },
-  monthTitle: {
-    ...theme.typography.presets.bodyLarge,
-    fontWeight: '800',
-    color: theme.colors.text.primary,
+    marginBottom: 20,
   },
   navButton: {
-    width: theme.layout.calendar.daySize,
-    height: theme.layout.calendar.daySize,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: theme.borderRadius.md,
+    width: 36, height: 36,
+    borderRadius: 12,
     backgroundColor: theme.colors.background,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  monthTitle: {
+    ...theme.typography.presets.body,
+    fontWeight: '600',
   },
   weekDays: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.md,
+    marginBottom: 8,
   },
   weekDayText: {
-    ...theme.typography.presets.caption,
-    color: theme.colors.text.muted,
-    width: 38,
+    width: DAY_SIZE,
     textAlign: 'center',
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.secondary,
+    fontWeight: '500',
   },
   calendarGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: theme.layout.calendar.gridGap,
-    justifyContent: 'flex-start',
+    gap: 4,
+  },
+  dayEmpty: {
+    width: DAY_SIZE,
+    height: DAY_SIZE,
   },
   dayContainer: {
-    height: theme.layout.calendar.daySize,
-    borderRadius: theme.borderRadius.md,
+    width: DAY_SIZE,
+    height: DAY_SIZE,
+    borderRadius: DAY_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  dayToday: {
+    borderWidth: 2,
+  },
+  daySelected: {
+    transform: [{ scale: 1.1 }],
+  },
   dayText: {
     ...theme.typography.presets.bodySmall,
-    fontWeight: '700',
+    fontWeight: '500',
+    color: theme.colors.text.primary,
   },
   todayDot: {
+    position: 'absolute',
+    bottom: 4,
     width: 4,
     height: 4,
     borderRadius: 2,
-    position: 'absolute',
-    bottom: 4,
   },
-  editLegend: {
+
+  // Week View
+  weekHeader: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  weekHeaderText: {
+    ...theme.typography.presets.body,
+    fontWeight: '600',
+    color: theme.colors.text.primary,
+  },
+  weekGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: theme.layout.calendar.cardPadding,
-    paddingTop: theme.spacing.lg,
+  },
+  expandButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 16,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border.DEFAULT,
+    borderTopColor: theme.colors.border.light,
+  },
+  expandText: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+  },
+
+  // Legend
+  legend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border.light,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.sm,
+    gap: 6,
   },
   legendDot: {
-    width: 12,
-    height: 12,
+    width: 8, height: 8,
     borderRadius: 4,
   },
   legendText: {
     ...theme.typography.presets.caption,
-    color: theme.colors.text.secondary,
+    color: theme.colors.text.muted,
   },
-  editControls: {
+
+  // Details Card
+  detailsCard: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.layout.calendar.cardRadius,
-    padding: theme.layout.calendar.cardPadding + 4,
-    marginBottom: theme.layout.calendar.cardPadding,
-    borderWidth: 1,
-    borderColor: theme.colors.border.DEFAULT,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
   },
-  editHeader: {
+  detailsHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    gap: 12,
   },
-  editTitle: {
-    ...theme.typography.presets.h4,
-    color: theme.colors.text.primary,
+  detailsIcon: {
+    width: 44, height: 44,
+    borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center',
   },
-  closeButton: {
-    padding: theme.spacing.xs,
+  detailsLabel: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
   },
-  editHint: {
-    ...theme.typography.presets.bodySmall,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.layout.calendar.cardPadding,
+  detailsTime: {
+    ...theme.typography.presets.body,
+    fontWeight: '600',
   },
-  statsRow: {
+  detailsSalary: {
+    ...theme.typography.presets.body,
+    fontWeight: '700',
+    color: theme.colors.success,
+  },
+  detailsAddress: {
     flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  statBox: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
     alignItems: 'center',
+    gap: 6,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border.light,
   },
-  statLabel: {
+  detailsAddressText: {
     ...theme.typography.presets.caption,
     color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.xs,
+    flex: 1,
   },
-  statValue: {
-    ...theme.typography.presets.bodyLarge,
-    fontWeight: '800',
+
+  // Upcoming
+  upcomingSection: {
+    marginTop: 8,
   },
-  shiftHeader: {
+  sectionTitle: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  upcomingCard: {
+    backgroundColor: theme.colors.white,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.md,
-    marginBottom: theme.layout.calendar.cardPadding,
+    gap: 14,
   },
-  iconBox: {
+  upcomingDate: {
     width: 44,
-    height: 44,
-    borderRadius: theme.borderRadius.lg,
+    alignItems: 'center',
+  },
+  upcomingDay: {
+    ...theme.typography.presets.h4,
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  upcomingMonth: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+    textTransform: 'lowercase',
+  },
+  upcomingInfo: {
+    flex: 1,
+  },
+  upcomingTime: {
+    ...theme.typography.presets.bodySmall,
+    fontWeight: '500',
+  },
+  upcomingAddress: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+    marginTop: 2,
+  },
+  upcomingIndicator: {
+    width: 4,
+    height: 32,
+    borderRadius: 2,
+  },
+
+  // Request Card styles
+  requestHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 16,
+  },
+  requestIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  shiftLabel: {
-    ...theme.typography.presets.bodySmall,
-    color: theme.colors.text.secondary,
+  requestInfo: {
+    flex: 1,
   },
-  shiftTime: {
-    ...theme.typography.presets.bodyLarge,
-    fontWeight: '800',
-    color: theme.colors.text.primary,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.md,
-  },
-  infoLabel: {
-    ...theme.typography.presets.bodySmall,
-    color: theme.colors.text.secondary,
-  },
-  infoValue: {
-    ...theme.typography.presets.bodySmall,
+  requestTitle: {
+    ...theme.typography.presets.body,
     fontWeight: '600',
     color: theme.colors.text.primary,
+    marginBottom: 2,
+  },
+  requestStatus: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.warning,
+  },
+  requestDetails: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 12,
+    padding: 14,
+    gap: 10,
+    marginBottom: 16,
+  },
+  requestRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  requestLabel: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+  },
+  requestValue: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.text.primary,
+    fontWeight: '500',
     flex: 1,
     textAlign: 'right',
-    marginLeft: theme.spacing.xl,
   },
-  actionButton: {
-    height: 50,
-    borderRadius: theme.borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: theme.spacing.sm,
-  },
-  actionButtonText: {
-    ...theme.typography.presets.bodyLarge,
-    fontWeight: '700',
-  },
-  emptyShift: {
-    alignItems: 'center',
-    paddingVertical: theme.spacing.sm,
-  },
-  emptyText: {
-    ...theme.typography.presets.bodySmall,
-    color: theme.colors.text.secondary,
-    marginTop: theme.spacing.md,
-  },
-  warningBox: {
-    padding: theme.spacing.lg,
-    backgroundColor: `${theme.colors.warning}10`,
-    borderRadius: theme.borderRadius.xl,
+
+  // Cancel & Request buttons
+  cancelButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: `${theme.colors.warning}20`,
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border.light,
   },
-  warningText: {
+  cancelButtonText: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.danger,
+    fontWeight: '500',
+  },
+  revokeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: `${theme.colors.danger}15`,
+  },
+  revokeButtonText: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.danger,
+    fontWeight: '600',
+  },
+  requestButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 12,
+  },
+  requestButtonText: {
+    ...theme.typography.presets.bodySmall,
+    fontWeight: '600',
+  },
+  emptyDay: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  emptyDayText: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.text.muted,
+  },
+
+  // Pending state
+  pendingCard: {
+    borderWidth: 1,
+  },
+  pendingBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  pendingBadgeText: {
     ...theme.typography.presets.caption,
-    color: theme.colors.text.secondary,
+    fontWeight: '600',
+  },
+  pendingRequestRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    width: '100%',
+  },
+
+  // Modal
+  modalOverlay: {
     flex: 1,
-    lineHeight: 16,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  modalTitle: {
+    ...theme.typography.presets.h4,
+  },
+  modalClose: {
+    padding: 4,
+  },
+  modalSubtitle: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.text.secondary,
+    marginBottom: 20,
+  },
+  modalLabel: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+    marginBottom: 12,
+  },
+  reasonsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 24,
+  },
+  reasonButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  reasonButtonActive: {
+    backgroundColor: theme.colors.white,
+  },
+  reasonText: {
+    ...theme.typography.presets.bodySmall,
+    color: theme.colors.text.secondary,
+  },
+  submitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 14,
+    marginBottom: 16,
+  },
+  submitButtonText: {
+    ...theme.typography.presets.body,
+    color: theme.colors.white,
+    fontWeight: '600',
+  },
+  modalNote: {
+    ...theme.typography.presets.caption,
+    color: theme.colors.text.muted,
+    textAlign: 'center',
   },
 });
